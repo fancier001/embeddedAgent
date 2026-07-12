@@ -1,0 +1,60 @@
+name: Validate agent kit
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: ${{ matrix.os }} / Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10"]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: .github/agent-kit/requirements-dev.txt
+
+      - name: Install validation dependencies
+        run: python -m pip install --disable-pip-version-check -r .github/agent-kit/requirements-dev.txt
+
+      - name: Validate customizations
+        run: python .github/agent-kit/scripts/validate_customizations.py --root .
+
+      - name: Run validator unit tests
+        run: python -m unittest discover -s .github/agent-kit/tests -p "test_*.py" -v
+
+      - name: Configure minimal firmware example
+        run: cmake -S examples/minimal-firmware -B build/minimal-firmware -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build minimal firmware example
+        run: cmake --build build/minimal-firmware --config Debug
+
+      - name: Confirm mismatched ELF evidence exit code
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set +e
+          python .github/skills/firmware-log-analysis/scripts/artifact_evidence.py match \
+            --elf build/minimal-firmware/status_led_tests \
+            --log examples/minimal-firmware/artifacts/sample-crash.log \
+            --symbol status_led_set
+          code=$?
+          set -e
+          test "$code" -eq 3
+
+      - name: Run minimal firmware tests
+        run: ctest --test-dir build/minimal-firmware -C Debug --output-on-failure

@@ -1,0 +1,131 @@
+# Embedded project profile / 嵌入式项目画像
+# Replace confirmed values only. Keep unknown values as "auto" so agents discover repository truth read-only.
+# 只填写已确认值。未知值保留为 "auto"，由 Agent 只读探测工程事实。
+
+schema_version: 1
+kit_version: "1.1.0"
+
+# Configured values: bare-metal, rtos, module-sdk, embedded-linux, hybrid.
+# "auto" means not configured yet and requires read-only discovery.
+product_form: auto
+
+target:
+  mcu_soc: auto
+  chip_part_number: auto
+  board: auto
+  silicon_revision: auto
+  board_revision: auto
+  rtos: auto
+  datasheet:
+    document_id: auto
+    revision: auto
+    path_or_url: auto
+
+toolchain:
+  compiler: auto
+  compiler_version: auto
+  c_standard: auto
+  build_system: auto
+  cross_compile_prefix: auto
+
+paths:
+  source: auto
+  drivers: auto
+  # Optional in schema for 1.0 profile compatibility; absence has the same meaning as auto.
+  # 为兼容 1.0 画像，这四个字段在 schema 中可选；缺失与 auto 含义相同。
+  application: auto
+  services: auto
+  middleware: auto
+  protocols: auto
+  tests: auto
+  docs: auto
+  vendor: auto
+  generated: auto
+
+commands:
+  configure: auto
+  build: auto
+  test: auto
+  static_analysis: auto
+  hardware:
+    flash:
+      command: auto
+      enabled: false
+      requires_explicit_approval: true
+    erase:
+      command: auto
+      enabled: false
+      requires_explicit_approval: true
+    fuse:
+      command: auto
+      enabled: false
+      requires_explicit_approval: true
+    reset:
+      command: auto
+      enabled: false
+      requires_explicit_approval: true
+    hil:
+      command: auto
+      enabled: false
+      requires_explicit_approval: true
+
+artifacts:
+  elf: auto
+  map: auto
+  logs: auto
+  static_analysis_reports: auto
+
+misra:
+  standard: auto
+  version: auto
+  deviations: auto
+  compliance_claim_allowed: false
+
+documentation:
+  language_policy: bilingual-full
+  chinese_section: "## 中文 / Chinese"
+  english_section: "## English"
+  todo_sync_allowed_at_release: false
+
+safety:
+  preserve_dirty_worktree: true
+  allow_destructive_git: false
+  allow_automatic_dependency_install: false
+  allow_physical_hardware_access: false
+
+# Review focus selected by product_form. These are policy hints, not proof of the detected product form.
+# 下列条目是产品形态对应的评审重点，不能作为产品形态探测证据。
+product_form_focus:
+  bare-metal:
+    - mmio
+    - isr
+    - atomicity
+    - timing
+    - stack
+    - startup-exception
+    - low-power
+  rtos:
+    - task-isr-boundary
+    - priority
+    - synchronization
+    - deadlock-priority-inversion
+    - heap
+    - timeout
+    - object-lifetime
+  module-sdk:
+    - api-urc
+    - state-machine
+    - network-lifecycle
+    - reconnection
+    - logging
+    - backward-compatibility
+  embedded-linux:
+    - posix
+    - threads-processes
+    - cross-compilation
+    - system-interfaces
+    - signals-file-descriptors
+    - resource-cleanup
+  hybrid:
+    - combine-relevant-product-focus
+    - bind-evidence-to-execution-domain

@@ -1,0 +1,34 @@
+schema_version: 1
+kit_version: "1.1.0"
+product_form: hybrid
+target:
+  mcu_soc: auto
+  chip_part_number: auto
+  board: auto
+  silicon_revision: auto
+  board_revision: auto
+  rtos: auto
+  datasheet: {document_id: auto, revision: auto, path_or_url: auto}
+toolchain: {compiler: auto, compiler_version: auto, c_standard: auto, build_system: auto, cross_compile_prefix: auto}
+paths: {source: auto, drivers: auto, application: auto, services: auto, middleware: auto, protocols: auto, tests: auto, docs: auto, vendor: auto, generated: auto}
+commands:
+  configure: auto
+  build: auto
+  test: auto
+  static_analysis: auto
+  hardware:
+    flash: {command: auto, enabled: false, requires_explicit_approval: true}
+    erase: {command: auto, enabled: false, requires_explicit_approval: true}
+    fuse: {command: auto, enabled: false, requires_explicit_approval: true}
+    reset: {command: auto, enabled: false, requires_explicit_approval: true}
+    hil: {command: auto, enabled: false, requires_explicit_approval: true}
+artifacts: {elf: auto, map: auto, logs: auto, static_analysis_reports: auto}
+misra: {standard: auto, version: auto, deviations: auto, compliance_claim_allowed: false}
+documentation: {language_policy: bilingual-full, chinese_section: "## 中文 / Chinese", english_section: "## English", todo_sync_allowed_at_release: false}
+safety: {preserve_dirty_worktree: true, allow_destructive_git: false, allow_automatic_dependency_install: false, allow_physical_hardware_access: false}
+product_form_focus:
+  bare-metal: [mmio]
+  rtos: [task-isr-boundary]
+  module-sdk: [api-urc]
+  embedded-linux: [posix]
+  hybrid: [combine-relevant-product-focus]

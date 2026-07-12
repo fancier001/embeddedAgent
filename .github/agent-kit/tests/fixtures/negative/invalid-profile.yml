@@ -1,0 +1,5 @@
+schema_version: 2
+kit_version: development
+product_form: desktop
+safety:
+  allow_physical_hardware_access: true

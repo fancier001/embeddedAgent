@@ -1,0 +1,24 @@
+{
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {"driver": {"name": "Example Analyzer"}},
+      "results": [
+        {
+          "ruleId": "C-RISK-001",
+          "level": "error",
+          "message": {"text": "Possible out-of-bounds access."},
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {"uri": "src/example.c"},
+                "region": {"startLine": 12}
+              }
+            }
+          ],
+          "partialFingerprints": {"primaryLocationLineHash": "abc123"}
+        }
+      ]
+    }
+  ]
+}
