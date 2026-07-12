@@ -1,0 +1,7 @@
+# Deliberately mismatched negative fixture. Do not attempt symbolization.
+format_version=1
+artifact=not-the-built-status-led-elf
+build_id=DELIBERATE_MISMATCH_NO_ELF
+symbol=UNAVAILABLE_BY_DESIGN
+pc=UNAVAILABLE_BY_DESIGN
+evidence=negative_fixture_requires_insufficient_evidence

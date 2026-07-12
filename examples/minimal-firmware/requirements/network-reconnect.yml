@@ -1,0 +1,39 @@
+schema_version: 1
+feature: network-reconnect
+requirements:
+  - id: APP-001
+    statement_cn: 掉线后按 1、2、4 秒退避序列重连，最多重试三次。
+    statement_en: Reconnect after link loss with 1, 2, and 4 second backoff, for at most three retries.
+    implementation:
+      - path: examples/minimal-firmware/src/reconnect_manager.c
+        symbol: reconnect_manager_handle
+    tests:
+      - name: reconnect-backoff-and-exhaustion
+        command: ctest --test-dir build/minimal-firmware -R reconnect-manager
+    evidence:
+      - reconnect-manager CTest covers all retry delays and exhaustion
+    status: covered
+  - id: APP-002
+    statement_cn: 重复掉线和乱序 timer 事件不能创建额外重连流程。
+    statement_en: Duplicate link-down and out-of-order timer events must not create another reconnect flow.
+    implementation:
+      - path: examples/minimal-firmware/src/reconnect_manager.c
+        symbol: reconnect_manager_handle
+    tests:
+      - name: reconnect-duplicate-and-out-of-order
+        command: ctest --test-dir build/minimal-firmware -R reconnect-manager
+    evidence:
+      - reconnect-manager CTest checks idempotent and ignored events
+    status: covered
+  - id: APP-003
+    statement_cn: 用户主动停止后取消等待中的 timer，并禁止后续自动重连。
+    statement_en: A user stop cancels a pending timer and prevents subsequent automatic reconnects.
+    implementation:
+      - path: examples/minimal-firmware/src/reconnect_manager.c
+        symbol: reconnect_manager_handle
+    tests:
+      - name: reconnect-user-stop
+        command: ctest --test-dir build/minimal-firmware -R reconnect-manager
+    evidence:
+      - reconnect-manager CTest verifies fake clock cancellation and zero network requests
+    status: covered
