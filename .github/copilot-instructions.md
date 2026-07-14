@@ -26,10 +26,10 @@
 
 ### Bug 诊断
 
-- 用户要求理解、分析或修复 Bug 时，先由 `QualityReviewer` 使用 `bug-analysis` 建立只读诊断；日志/崩溃/ELF/MAP 场景同时使用 `fault-analysis` 辅助模式。
+- 用户要求理解、分析或修复 Bug 时，交给 `BugResolver` 使用 `bug-analysis` 建立只读诊断；日志/崩溃/ELF/MAP 场景同时使用 `fault-analysis` 辅助模式。
 - 保留原始错误，区分现象、报错位置、触发条件和根因；追踪相关调用、状态、数据所有权、配置、依赖、版本与 baseline。
 - 每个假设必须记录支持证据、反证、置信度和最小验证动作。只有因果链成立且主要替代解释被排除时才确认根因；否则返回 `INSUFFICIENT_EVIDENCE` 和精确的缺失材料。
-- 分析请求不修改代码。用户明确要求修复后，才将已确认根因或可证伪的高置信假设交给 `EmbeddedDeveloper`，并由 `QualityReviewer` 独立验证。
+- 分析请求不修改代码。用户明确要求修复后，由 `BugResolver` 将已确认根因或可证伪的高置信假设交给 `EmbeddedDeveloper`，并调用 `QualityReviewer` 做独立质量评估。
 
 ### 嵌入式安全边界
 
@@ -47,11 +47,12 @@
 - MISRA 的模型审查仅称为风险筛查；只有匹配的标准版本、deviation 配置和工具报告才能支持合规结论。
 - 硬件事实引用本地受控资料或官方/供应商来源，并记录器件型号、文档编号、revision 和页码或 URL。
 
-### 四 Agent 协作
+### 五 Agent 协作
 
-- `Orchestrator` 是唯一自动委派者；它不编辑文件或执行命令。
+- `Orchestrator` 是默认通用交付入口；它不编辑文件或执行命令，Bug 请求通过人工 handoff 或专用 prompt 切换到 BugResolver。
+- `BugResolver` 专门编排 Bug 诊断与解决，可运行只读诊断命令并调用开发、质量评估和文档角色，但不直接修改文件；两个 manager 不自动相互调用。
 - `EmbeddedDeveloper` 是唯一常规功能代码修改者，并负责构建和测试证据。
-- `QualityReviewer` 独立评审和诊断，不修改功能代码。
+- `QualityReviewer` 只做独立质量评估，不负责 Bug 根因分析，也不修改功能代码。
 - `DocKeeper` 维护 README、`docs/`、项目画像和明确授权的非行为性注释，不修改功能行为。
 - 自动 subagent 委派与用户点击的 handoff 是不同机制；handoff 不代表任务已经自动提交或执行。
 
@@ -83,10 +84,10 @@
 
 ### Bug Diagnosis
 
-- When the user asks to understand, analyze, or fix a bug, first have `QualityReviewer` establish a read-only diagnosis in `bug-analysis` mode. Add `fault-analysis` for log/crash/ELF/MAP cases.
+- When the user asks to understand, analyze, or fix a bug, give it to `BugResolver` to establish a read-only diagnosis in `bug-analysis` mode. Add `fault-analysis` for log/crash/ELF/MAP cases.
 - Preserve the original error and distinguish symptom, reporting location, trigger, and root cause. Trace related calls, states, data ownership, configuration, dependencies, versions, and baseline.
 - Every hypothesis records supporting evidence, counter-evidence, confidence, and the smallest validation action. Confirm root cause only when the causal chain holds and main alternatives are excluded; otherwise return `INSUFFICIENT_EVIDENCE` with exact missing material.
-- Analysis requests do not modify code. Only after the user explicitly asks for a fix should a confirmed root cause or falsifiable high-confidence hypothesis go to `EmbeddedDeveloper`, followed by independent `QualityReviewer` verification.
+- Analysis requests do not modify code. Only after the user explicitly asks for a fix may `BugResolver` give a confirmed root cause or falsifiable high-confidence hypothesis to `EmbeddedDeveloper`, followed by independent `QualityReviewer` assessment.
 
 ### Embedded Safety Boundaries
 
@@ -104,11 +105,12 @@
 - Describe model-based MISRA work as risk screening only. A compliance claim requires a matching standard edition, deviation configuration, and tool report.
 - Cite hardware facts from controlled local documents or official/vendor sources, recording the device, document number, revision, and page or URL.
 
-### Four-Agent Collaboration
+### Five-Agent Collaboration
 
-- `Orchestrator` is the only automatic delegator; it does not edit files or run commands.
+- `Orchestrator` is the default general-delivery entry point; it does not edit files or run commands, and bug requests transition to BugResolver through a manual handoff or dedicated prompt.
+- `BugResolver` exclusively orchestrates bug diagnosis and resolution. It may run read-only diagnostic commands and invoke development, quality-assessment, and documentation roles, but it does not edit files directly; the two managers never auto-invoke each other.
 - `EmbeddedDeveloper` is the sole routine functional-code writer and supplies build and test evidence.
-- `QualityReviewer` performs independent review and diagnosis without modifying functional code.
+- `QualityReviewer` performs independent quality assessment only; it neither diagnoses bug root causes nor modifies functional code.
 - `DocKeeper` maintains the README, `docs/`, the project profile, and explicitly authorized non-behavioral comments without changing functional behavior.
 - Automatic subagent delegation and user-selected handoffs are different mechanisms. A handoff does not mean a task was automatically submitted or executed.
 

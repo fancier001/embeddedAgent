@@ -8,7 +8,7 @@
 
 ### 用途
 
-`.github/embedded-project.yml` 用同一套四 Agent 适配不同嵌入式产品。画像保存经过团队确认的项目事实；Agent 指令保存工作方法，两者不要混写。
+`.github/embedded-project.yml` 用同一套五 Agent 适配不同嵌入式产品。画像保存经过团队确认的项目事实；Agent 指令保存工作方法，两者不要混写。
 
 字段为 `auto` 时，Agent 从 README、CI、构建文件、VS Code tasks、相邻模块和测试中探测。如果画像与仓库冲突，Agent 报告配置漂移，不静默选择其中一个。
 
@@ -65,7 +65,7 @@
 
 ### Purpose
 
-`.github/embedded-project.yml` adapts the same four agents to different embedded products. The profile stores team-confirmed project facts; agent instructions store working methods. Do not mix the two.
+`.github/embedded-project.yml` adapts the same five agents to different embedded products. The profile stores team-confirmed project facts; agent instructions store working methods. Do not mix the two.
 
 When a field is `auto`, agents discover it from the README, CI, build files, VS Code tasks, neighboring modules, and tests. If the profile conflicts with the repository, agents report configuration drift instead of silently choosing one side.
 

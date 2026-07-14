@@ -77,6 +77,10 @@ class CustomizationValidatorTests(unittest.TestCase):
         (self.repo / ".github" / "agents" / "doc-keeper.agent.md").unlink()
         self.assertIn("AGENT_SET", self.codes())
 
+    def test_missing_bug_resolver_agent_is_rejected(self) -> None:
+        (self.repo / ".github" / "agents" / "bug-resolver.agent.md").unlink()
+        self.assertIn("AGENT_SET", self.codes())
+
     def test_extra_markdown_in_agents_directory_is_rejected(self) -> None:
         shutil.copyfile(
             FIXTURES / "negative" / "extra-agent.md",
@@ -128,6 +132,18 @@ class CustomizationValidatorTests(unittest.TestCase):
         prompt = self.repo / ".github" / "prompts" / "analyze-bug.prompt.md"
         prompt.unlink()
         self.assertIn("PROMPT_SET", self.codes())
+
+    def test_bug_prompt_must_route_to_bug_resolver(self) -> None:
+        prompt = self.repo / ".github" / "prompts" / "analyze-bug.prompt.md"
+        prompt.write_text(
+            prompt.read_text(encoding="utf-8").replace(
+                "agent: BugResolver",
+                "agent: QualityReviewer",
+            ),
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assertIn("PROMPT_AGENT", self.codes())
 
     def test_missing_required_skill_script_is_rejected(self) -> None:
         script = (

@@ -1,7 +1,7 @@
 ---
 name: analyze-bug
 description: 理解错误、验证根因假设并输出证据化 Bug 分析 / Understand errors, test root-cause hypotheses, and report evidence-backed bug analysis
-agent: QualityReviewer
+agent: BugResolver
 argument-hint: Bug 描述、原始错误、复现步骤、相关文件或日志 / Bug description, original error, reproduction, related files, or logs
 ---
 
@@ -13,7 +13,7 @@ argument-hint: Bug 描述、原始错误、复现步骤、相关文件或日志 
 
 ## 中文 / Chinese
 
-使用 `QualityReviewer` 系统提示词中的 `bug-analysis` 模式和 `.github/agent-contracts.md` 的 Bug Analysis 输出契约处理以下输入：
+使用 `BugResolver` 系统提示词中的 `bug-analysis` 模式和 `.github/agent-contracts.md` 的 Bug Analysis 输出契约处理以下输入：
 
 - `bug_input`: `${input:bug_input}`
 
@@ -21,7 +21,7 @@ argument-hint: Bug 描述、原始错误、复现步骤、相关文件或日志 
 
 ## English
 
-Use the `bug-analysis` mode in the `QualityReviewer` system prompt and the Bug Analysis output contract in `.github/agent-contracts.md` for this input:
+Use the `bug-analysis` mode in the `BugResolver` system prompt and the Bug Analysis output contract in `.github/agent-contracts.md` for this input:
 
 - `bug_input`: `${input:bug_input}`
 

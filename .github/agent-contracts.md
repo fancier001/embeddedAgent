@@ -1,4 +1,4 @@
-# Four-Agent Collaboration Contract
+# Five-Agent Collaboration Contract
 
 > 中文：本文档采用固定双语结构。更新中文或英文内容时，必须同步更新另一部分，保持两部分语义一致。
 >
@@ -8,7 +8,7 @@
 
 ### 目的与适用范围
 
-本文档是 `Orchestrator`、`EmbeddedDeveloper`、`QualityReviewer`、`DocKeeper` 的共享输入、输出和安全契约。四个 Agent 开始工作前必须读取本文件与 `.github/embedded-project.yml`；角色文件只定义专属行为，不得降低本契约要求。
+本文档是 `Orchestrator`、`BugResolver`、`EmbeddedDeveloper`、`QualityReviewer`、`DocKeeper` 的共享输入、输出和安全契约。五个 Agent 开始工作前必须读取本文件与 `.github/embedded-project.yml`；角色文件只定义专属行为，不得降低本契约要求。
 
 规则优先级如下：
 
@@ -132,7 +132,7 @@ Evidence 与 Hypothesis 必须分开。MISRA 默认是风险筛查；缺少已�
 
 ### Bug Analysis 输出契约
 
-`QualityReviewer` 的 `bug-analysis` 报告必须在通用 Result Report 之后追加以下结构；字段无证据时写 `Unknown` 或 `Not confirmed`，不得删除：
+`BugResolver` 的 `bug-analysis` 报告必须在通用 Result Report 之后追加以下结构；字段无证据时写 `Unknown` 或 `Not confirmed`，不得删除：
 
 ```md
 ## Bug Analysis
@@ -169,12 +169,13 @@ Bug 分析规则：
 
 ### 编排与写入所有权
 
-- `Orchestrator` 是唯一自动委派者，只读且不执行命令。
+- `Orchestrator` 是默认通用交付入口，只读且不执行命令；Bug 请求必须通过人工 handoff 或专用 prompt 切换到 `BugResolver`，不得自动嵌套 manager。
+- `BugResolver` 是 Bug 诊断与解决流程的专职编排者，可执行受限的只读诊断命令，但不直接修改文件；仅可按需调用 `EmbeddedDeveloper`、`QualityReviewer` 和 `DocKeeper`。
 - `EmbeddedDeveloper` 是唯一常规功能代码写入者，也负责相关测试和必要构建配置。
-- `QualityReviewer` 只读源码；`execute` 仅用于只读 Git、非源码改写的构建/测试诊断、静态分析和符号化。
+- `QualityReviewer` 只做独立质量评估并只读源码；`execute` 仅用于只读 Git、非源码改写的构建/测试审计和静态分析，不负责 Bug 根因诊断或符号化。
 - `DocKeeper` 只可写 `docs/`、根 README、`.github/embedded-project.yml` 和明确授权的非行为性代码注释。
 - 任何工作树写入必须串行。无依赖只读评审可以并行；并行结果由 Orchestrator 去重并保留证据来源。
-- 自动 subagent 委派用于闭环；frontmatter handoff 是 `send: false` 的人工切换，不得被描述为自动继续。
+- 自动 subagent 委派只用于各 manager 内部闭环；两个 manager 不得自动相互调用。frontmatter handoff 是 `send: false` 的人工流程切换，不得被描述为自动继续。
 - Developer/Reviewer 返工最多两轮；超过限制仍有 BLOCKER/MAJOR 或必需门失败，返回 `FAILED`。
 
 仅在公共 API、架构、硬件假设、操作流程或已确认根因变化时触发 DocKeeper。文档必须完整双语，发布前不得保留同步占位标记。
@@ -192,7 +193,7 @@ Bug 分析规则：
 
 ### Purpose and Scope
 
-This document is the shared input, output, and safety contract for `Orchestrator`, `EmbeddedDeveloper`, `QualityReviewer`, and `DocKeeper`. Every agent must read this file and `.github/embedded-project.yml` before work. Role files define specialist behavior and cannot weaken this contract.
+This document is the shared input, output, and safety contract for `Orchestrator`, `BugResolver`, `EmbeddedDeveloper`, `QualityReviewer`, and `DocKeeper`. All five agents must read this file and `.github/embedded-project.yml` before work. Role files define specialist behavior and cannot weaken this contract.
 
 Rule precedence is:
 
@@ -316,7 +317,7 @@ Evidence and Hypothesis must remain separate. MISRA is risk screening by default
 
 ### Bug Analysis Output Contract
 
-A `QualityReviewer` `bug-analysis` report appends the following structure after the general Result Report. Use `Unknown` or `Not confirmed` when evidence is absent; do not remove fields:
+A `BugResolver` `bug-analysis` report appends the following structure after the general Result Report. Use `Unknown` or `Not confirmed` when evidence is absent; do not remove fields:
 
 ```md
 ## Bug Analysis
@@ -353,12 +354,13 @@ Bug-analysis rules:
 
 ### Orchestration and Write Ownership
 
-- `Orchestrator` is the only automatic delegator; it is read-only and does not execute commands.
+- `Orchestrator` is the default general-delivery entry point; it is read-only and does not execute commands. Bug requests transition to `BugResolver` through a manual handoff or dedicated prompt, never nested manager auto-invocation.
+- `BugResolver` is the dedicated orchestrator for bug diagnosis and resolution. It may run restricted read-only diagnostic commands but never edits files directly; it may invoke only `EmbeddedDeveloper`, `QualityReviewer`, and `DocKeeper` as needed.
 - `EmbeddedDeveloper` is the only routine functional-code writer and owns related tests and necessary build configuration.
-- `QualityReviewer` reads source only; `execute` is restricted to read-only Git, non-source-rewriting build/test diagnostics, static analysis, and symbolization.
+- `QualityReviewer` performs independent quality assessment only and reads source without editing it. Its `execute` access is restricted to read-only Git, non-source-rewriting build/test audit, and static analysis; it does not diagnose bug root causes or symbolize faults.
 - `DocKeeper` may write only `docs/`, the root README, `.github/embedded-project.yml`, and explicitly authorized non-behavioral code comments.
 - Serialize every working-tree write. Independent read-only reviews may run in parallel; Orchestrator deduplicates results while preserving evidence provenance.
-- Automatic subagent delegation drives the closed loop; frontmatter handoff is a manual `send: false` transition and must not be described as automatic continuation.
+- Automatic subagent delegation drives the internal loop of each manager; the two managers must not auto-invoke each other. A frontmatter handoff is a manual `send: false` workflow transition and must not be described as automatic continuation.
 - Allow at most two Developer/Reviewer rework rounds. Return `FAILED` if BLOCKER/MAJOR findings or required gate failures remain.
 
 Invoke DocKeeper only when a public API, architecture, hardware assumption, operating procedure, or confirmed root cause changed. Documentation must be fully bilingual and contain no synchronization placeholder at release.

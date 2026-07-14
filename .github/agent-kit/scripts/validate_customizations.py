@@ -35,8 +35,15 @@ EXPECTED_AGENTS: Mapping[str, Mapping[str, Any]] = {
         "name": "Orchestrator",
         "tools": ["agent", "read", "search"],
         "agents": ["EmbeddedDeveloper", "QualityReviewer", "DocKeeper"],
-        "handoffs": ["EmbeddedDeveloper", "QualityReviewer", "DocKeeper"],
+        "handoffs": ["BugResolver", "EmbeddedDeveloper", "QualityReviewer", "DocKeeper"],
         "disable-model-invocation": True,
+    },
+    "bug-resolver.agent.md": {
+        "name": "BugResolver",
+        "tools": ["agent", "read", "search", "execute"],
+        "agents": ["EmbeddedDeveloper", "QualityReviewer", "DocKeeper"],
+        "disable-model-invocation": False,
+        "handoffs": ["EmbeddedDeveloper", "QualityReviewer", "DocKeeper"],
     },
     "embedded-developer.agent.md": {
         "name": "EmbeddedDeveloper",
@@ -67,13 +74,13 @@ EXPECTED_PROMPTS: Mapping[str, Mapping[str, str]] = {
     },
     "analyze-log.prompt.md": {
         "name": "analyze-log",
-        "agent": "QualityReviewer",
+        "agent": "BugResolver",
         "skill": "firmware-log-analysis",
         "input": "log_input",
     },
     "analyze-bug.prompt.md": {
         "name": "analyze-bug",
-        "agent": "QualityReviewer",
+        "agent": "BugResolver",
         "input": "bug_input",
     },
     "misra-review.prompt.md": {
@@ -592,10 +599,10 @@ class RepositoryValidator:
                 self._add(
                     path,
                     "AGENT_MODEL_INVOCATION",
-                    "disable-model-invocation does not match the four-agent policy",
+                    "disable-model-invocation does not match the five-agent policy",
                 )
 
-            if spec["name"] == "Orchestrator":
+            if "agents" in spec:
                 if data.get("agents") != spec["agents"]:
                     self._add(
                         path,
@@ -603,7 +610,11 @@ class RepositoryValidator:
                         f"agents must be exactly {spec['agents']!r}",
                     )
             elif "agents" in data:
-                self._add(path, "AGENT_NESTING", "specialists must not declare an agents allowlist")
+                self._add(
+                    path,
+                    "AGENT_NESTING",
+                    "non-delegating specialists must not declare an agents allowlist",
+                )
 
             handoffs = data.get("handoffs", [])
             if not isinstance(handoffs, list):

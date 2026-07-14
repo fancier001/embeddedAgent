@@ -8,50 +8,47 @@
 
 ### 概述
 
-`embedded-multi-agent` 是一个 VS Code-first、仓库内嵌、无 MCP 依赖的嵌入式 C Agent Kit。它固定提供四个可直接选择的 custom agent，并用浅层 manager 模式完成驱动与应用逻辑的需求、实现、验证、评审和文档闭环：
+`embedded-multi-agent` 是一个 VS Code-first、仓库内嵌、无 MCP 依赖的嵌入式 C Agent Kit。它固定提供五个可直接选择的 custom agent，并用浅层 manager 模式完成驱动与应用逻辑的需求、实现、验证、评审和文档闭环：
 
-- `Orchestrator`：唯一自动委派者与质量门控制者。
+- `Orchestrator`：默认入口与通用交付编排者。
+- `BugResolver`：Bug 理解、根因验证和修复闭环的专职编排者。
 - `EmbeddedDeveloper`：唯一常规功能代码修改者。
-- `QualityReviewer`：独立只读评审与故障分析者。
+- `QualityReviewer`：只负责独立只读质量评估。
 - `DocKeeper`：团队文档、项目画像和知识沉淀维护者。
 
 本 Kit 随固件仓库版本化，先遵循目标工程已有事实，再应用模板默认值。它适配 bare-metal、RTOS、通信模组 SDK、Embedded Linux 和混合产品，但不自带板卡烧录权限、MCP、私有工具链或供应商资料。
 
 ### 产品设计
 
-四个 agent 对应稳定职责，而重复流程放在 prompt 和按需加载的 skill 中。Agent persona、VS Code approvals 和宿主 sandbox 是三层不同控制：角色说明约束行为，工具列表缩小能力面，审批与 sandbox 才控制真实命令和文件边界。
+五个 agent 对应稳定职责，而重复流程放在 prompt 和按需加载的 skill 中。Agent persona、VS Code approvals 和宿主 sandbox 是三层不同控制：角色说明约束行为，工具列表缩小能力面，审批与 sandbox 才控制真实命令和文件边界。
 
 自动闭环使用 subagent：
 
 ```text
 User
+  ├──▶ Orchestrator ── ordinary work ──▶ EmbeddedDeveloper
+  │          ├── quality review ───────▶ QualityReviewer
+  │          └── documentation ────────▶ DocKeeper
   │
-  ▼
-Orchestrator ── Task Brief ──▶ EmbeddedDeveloper
-  │                                  │
-  │                                  └── code + build/test evidence
-  │
-  ├──▶ QualityReviewer ── findings/verdict
-  │          │
-  │          └── BLOCKER/MAJOR ──▶ Orchestrator ──▶ Developer rework
-  │
-  └──▶ DocKeeper（仅在需要文档时）
-             │
-             └── docs/profile/comment evidence
+  └──▶ BugResolver ── diagnosis/root cause
+             ├── authorized fix ───────▶ EmbeddedDeveloper
+             ├── quality gate ─────────▶ QualityReviewer
+             └── docs when needed ─────▶ DocKeeper
 ```
 
 Handoff 是另一条人工路径：agent 回复结束后显示按钮，由用户确认切换角色；`send: false` 表示不会自动提交。Handoff 不等于 subagent 调用，也不代表下一阶段已经执行。
 
-### 四个 Agent
+### 五个 Agent
 
 | Agent | 工具 | 允许写入 | 主要输出 |
 | --- | --- | --- | --- |
 | `Orchestrator` | `agent`, `read`, `search` | 无 | Task Brief、编排状态、质量门和最终汇总 |
+| `BugResolver` | `agent`, `read`, `search`, `execute` | 无 | 错误理解、证据化根因、修复编排和闭环报告 |
 | `EmbeddedDeveloper` | `edit`, `read`, `search`, `execute` | 任务范围内功能代码、测试和构建配置 | 最小 diff、API、baseline/build/test 证据 |
-| `QualityReviewer` | `read`, `search`, `execute` | 无 | 高信噪比 findings、MISRA 风险、时间线、根因与 verdict |
+| `QualityReviewer` | `read`, `search`, `execute` | 无 | 高信噪比质量 findings、MISRA 风险和 verdict |
 | `DocKeeper` | `read`, `search`, `edit`, `web` | README、`docs/`、项目画像和授权注释 | 设计、How-to、Reference、ADR、FAQ 和结案记录 |
 
-所有 agent 都可从下拉框直接选择。复杂或跨阶段任务优先使用 `Orchestrator`；直接专家模式仍遵守 [公共契约](.github/agent-contracts.md)。
+所有 agent 都可从下拉框直接选择。复杂的通用交付任务优先使用 `Orchestrator`，Bug 分析或解决使用 `BugResolver`；直接专家模式仍遵守 [公共契约](.github/agent-contracts.md)。
 
 ### 工作状态与质量门
 
@@ -73,7 +70,7 @@ INTAKE → PREFLIGHT → PLAN → IMPLEMENT → VERIFY → REVIEW
                          DOCUMENT（按需）→ CLOSE
 ```
 
-Bug 请求先走 `INTAKE → PREFLIGHT → DIAGNOSE`。只要求分析时直接 `CLOSE`；明确要求修复时，诊断结论再进入 `PLAN → IMPLEMENT → VERIFY → REVIEW` 闭环。
+Bug 请求通过 `/analyze-bug`、`/analyze-log`、直接选择或 Orchestrator 的人工 handoff 进入 `BugResolver`，两个 manager 不自动嵌套。诊断路径为 `INTAKE → SCOPE → NORMALIZE_ERROR → TRACE_CONTEXT → REPRODUCE_BASELINE → HYPOTHESES → VALIDATE_CAUSE → DECIDE`；用户明确授权修复后，再进入 `PLAN_FIX → IMPLEMENT → VERIFY → QUALITY_REVIEW → REWORK → DOCUMENT → CLOSE`。
 
 命令证据必须包含实际命令、退出码和关键输出。未执行项标为 `NOT_RUN`，不计为通过。
 
@@ -97,9 +94,9 @@ Bug 请求先走 `INTAKE → PREFLIGHT → DIAGNOSE`。只要求分析时直接 
 3. 调整 `.github/embedded-project.yml`；未知值保持 `auto`，不要填写未经确认的硬件事实。
 4. 用 VS Code 直接打开固件仓库根目录并信任工作区。若只打开父目录，VS Code 不会自动发现该 `.github`。
 5. 启用 GitHub Copilot Chat，确认 custom agents、prompt files、Agent Skills 和 `agent/runSubagent` 可用；不需要启用递归 subagent。
-6. 在 Chat 的 Customizations/Diagnostics 中确认四个 agent、六个 prompt 和 instructions 均无错误。
+6. 在 Chat 的 Customizations/Diagnostics 中确认五个 agent、六个 prompt 和 instructions 均无错误。
 
-Orchestrator frontmatter 中的 `agents` allowlist 可能依赖目标 VS Code 与 GitHub Copilot 环境中的 Experimental custom-agent/subagent 支持。本 Kit 不声明未经验证的最低版本；请在实际目标环境运行 Customizations/Diagnostics，并用一次 Orchestrator 委派烟测确认 allowlist 生效。
+Orchestrator 与 BugResolver frontmatter 中的 `agents` allowlist 可能依赖目标 VS Code 与 GitHub Copilot 环境中的 Experimental custom-agent/subagent 支持。本 Kit 不声明未经验证的最低版本；请在实际目标环境运行 Customizations/Diagnostics，并分别用一次通用委派和 Bug 修复委派烟测确认 allowlist 生效。
 
 本仓库不提供自动覆盖安装脚本。升级时按目录比较和合并，尤其保护项目画像、全局规则和本地 prompt 定制。
 
@@ -115,20 +112,21 @@ Orchestrator frontmatter 中的 `agents` allowlist 可能依赖目标 VS Code �
 
 - `/new-driver <driver_request>`：由 Orchestrator 完成驱动预检、实现、验证和评审。
 - `/implement-feature <feature_request>`：由 Orchestrator 完成应用行为建模、实现、追踪、验证和评审。
-- `/analyze-bug <bug_input>`：由 QualityReviewer 理解原始错误、追踪代码/配置上下文、验证根因假设并输出证据化诊断。
-- `/analyze-log <log_input>`：由 QualityReviewer 分析日志、ELF/MAP 和证据时间线。
+- `/analyze-bug <bug_input>`：由 BugResolver 理解原始错误、追踪代码/配置上下文、验证根因假设；用户授权时继续协调修复与质量评估。
+- `/analyze-log <log_input>`：由 BugResolver 分析日志、ELF/MAP 和证据时间线。
 - `/misra-review <review_target>`：由 QualityReviewer 做 MISRA-oriented 风险筛查。
 - `/verify-change <change_target>`：由 Orchestrator 审计 baseline、构建、测试、评审和文档门禁。
 
 直接模式：
 
 - 只实现代码：选择 `EmbeddedDeveloper`，提供 Goal、Scope、约束和验收条件。
-- 只做独立评审或 Bug/日志分析：选择 `QualityReviewer`，提供原始错误、预期/实际行为、复现步骤、真实 diff/files、环境/版本和可用产物。
+- 分析或解决 Bug/日志问题：选择 `BugResolver`，提供原始错误、预期/实际行为、复现步骤、环境/版本和可用产物，并明确是否授权修改。
+- 只做独立质量评估：选择 `QualityReviewer`，提供需求、真实 diff/files 和可用构建/测试/静态分析证据。
 - 只维护文档：选择 `DocKeeper`，提供已经确认的源码/API/测试或根因证据。
 
 ### 安全与权限
 
-- `EmbeddedDeveloper` 和 `QualityReviewer` 的 `execute` 都受 VS Code 审批设置约束。Reviewer 只应运行 Git 只读命令、构建/测试诊断、静态分析和符号化。
+- `BugResolver`、`EmbeddedDeveloper` 和 `QualityReviewer` 的 `execute` 都受 VS Code 审批设置约束。BugResolver 只运行只读诊断与符号化；Reviewer 只运行 Git 只读、构建/测试审计和静态分析。
 - flash、erase、fuse、reset、HIL、设备电源、发布和外部部署始终需要明确人工授权；画像中存在命令不等于授权。
 - DocKeeper 的 Web 仅用于官方或供应商公开资料，不得上传私有源码、日志、客户数据或凭据。
 - 同一 checkout 不并行运行写任务。未来只有一任务一 worktree/branch 隔离后才能考虑并行写入。
@@ -162,7 +160,7 @@ CI 在 Windows 和 Ubuntu 上执行上述验证。真实交互还需按照 [VS C
 ├── copilot-instructions.md
 ├── embedded-project.yml
 ├── agent-contracts.md
-├── agents/                  # 固定四个 agent
+├── agents/                  # 固定五个 agent
 ├── agent-kit/               # Kit 自检脚本、测试、fixtures 和开发依赖
 ├── instructions/            # C、双语和 Kit 配置规则
 ├── prompts/                 # 六个薄 slash 入口
@@ -196,7 +194,7 @@ vendor、generated、第三方文档和许可证原文不自动双语化。发�
 
 ### 扩展原则
 
-- 不为新流程随意增加第五个 agent；先扩展现有角色的模式或新增按需 skill。
+- 不为新流程随意增加第六个 agent；先扩展现有角色的模式或新增按需 skill。
 - Prompt 用于人工入口和 agent 路由；复杂检查表、模板和脚本放 skill。
 - 共享规则只维护一份，并由 agent/skill 链接，避免上下文重复。
 - 本 Kit 明确以 VS Code 为完整支持目标。GitHub cloud/CLI 可能忽略 handoff 或 VS Code-specific allowlist，不属于 v1 验收范围。
@@ -205,50 +203,47 @@ vendor、generated、第三方文档和许可证原文不自动双语化。发�
 
 ### Overview
 
-`embedded-multi-agent` is a VS Code-first, repository-embedded, MCP-free Agent Kit for Embedded C. It provides exactly four directly selectable custom agents and uses a shallow manager pattern for driver and application-logic requirements, implementation, verification, review, and documentation:
+`embedded-multi-agent` is a VS Code-first, repository-embedded, MCP-free Agent Kit for Embedded C. It provides exactly five directly selectable custom agents and uses a shallow manager pattern for driver and application-logic requirements, implementation, verification, review, and documentation:
 
-- `Orchestrator`: the only automatic delegator and quality-gate controller.
+- `Orchestrator`: the default entry point and general delivery orchestrator.
+- `BugResolver`: the dedicated orchestrator for understanding bugs, validating root cause, and closing authorized repairs.
 - `EmbeddedDeveloper`: the sole routine functional-code writer.
-- `QualityReviewer`: the independent read-only reviewer and fault analyst.
+- `QualityReviewer`: responsible only for independent read-only quality assessment.
 - `DocKeeper`: the maintainer of team documentation, the project profile, and captured knowledge.
 
 The kit is versioned with the firmware repository. It follows existing project facts before applying template defaults. It adapts to bare-metal, RTOS, communication-module SDK, Embedded Linux, and hybrid products, but it does not include board-programming authority, MCP, private toolchains, or vendor documentation.
 
 ### Product Design
 
-The four agents represent stable responsibilities, while repeated workflows live in prompts and on-demand skills. Agent persona, VS Code approvals, and the host sandbox are separate control layers: role text constrains behavior, tool lists reduce the capability surface, and approvals plus sandboxing control actual commands and file boundaries.
+The five agents represent stable responsibilities, while repeated workflows live in prompts and on-demand skills. Agent persona, VS Code approvals, and the host sandbox are separate control layers: role text constrains behavior, tool lists reduce the capability surface, and approvals plus sandboxing control actual commands and file boundaries.
 
 Automatic closure uses subagents:
 
 ```text
 User
+  ├──▶ Orchestrator ── ordinary work ──▶ EmbeddedDeveloper
+  │          ├── quality review ───────▶ QualityReviewer
+  │          └── documentation ────────▶ DocKeeper
   │
-  ▼
-Orchestrator ── Task Brief ──▶ EmbeddedDeveloper
-  │                                  │
-  │                                  └── code + build/test evidence
-  │
-  ├──▶ QualityReviewer ── findings/verdict
-  │          │
-  │          └── BLOCKER/MAJOR ──▶ Orchestrator ──▶ Developer rework
-  │
-  └──▶ DocKeeper (only when documentation is required)
-             │
-             └── docs/profile/comment evidence
+  └──▶ BugResolver ── diagnosis/root cause
+             ├── authorized fix ───────▶ EmbeddedDeveloper
+             ├── quality gate ─────────▶ QualityReviewer
+             └── docs when needed ─────▶ DocKeeper
 ```
 
 A handoff is a separate human-controlled path: a button appears after an agent response and the user confirms the role switch. `send: false` means it is not submitted automatically. A handoff is not a subagent invocation and does not mean the next stage ran.
 
-### The Four Agents
+### The Five Agents
 
 | Agent | Tools | Allowed writes | Main output |
 | --- | --- | --- | --- |
 | `Orchestrator` | `agent`, `read`, `search` | None | Task Briefs, orchestration state, quality gates, and final synthesis |
+| `BugResolver` | `agent`, `read`, `search`, `execute` | None | Error understanding, evidence-backed root cause, repair orchestration, and closure report |
 | `EmbeddedDeveloper` | `edit`, `read`, `search`, `execute` | In-scope functional code, tests, and build configuration | Minimal diff, APIs, baseline/build/test evidence |
-| `QualityReviewer` | `read`, `search`, `execute` | None | High-signal findings, MISRA risks, timelines, root cause, and verdict |
+| `QualityReviewer` | `read`, `search`, `execute` | None | High-signal quality findings, MISRA risks, and verdict |
 | `DocKeeper` | `read`, `search`, `edit`, `web` | README, `docs/`, project profile, and authorized comments | Design, How-to, Reference, ADR, FAQ, and closure records |
 
-All agents remain directly selectable. Use `Orchestrator` for complex or multi-stage tasks; direct specialist mode still follows the [shared contract](.github/agent-contracts.md).
+All agents remain directly selectable. Use `Orchestrator` for complex general delivery and `BugResolver` for bug analysis or resolution; direct specialist mode still follows the [shared contract](.github/agent-contracts.md).
 
 ### Workflow Status and Quality Gates
 
@@ -270,7 +265,7 @@ INTAKE → PREFLIGHT → PLAN → IMPLEMENT → VERIFY → REVIEW
                          DOCUMENT (as needed) → CLOSE
 ```
 
-Bug requests first follow `INTAKE → PREFLIGHT → DIAGNOSE`. Analysis-only requests then `CLOSE`; an explicitly requested fix continues from the diagnosis into `PLAN → IMPLEMENT → VERIFY → REVIEW`.
+Bug requests enter `BugResolver` through `/analyze-bug`, `/analyze-log`, direct selection, or Orchestrator's manual handoff; the two managers are never auto-nested. Its diagnostic path is `INTAKE → SCOPE → NORMALIZE_ERROR → TRACE_CONTEXT → REPRODUCE_BASELINE → HYPOTHESES → VALIDATE_CAUSE → DECIDE`. After the user explicitly authorizes a fix, it continues through `PLAN_FIX → IMPLEMENT → VERIFY → QUALITY_REVIEW → REWORK → DOCUMENT → CLOSE`.
 
 Command evidence includes the exact command, exit code, and relevant output. An unexecuted check is `NOT_RUN`, not a pass.
 
@@ -294,9 +289,9 @@ Fields may remain `auto`, in which case agents discover them from the repository
 3. Adjust `.github/embedded-project.yml`. Keep unknown values as `auto`; do not enter unconfirmed hardware facts.
 4. Open the firmware repository root directly in VS Code and trust the workspace. Opening only its parent prevents automatic `.github` discovery.
 5. Enable GitHub Copilot Chat and confirm that custom agents, prompt files, Agent Skills, and `agent/runSubagent` are available. Recursive subagents are not required.
-6. Confirm in Chat Customizations/Diagnostics that all four agents, six prompts, and instructions load without errors.
+6. Confirm in Chat Customizations/Diagnostics that all five agents, six prompts, and instructions load without errors.
 
-The `agents` allowlist in the Orchestrator frontmatter may depend on Experimental custom-agent/subagent support in the target VS Code and GitHub Copilot environment. This kit does not claim an unverified minimum version; run Customizations/Diagnostics in the actual target environment and perform one Orchestrator delegation smoke test to confirm that the allowlist is honored.
+The `agents` allowlists in the Orchestrator and BugResolver frontmatter may depend on Experimental custom-agent/subagent support in the target VS Code and GitHub Copilot environment. This kit does not claim an unverified minimum version; run Customizations/Diagnostics in the actual target environment and perform both a general delegation smoke test and a bug-resolution delegation smoke test to confirm that the allowlists are honored.
 
 The repository intentionally has no overwriting installation script. Compare and merge directories during upgrades, especially the profile, global rules, and local prompt customizations.
 
@@ -312,20 +307,21 @@ Slash commands:
 
 - `/new-driver <driver_request>`: Orchestrator performs driver preflight, implementation, verification, and review.
 - `/implement-feature <feature_request>`: Orchestrator performs application behavior modeling, implementation, traceability, verification, and review.
-- `/analyze-bug <bug_input>`: QualityReviewer understands the original error, traces code/configuration context, tests root-cause hypotheses, and reports an evidence-backed diagnosis.
-- `/analyze-log <log_input>`: QualityReviewer analyzes logs, ELF/MAP artifacts, and the evidence timeline.
+- `/analyze-bug <bug_input>`: BugResolver understands the original error, traces code/configuration context, tests root-cause hypotheses, and coordinates repair plus quality assessment when authorized.
+- `/analyze-log <log_input>`: BugResolver analyzes logs, ELF/MAP artifacts, and the evidence timeline.
 - `/misra-review <review_target>`: QualityReviewer performs MISRA-oriented risk screening.
 - `/verify-change <change_target>`: Orchestrator audits baseline, build, tests, review, and documentation gates.
 
 Direct mode:
 
 - Implementation only: select `EmbeddedDeveloper` and provide the Goal, Scope, constraints, and acceptance criteria.
-- Independent review or bug/log analysis only: select `QualityReviewer` and provide the original error, expected/actual behavior, reproduction, real diff/files, environment/version, and available artifacts.
+- Bug/log analysis or resolution: select `BugResolver` and provide the original error, expected/actual behavior, reproduction, environment/version, and available artifacts, plus whether changes are authorized.
+- Independent quality assessment only: select `QualityReviewer` and provide requirements, the real diff/files, and available build/test/static-analysis evidence.
 - Documentation only: select `DocKeeper` and provide confirmed source/API/test or root-cause evidence.
 
 ### Safety and Permissions
 
-- VS Code approval settings govern `execute` for EmbeddedDeveloper and QualityReviewer. Reviewer should run only read-only Git, build/test diagnostics, static analysis, and symbolization.
+- VS Code approval settings govern `execute` for BugResolver, EmbeddedDeveloper, and QualityReviewer. BugResolver runs only read-only diagnostics and symbolization; Reviewer runs only read-only Git, build/test audit, and static analysis.
 - Flash, erase, fuse, reset, HIL, device power, release, and external deployment always require explicit human authorization. A command's presence in the profile is not authorization.
 - DocKeeper uses the web only for official or vendor public sources and never uploads private source, logs, customer data, or credentials.
 - Do not run write tasks concurrently in one checkout. Parallel writing may be considered only after one-task-per-worktree/branch isolation exists.
@@ -359,7 +355,7 @@ CI runs these checks on Windows and Ubuntu. Real interaction also requires the [
 ├── copilot-instructions.md
 ├── embedded-project.yml
 ├── agent-contracts.md
-├── agents/                  # exactly four agents
+├── agents/                  # exactly five agents
 ├── agent-kit/               # kit self-check scripts, tests, fixtures, and dev dependencies
 ├── instructions/            # C, bilingual, and kit configuration rules
 ├── prompts/                 # six thin slash entries
@@ -393,7 +389,7 @@ Vendor, generated, third-party documentation, and license text are not automatic
 
 ### Extension Principles
 
-- Do not add a fifth agent casually for a new workflow; extend an existing role mode or add an on-demand skill first.
+- Do not add a sixth agent casually for a new workflow; extend an existing role mode or add an on-demand skill first.
 - Prompts provide manual entry and agent routing; complex checklists, templates, and scripts belong in skills.
 - Maintain shared rules once and link them from agents and skills to avoid repeated context.
 - The kit fully supports VS Code only. GitHub cloud/CLI may ignore handoffs or VS Code-specific allowlists and are outside v1 acceptance.

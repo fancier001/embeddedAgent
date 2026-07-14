@@ -15,7 +15,7 @@ user-invocable: false
 ### 输入与模式
 
 - 接收 `log_input`，内容可以是日志片段、仓库内文件路径或经用户明确纳入范围的日志/转储产物。
-- 使用 `QualityReviewer` 的 `bug-analysis` 主模式和 `fault-analysis` 辅助模式，并先读取 `.github/agent-contracts.md` 与 `.github/embedded-project.yml`。
+- 使用 `BugResolver` 的 `bug-analysis` 主模式和 `fault-analysis` 辅助模式，并先读取 `.github/agent-contracts.md` 与 `.github/embedded-project.yml`。
 - 保留日志、地址、寄存器、错误码和工具诊断原文；不得把私有日志发送到 Web 服务。
 
 ### 工作流
@@ -41,7 +41,7 @@ user-invocable: false
 ### Input and mode
 
 - Accept `log_input` as a pasted log, a repository file path, or log/dump artifacts explicitly placed in scope by the user.
-- Use the `QualityReviewer` `bug-analysis` primary mode with `fault-analysis` as an auxiliary mode, and read `.github/agent-contracts.md` plus `.github/embedded-project.yml` first.
+- Use the `BugResolver` `bug-analysis` primary mode with `fault-analysis` as an auxiliary mode, and read `.github/agent-contracts.md` plus `.github/embedded-project.yml` first.
 - Preserve logs, addresses, registers, error codes, and tool diagnostics verbatim. Never send private logs to a Web service.
 
 ### Workflow

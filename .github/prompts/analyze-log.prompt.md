@@ -1,7 +1,7 @@
 ---
 name: analyze-log
 description: 分析固件串口、崩溃或异常日志 / Analyze firmware serial, crash, or exception logs
-agent: QualityReviewer
+agent: BugResolver
 argument-hint: 日志片段、日志路径或 dump/ELF/MAP 信息 / Log text, log path, or dump/ELF/MAP details
 ---
 
