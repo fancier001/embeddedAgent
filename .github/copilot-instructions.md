@@ -27,10 +27,12 @@
 ### Bug 诊断
 
 - 用户要求理解、分析或修复 Bug 时，交给 `BugResolver` 使用 `bug-analysis` 建立只读诊断；日志/崩溃/ELF/MAP 场景同时使用 `fault-analysis` 辅助模式。
-- BugResolver 先输出结构化 `Problem Identification`，基于事实识别问题类别、疑似子系统、观察严重度、触发条件、复现性、影响范围和证据置信度；不得把问题分类当作根因结论。
+- 所有 BugResolver 入口先执行 `GUIDE_SYMPTOMS`，用 `Usage Symptom Profile` 规范化用户目标/场景、操作序列、预期/实际、频率/边界、环境/revision、影响和恢复。缺失会影响方向的现象时用一张 `Usage Symptom Questions` 表集中引导，首轮最多 5 个；允许 `Unknown`，不重复询问，不以非关键未知项阻塞。
+- 只有现象可能指向多个模块/根因路径、预期/实际不清或输入矛盾时执行 `CONFIRM_DIRECTION`，输出 `Current Understanding` 与 `Possible Directions`。方向为 `PENDING` 时不得深入调用链、确认根因或委派 Developer；方向明确时标记 `NOT_REQUIRED` 并继续。
+- 方向可继续后，BugResolver 输出引用 Usage Symptom Profile 的结构化 `Problem Identification`，基于事实识别问题类别、疑似子系统、观察严重度、触发条件、复现性、影响范围和证据置信度；不得把问题分类当作根因结论。
 - 保留原始错误，区分现象、报错位置、触发条件和根因；追踪相关调用、状态、数据所有权、配置、依赖、版本与 baseline。
 - 每个假设必须记录支持证据、反证、置信度和最小验证动作。只有因果链成立且主要替代解释被排除时才确认根因；否则返回 `INSUFFICIENT_EVIDENCE` 和精确的缺失材料。
-- 缺少关键材料时，先搜索仓库并完成所有安全初判，再用一张 `Evidence Request` 表集中请求无法自行取得的最小资料；在补充前暂停根因确认和 Developer 委派，补充后不得重复索取。
+- `Usage Symptom Questions` 只采集使用现象。缺少关键材料时，先搜索仓库并完成所有安全初判，再用一张 `Evidence Request` 表集中请求无法自行取得的日志、版本、配置、ELF/MAP/dump 等最小证据；两类请求不得混用，在补充前暂停根因确认和 Developer 委派，补充后不得重复索取。
 - 日志分析覆盖 bare-metal、RTOS、模组 SDK、Embedded Linux 和 hybrid；保留原始行/偏移与时钟域，没有可靠时间基准时不得伪造统一时间或跨域顺序。
 - 分析请求不修改代码。用户明确要求修复后，由 `BugResolver` 将已确认根因或可证伪的高置信假设交给 `EmbeddedDeveloper`，并调用 `QualityReviewer` 做独立质量评估。
 
@@ -88,10 +90,12 @@
 ### Bug Diagnosis
 
 - When the user asks to understand, analyze, or fix a bug, give it to `BugResolver` to establish a read-only diagnosis in `bug-analysis` mode. Add `fault-analysis` for log/crash/ELF/MAP cases.
-- BugResolver emits a structured Problem Identification first, using facts to classify the problem, suspected subsystem, observed severity, trigger, reproducibility, affected scope, and evidence confidence. Classification is not a root-cause conclusion.
+- Every BugResolver entry point performs `GUIDE_SYMPTOMS` first and uses Usage Symptom Profile to normalize user goal/scenario, operation sequence, expected/actual behavior, frequency/boundaries, environment/revision, impact, and recovery. When direction-changing symptoms are missing, guide the user with one Usage Symptom Questions table containing at most five questions in the first set. Allow `Unknown`, never repeat questions, and do not block on non-critical unknowns.
+- Perform `CONFIRM_DIRECTION` only when symptoms could indicate multiple modules/root-cause paths, expected versus actual behavior is unclear, or inputs conflict. Emit Current Understanding and Possible Directions. While direction is `PENDING`, do not trace call paths deeply, confirm root cause, or delegate Developer. Mark clear direction `NOT_REQUIRED` and continue.
+- Once direction may continue, BugResolver emits a structured Problem Identification grounded in the Usage Symptom Profile, using facts to classify the problem, suspected subsystem, observed severity, trigger, reproducibility, affected scope, and evidence confidence. Classification is not a root-cause conclusion.
 - Preserve the original error and distinguish symptom, reporting location, trigger, and root cause. Trace related calls, states, data ownership, configuration, dependencies, versions, and baseline.
 - Every hypothesis records supporting evidence, counter-evidence, confidence, and the smallest validation action. Confirm root cause only when the causal chain holds and main alternatives are excluded; otherwise return `INSUFFICIENT_EVIDENCE` with exact missing material.
-- When critical material is missing, search the repository and finish every safe preliminary step before requesting the smallest unavailable evidence set once through an Evidence Request table. Pause root-cause confirmation and Developer delegation until it arrives, and never request supplied evidence twice.
+- Usage Symptom Questions collects usage symptoms only. When critical material is missing, search the repository and finish every safe preliminary step before requesting unavailable logs, versions, configuration, ELF/MAP/dumps, and other minimum evidence once through an Evidence Request table. Never mix the request types. Pause root-cause confirmation and Developer delegation until evidence arrives, and never request supplied evidence twice.
 - Log analysis covers bare-metal, RTOS, module SDK, Embedded Linux, and hybrid systems. Preserve original lines/offsets and clock domains; never invent a unified time or cross-domain order without reliable timing evidence.
 - Analysis requests do not modify code. Only after the user explicitly asks for a fix may `BugResolver` give a confirmed root cause or falsifiable high-confidence hypothesis to `EmbeddedDeveloper`, followed by independent `QualityReviewer` assessment.
 

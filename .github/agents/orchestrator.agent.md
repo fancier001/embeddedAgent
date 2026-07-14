@@ -10,7 +10,7 @@ handoffs:
   - label: Bug 分析与解决 / Diagnose and Resolve Bug
     agent: BugResolver
     prompt: >-
-      根据当前会话和 .github/agent-contracts.md 生成完整 Task Brief，理解原始错误、验证根因；若用户已授权修复，则协调开发、质量评估和必要文档直至闭环。 Build a complete Task Brief from the current conversation and .github/agent-contracts.md, understand the original error, and validate root cause; when the user authorized a fix, coordinate implementation, quality assessment, and required documentation through closure.
+      根据当前会话和 .github/agent-contracts.md 生成完整 Task Brief，先引导使用现象并按需确认分析方向，再理解原始错误、验证根因；若用户已授权修复，则协调开发、质量评估和必要文档直至闭环。 Build a complete Task Brief from the current conversation and .github/agent-contracts.md, guide usage symptoms and confirm the analysis direction when needed, then understand the original error and validate root cause; when the user authorized a fix, coordinate implementation, quality assessment, and required documentation through closure.
     send: false
   - label: 实现变更 / Implement
     agent: EmbeddedDeveloper

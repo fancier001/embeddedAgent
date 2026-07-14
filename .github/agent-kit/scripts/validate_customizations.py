@@ -115,9 +115,14 @@ EXPECTED_SKILL_SCRIPTS: Mapping[str, frozenset[str]] = {
 REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
     "bug-resolver.agent.md": frozenset(
         {
+            "GUIDE_SYMPTOMS",
+            "CONFIRM_DIRECTION",
             "IDENTIFY_PROBLEM",
             "EVIDENCE_CHECK",
             "AWAIT_EVIDENCE",
+            "## Usage Symptom Questions",
+            "## Usage Symptom Profile",
+            "Direction Confirmation",
             "## Problem Identification",
             "## Evidence Request",
         }
@@ -126,9 +131,14 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
 REQUIRED_SKILL_BODY_MARKERS: Mapping[str, frozenset[str]] = {
     "firmware-log-analysis": frozenset(
         {
+            "GUIDE_SYMPTOMS",
+            "CONFIRM_DIRECTION",
             "IDENTIFY_PROBLEM",
             "EVIDENCE_CHECK",
             "AWAIT_EVIDENCE",
+            "Usage Symptom Questions",
+            "Usage Symptom Profile",
+            "Direction Confirmation",
             "Normalized Events",
             "Anomalies and Correlations",
             "Next Evidence Needed",

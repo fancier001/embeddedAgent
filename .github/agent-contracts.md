@@ -130,13 +130,50 @@ Task Brief 规则：
 
 Evidence 与 Hypothesis 必须分开。MISRA 默认是风险筛查；缺少已配置标准版本、deviation 与实际工具证据时，不得声称合规或虚构规则号。
 
+### Usage Symptom Guidance 输出契约
+
+`BugResolver` 在问题识别和根因分析前，必须先把用户如何使用、执行了什么以及观察到什么规范化。输入缺少会影响方向的现象时，使用以下表格集中引导；首轮最多 5 个问题：
+
+```md
+## Usage Symptom Questions
+
+| Priority | Question | Why It Matters | Example Answer |
+|---|---|---|---|
+| REQUIRED_FOR_DIRECTION/HELPFUL | ... | ... | ... |
+```
+
+问题依次优先覆盖用户目标/实际场景、从正常到异常的操作序列、预期/实际行为、频率/规律/触发窗口/边界条件，以及软件/固件/硬件版本、最后正常/首次异常版本、影响和恢复方式。只询问当前输入没有回答的高信息量问题；完整输入不得重复提问。用户可回答 `Unknown`，非关键未知项不得阻塞分析。只有回答产生新矛盾或新方向歧义时，允许最多一组不重复的补充问题。
+
+每次分析都维护以下规范化结果；缺失字段写 `Unknown`：
+
+```md
+## Usage Symptom Profile
+
+- User Goal / Scenario: <用户要完成的目标及真实使用场景>
+- Operation Sequence: <从正常状态到异常发生的操作和事件顺序>
+- Expected Behavior: <用户或需求定义的预期>
+- Actual Behavior: <可观察实际现象和原始错误>
+- Frequency / Pattern: <频率、规律、持续时间和触发窗口>
+- Preconditions / Boundary Conditions: <前置状态、负载、网络、电源、时序和边界值>
+- Environment / Revision: <软件、固件、硬件、配置和工具链版本>
+- Last Known Good / First Known Bad: <最后正常与首次异常版本或时间>
+- Impact / Scope: <受影响设备、用户、功能和严重影响>
+- Recovery / Workaround: <自动/人工恢复方式和已知规避方法>
+- Direction Confirmation: CONFIRMED | NOT_REQUIRED | PENDING
+```
+
+当现象可能指向两个以上模块或根因路径、预期/实际不明确或输入相互矛盾时，将方向标记为 `PENDING`，输出一句 `Current Understanding`、具体的 `Possible Directions`，并请求用户确认或纠正。确认前不得进入深入调用链追踪、根因确认或 Developer 委派。方向明确时使用 `NOT_REQUIRED` 并直接继续；用户确认后使用 `CONFIRMED`。
+
+`Usage Symptom Questions` 只采集使用现象。日志、版本清单、配置、ELF/MAP、dump 等材料只能通过 `Evidence Request` 索取，两类请求不得混用。
+
 ### Problem Identification 输出契约
 
-`BugResolver` 必须在 Bug Analysis 之前输出以下结构。字段缺失时写 `Unknown`，不得用假设填空：
+`BugResolver` 必须在 Usage Symptom Profile 的方向为 `CONFIRMED` 或 `NOT_REQUIRED` 后、Bug Analysis 之前输出以下结构。字段缺失时写 `Unknown`，不得用假设填空：
 
 ```md
 ## Problem Identification
 
+- Usage Symptom Basis: <引用 Usage Symptom Profile 中支持当前方向的已确认事实>
 - Problem Statement: <仅基于已观察事实的一句话问题定义>
 - Category: 功能/状态机 | 崩溃/异常 | 内存 | 并发/时序 | 资源 | 硬件/I/O | 协议/网络 | 配置/构建/版本 | 性能/功耗 | 其他/未知
 - Suspected Subsystem: <受影响模块或运行域；未知时写 Unknown>
@@ -147,7 +184,7 @@ Evidence 与 Hypothesis 必须分开。MISRA 默认是风险筛查；缺少已�
 - Evidence Confidence: HIGH | MEDIUM | LOW
 ```
 
-`Observed Severity` 只表达已观察影响，不表示原因已确认。问题陈述必须区分事实、推断和未知项；类别或子系统可以随着新增证据更新，但必须说明变化依据。
+`Observed Severity` 只表达已观察影响，不表示原因已确认。问题陈述必须区分事实、推断和未知项；类别或子系统可以随着新增证据更新，但必须说明变化依据。`Usage Symptom Basis` 必须与方向已确认或无需确认的 Profile 一致，不得用日志中的推测替代用户使用现象。
 
 ### Evidence Request 输出契约
 
@@ -351,13 +388,50 @@ Every `QualityReviewer` finding uses:
 
 Evidence and Hypothesis must remain separate. MISRA is risk screening by default; without a configured standard version, deviation record, and actual tool evidence, do not claim compliance or invent rule numbers.
 
+### Usage Symptom Guidance Output Contract
+
+Before problem identification or root-cause analysis, `BugResolver` normalizes how the user operated the product, what they did, and what they observed. When direction-changing symptoms are missing, guide the user with one consolidated table containing at most five questions in the first set:
+
+```md
+## Usage Symptom Questions
+
+| Priority | Question | Why It Matters | Example Answer |
+|---|---|---|---|
+| REQUIRED_FOR_DIRECTION/HELPFUL | ... | ... | ... |
+```
+
+Prioritize user goal/real scenario; operation sequence from normal state to failure; expected versus actual behavior; frequency/pattern/trigger window/boundaries; and software/firmware/hardware revisions, last-known-good/first-known-bad, impact, and recovery. Ask only high-information questions not already answered by the current input, and never repeat questions for complete input. The user may answer `Unknown`; non-critical unknowns do not block analysis. Allow at most one non-repeating follow-up set, and only when answers create a new contradiction or direction ambiguity.
+
+Maintain this normalized result for every analysis, using `Unknown` for unavailable fields:
+
+```md
+## Usage Symptom Profile
+
+- User Goal / Scenario: <user goal and real usage scenario>
+- Operation Sequence: <operations and events from normal state to failure>
+- Expected Behavior: <behavior defined by the user or requirement>
+- Actual Behavior: <observable behavior and original error>
+- Frequency / Pattern: <frequency, pattern, duration, and trigger window>
+- Preconditions / Boundary Conditions: <prior state, load, network, power, timing, and boundary values>
+- Environment / Revision: <software, firmware, hardware, configuration, and toolchain revisions>
+- Last Known Good / First Known Bad: <last good and first bad version or time>
+- Impact / Scope: <affected devices, users, functions, and observed impact>
+- Recovery / Workaround: <automatic/manual recovery and known workaround>
+- Direction Confirmation: CONFIRMED | NOT_REQUIRED | PENDING
+```
+
+When symptoms could indicate two or more modules or root-cause paths, expected versus actual behavior is unclear, or inputs conflict, set direction to `PENDING`, emit one `Current Understanding`, list concrete `Possible Directions`, and ask the user to confirm or correct them. Do not begin deep call-path tracing, confirm root cause, or delegate Developer before confirmation. Use `NOT_REQUIRED` and continue directly when direction is clear; use `CONFIRMED` after user confirmation.
+
+`Usage Symptom Questions` collects usage symptoms only. Request logs, version manifests, configuration, ELF/MAP, dumps, and other material only through `Evidence Request`; never mix the two request types.
+
 ### Problem Identification Output Contract
 
-`BugResolver` emits the following structure before Bug Analysis. Use `Unknown` for missing fields and never fill them with assumptions:
+`BugResolver` emits the following structure after the Usage Symptom Profile direction is `CONFIRMED` or `NOT_REQUIRED` and before Bug Analysis. Use `Unknown` for missing fields and never fill them with assumptions:
 
 ```md
 ## Problem Identification
 
+- Usage Symptom Basis: <reference confirmed facts from the Usage Symptom Profile that support this direction>
 - Problem Statement: <one-sentence definition based only on observed facts>
 - Category: functional/state-machine | crash/exception | memory | concurrency/timing | resource | hardware/I/O | protocol/network | configuration/build/version | performance/power | other/unknown
 - Suspected Subsystem: <affected module or execution domain; Unknown when unavailable>
@@ -368,7 +442,7 @@ Evidence and Hypothesis must remain separate. MISRA is risk screening by default
 - Evidence Confidence: HIGH | MEDIUM | LOW
 ```
 
-`Observed Severity` describes observed impact only and does not imply root-cause certainty. Keep facts, inferences, and unknowns separate. Category or subsystem may change with new evidence, but the report must state why.
+`Observed Severity` describes observed impact only and does not imply root-cause certainty. Keep facts, inferences, and unknowns separate. Category or subsystem may change with new evidence, but the report must state why. `Usage Symptom Basis` must agree with a Profile whose direction is confirmed or does not require confirmation; never replace user-observed usage symptoms with speculation from a log.
 
 ### Evidence Request Output Contract
 

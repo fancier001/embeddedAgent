@@ -83,15 +83,25 @@ class CustomizationValidatorTests(unittest.TestCase):
 
     def test_bug_resolver_behavior_contract_is_required(self) -> None:
         agent = self.repo / ".github" / "agents" / "bug-resolver.agent.md"
-        agent.write_text(
-            agent.read_text(encoding="utf-8").replace(
-                "IDENTIFY_PROBLEM",
-                "REMOVED_PROBLEM_IDENTIFICATION",
-            ),
-            encoding="utf-8",
-            newline="\n",
-        )
-        self.assertIn("AGENT_BODY_CONTRACT", self.codes())
+        original = agent.read_text(encoding="utf-8")
+        for marker in (
+            "GUIDE_SYMPTOMS",
+            "CONFIRM_DIRECTION",
+            "Usage Symptom Questions",
+            "Usage Symptom Profile",
+            "Direction Confirmation",
+            "IDENTIFY_PROBLEM",
+            "EVIDENCE_CHECK",
+            "AWAIT_EVIDENCE",
+        ):
+            with self.subTest(marker=marker):
+                agent.write_text(
+                    original.replace(marker, "REMOVED_REQUIRED_BEHAVIOR"),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("AGENT_BODY_CONTRACT", self.codes())
+        agent.write_text(original, encoding="utf-8", newline="\n")
 
     def test_extra_markdown_in_agents_directory_is_rejected(self) -> None:
         shutil.copyfile(
@@ -177,15 +187,26 @@ class CustomizationValidatorTests(unittest.TestCase):
             / "firmware-log-analysis"
             / "SKILL.md"
         )
-        skill.write_text(
-            skill.read_text(encoding="utf-8").replace(
-                "Normalized Events",
-                "Removed Event Output",
-            ),
-            encoding="utf-8",
-            newline="\n",
-        )
-        self.assertIn("SKILL_BODY_CONTRACT", self.codes())
+        original = skill.read_text(encoding="utf-8")
+        for marker in (
+            "GUIDE_SYMPTOMS",
+            "CONFIRM_DIRECTION",
+            "Usage Symptom Questions",
+            "Usage Symptom Profile",
+            "Direction Confirmation",
+            "IDENTIFY_PROBLEM",
+            "EVIDENCE_CHECK",
+            "AWAIT_EVIDENCE",
+            "Normalized Events",
+        ):
+            with self.subTest(marker=marker):
+                skill.write_text(
+                    original.replace(marker, "REMOVED_REQUIRED_BEHAVIOR"),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("SKILL_BODY_CONTRACT", self.codes())
+        skill.write_text(original, encoding="utf-8", newline="\n")
 
     def test_invalid_project_profile_is_rejected(self) -> None:
         shutil.copyfile(

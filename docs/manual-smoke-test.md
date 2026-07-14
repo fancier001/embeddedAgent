@@ -57,19 +57,25 @@
 运行 `/analyze-bug UART ISR 连续接收第 9 个字节后发生邻近内存破坏；请理解错误并分析根因，不修改源码`，范围指向 `examples/minimal-firmware/fixtures/defects/seeded_isr_overrun.c`。验收：
 
 - BugResolver 选择 `bug-analysis`，保留原始问题并记录预期/实际行为、环境、复现和 baseline。
-- 报告首先输出 `Problem Identification`，包含问题陈述、类别、疑似子系统、观察严重度、触发条件、复现性、影响范围和证据置信度；不得把问题分类写成根因。
+- 输入已经包含清晰场景、操作、预期/实际和范围时，不重复提问；输出 `Usage Symptom Profile` 并将 `Direction Confirmation` 标为 `NOT_REQUIRED`。
+- 随后输出引用 Usage Symptom Profile 的 `Problem Identification`，包含问题陈述、类别、疑似子系统、观察严重度、触发条件、复现性、影响范围和证据置信度；不得把问题分类写成根因。
 - 此分析任务不得调用 Developer 修改代码；QualityReviewer 不参与根因分析。只有用户明确授权修复后，BugResolver 才协调 Developer 实现并调用 QualityReviewer 做质量评估。
 - 工具顺序体现 `search → read → execute` 的证据需求：定位错误/符号和调用路径，读取完整上下文，再运行最小目标测试；工作区 tracked 源文件保持不变。
 - 报告区分 Failure Point、Trigger 和 Root Cause，Hypotheses 表包含支持证据、反证、置信度和最小验证动作。
 - 不能建立完整因果链时返回 `INSUFFICIENT_EVIDENCE` 和精确缺失材料，不得把最高概率假设写成根因。
 
-### 主动问题识别与索证场景
+### 使用现象引导、方向确认与主动索证场景
 
-运行 `/analyze-bug 设备偶发重启，请分析`，不提供日志、版本、复现条件或产物。验收：
+运行 `/analyze-bug 设备偶发卡住，请分析`，不提供使用步骤、预期/实际差异、频率、版本、日志或产物。验收：
 
-- BugResolver 先搜索项目画像、日志格式、复位处理、看门狗、版本入口和现有产物，再决定需要用户提供什么。
-- 输出初步 `Problem Identification`；未知字段保持 `Unknown`，`Observed Severity` 只根据已观察影响判断。
-- 仅用一张 `Evidence Request` 表集中请求最小资料，列明 `REQUIRED_NOW/HELPFUL`、原因、可接受形式、脱敏要求和阻塞的决策；不得逐项追问或请求仓库已有内容。
+- BugResolver 先输出当前 `Usage Symptom Profile`，再用一张 `Usage Symptom Questions` 表集中询问最多 5 个高信息量问题，依次覆盖使用目标/场景、从正常到异常的操作序列、预期/实际、频率/触发窗口/边界，以及环境/revision/最后正常版本/影响/恢复。不得为已回答内容重复提问。
+- 问题优先级只能是 `REQUIRED_FOR_DIRECTION` 或 `HELPFUL`。用户回答 `Unknown` 时保留未知项，非关键未知项不得阻塞；只有回答产生新矛盾或新方向歧义时，最多再提出一组不重复问题。
+- 当同一“卡住”现象可能来自网络会话、驱动 I/O 或应用状态机时，BugResolver 输出一句 `Current Understanding` 和具体 `Possible Directions`，将 `Direction Confirmation` 标为 `PENDING` 并请求确认。确认前不得深入调用链、确认根因或调用 Developer。
+- 当用户输入已明确目标模块和预期/实际时，不要求形式化确认，方向标为 `NOT_REQUIRED` 并直接继续；用户确认方向后标为 `CONFIRMED`，后续分析只沿确认范围展开。
+- 即使 `/analyze-log` 已提供日志，但缺少真实使用场景时，仍执行同一现象引导和按需方向确认，不从日志内容臆测用户目标。
+- 方向可继续后，BugResolver 输出引用 Usage Symptom Profile 的初步 `Problem Identification`；未知字段保持 `Unknown`，`Observed Severity` 只根据已观察影响判断。
+- 随后先搜索项目画像、日志格式、相关状态/复位/看门狗路径、版本入口和现有产物，再决定需要什么证据。
+- 仅用一张独立的 `Evidence Request` 表集中请求最小证据，列明 `REQUIRED_NOW/HELPFUL`、原因、可接受形式、脱敏要求和阻塞的决策；不得把使用现象问题混入该表、逐项追问或请求仓库已有内容。
 - 关键资料补充前停在 `AWAIT_EVIDENCE`，不得确认根因、调用 Developer 或把 `HELPFUL` 当作强制阻塞。
 - 在同一任务补充请求的资料后，Agent 回到 `EVIDENCE_CHECK` 并继续分析，不重复索取已经提供的内容。
 
@@ -103,7 +109,7 @@ ctest --test-dir build/minimal-firmware --output-on-failure
 ### 直接专家模式
 
 - 直接选择 EmbeddedDeveloper 时，仍要求 Task Brief；缺失信息应先补齐或列为假设。
-- 直接选择 BugResolver 时，必须给出原始错误、预期/实际行为、复现、环境/revision、可用日志或产物，并明确是否允许修改。
+- 直接选择 BugResolver 时，可先给出现有的原始错误或日志；Agent 必须引导补齐会影响方向的使用现象。需要解决时仍须明确是否允许修改。
 - 直接选择 QualityReviewer 时，只提供质量评估目标、diff/files、需求和可用构建证据；不得要求其诊断根因或协调修复。
 - 直接选择 DocKeeper 时，只允许修改 README、`docs/`、项目画像和明确授权的注释。
 
@@ -164,19 +170,25 @@ Run `/implement-feature` for the example reconnect behavior: 1/2/4 second backof
 Run `/analyze-bug Neighboring memory is corrupted after the UART ISR receives the ninth consecutive byte; understand the error and analyze the cause without modifying source`, scoped to `examples/minimal-firmware/fixtures/defects/seeded_isr_overrun.c`. Acceptance criteria:
 
 - BugResolver selects `bug-analysis`, preserves the original problem, and records expected/actual behavior, environment, reproduction, and baseline.
-- The report emits Problem Identification first with problem statement, category, suspected subsystem, observed severity, trigger, reproducibility, affected scope, and evidence confidence; classification is not presented as root cause.
+- When input already provides a clear scenario, operations, expected/actual behavior, and scope, it asks no repeated questions; it emits Usage Symptom Profile with `Direction Confirmation` set to `NOT_REQUIRED`.
+- It then emits Problem Identification grounded in the Usage Symptom Profile, including problem statement, category, suspected subsystem, observed severity, trigger, reproducibility, affected scope, and evidence confidence. Classification is not presented as root cause.
 - This analysis-only task does not invoke Developer to edit code, and QualityReviewer does not participate in root-cause analysis. Only after explicit repair authorization may BugResolver coordinate Developer implementation and invoke QualityReviewer for quality assessment.
 - Tool use follows the evidence needs of `search → read → execute`: locate errors/symbols and call paths, inspect full context, then run the smallest targeted test; tracked source files remain unchanged.
 - The report distinguishes Failure Point, Trigger, and Root Cause. Its Hypotheses table includes supporting evidence, counter-evidence, confidence, and the smallest validation action.
 - If a complete causal chain cannot be established, the result is `INSUFFICIENT_EVIDENCE` with exact missing material, not the most likely hypothesis presented as root cause.
 
-### Active problem-identification and evidence-request scenario
+### Usage-symptom guidance, direction-confirmation, and active-evidence scenario
 
-Run `/analyze-bug The device restarts intermittently; analyze it` without logs, versions, reproduction, or artifacts. Acceptance criteria:
+Run `/analyze-bug The device freezes intermittently; analyze it` without operating steps, expected/actual difference, frequency, versions, logs, or artifacts. Acceptance criteria:
 
-- BugResolver searches the project profile, log format, reset handling, watchdog paths, version entry points, and existing artifacts before deciding what to request.
-- It emits a provisional Problem Identification; unknown fields remain `Unknown`, and Observed Severity reflects observed impact only.
-- One Evidence Request table asks for the minimum set with `REQUIRED_NOW/HELPFUL`, rationale, accepted form, redaction guidance, and blocked decision. It neither drip-feeds questions nor asks for repository material already available.
+- BugResolver emits the current Usage Symptom Profile, then asks at most five high-information questions in one Usage Symptom Questions table, prioritized as user goal/scenario, operation sequence from normal to failure, expected/actual behavior, frequency/trigger window/boundaries, and environment/revision/last known good/impact/recovery. It does not repeat answered questions.
+- Question priority is only `REQUIRED_FOR_DIRECTION` or `HELPFUL`. If the user answers `Unknown`, the field remains unknown and non-critical unknowns do not block. At most one non-repeating follow-up set is allowed, only when answers create a new contradiction or direction ambiguity.
+- If the same “freeze” could arise from a network session, driver I/O, or application state machine, BugResolver emits one Current Understanding and concrete Possible Directions, marks Direction Confirmation `PENDING`, and requests confirmation. Before confirmation, it neither traces call paths deeply, confirms root cause, nor invokes Developer.
+- When input already identifies the target module and expected/actual behavior, it does not ask for formal confirmation; it marks direction `NOT_REQUIRED` and continues. After user confirmation, it marks direction `CONFIRMED` and analyzes only the confirmed scope.
+- Even when `/analyze-log` already receives logs, missing real usage context triggers the same symptom guidance and conditional direction confirmation. It never infers the user's goal from log content.
+- Once direction may continue, BugResolver emits a provisional Problem Identification grounded in the Usage Symptom Profile. Unknown fields remain `Unknown`, and Observed Severity reflects observed impact only.
+- It then searches the project profile, log format, relevant state/reset/watchdog paths, version entry points, and existing artifacts before deciding what evidence to request.
+- One separate Evidence Request table asks for the minimum evidence with `REQUIRED_NOW/HELPFUL`, rationale, accepted form, redaction guidance, and blocked decision. It never mixes usage questions into the table, drip-feeds requests, or asks for repository material already available.
 - Before critical material arrives, it remains in `AWAIT_EVIDENCE`, does not confirm root cause or invoke Developer, and does not treat `HELPFUL` as a mandatory blocker.
 - After the requested material is supplied in the same task, the agent returns to `EVIDENCE_CHECK`, continues analysis, and never requests supplied material twice.
 
@@ -210,7 +222,7 @@ Acceptance criteria:
 ### Direct Specialist Mode
 
 - When selecting EmbeddedDeveloper directly, still provide a Task Brief; missing facts are clarified or recorded as assumptions.
-- When selecting BugResolver directly, provide the original error, expected/actual behavior, reproduction, environment/revision, available logs or artifacts, and whether changes are authorized.
+- When selecting BugResolver directly, you may begin with the available original error or log; the agent must guide completion of usage symptoms that could change direction. Explicitly state whether changes are authorized when resolution is required.
 - When selecting QualityReviewer directly, provide only the quality-assessment target, diff/files, requirements, and available build evidence; do not ask it to diagnose root cause or coordinate repair.
 - When selecting DocKeeper directly, restrict changes to the README, `docs/`, the project profile, and explicitly authorized comments.
 

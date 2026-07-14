@@ -18,6 +18,7 @@ description: 五 Agent Kit 配置和最小权限规则 / Five-agent kit configur
 - 所有 handoff 显式 `send: false`，正文不得把 handoff 描述成自动执行。
 - Prompt 只负责输入和 agent 路由，不声明 `tools`，以继承目标 agent 权限。
 - Skill 目录名必须与 `name` 一致、使用小写连字符；附属资源必须从 `SKILL.md` 直接链接。
+- BugResolver 及 `firmware-log-analysis` 必须保留 `GUIDE_SYMPTOMS`、按需 `CONFIRM_DIRECTION`、`Usage Symptom Questions`、`Usage Symptom Profile` 和 `Direction Confirmation` 契约；使用现象问题不得与证据材料请求混用。
 - Frontmatter 之外的正文遵循完整中英双区结构。
 
 ## English
@@ -28,4 +29,5 @@ description: 五 Agent Kit 配置和最小权限规则 / Five-agent kit configur
 - Every handoff explicitly sets `send: false`, and body text must not describe handoffs as automatic execution.
 - Prompts only capture input and route to an agent. They omit `tools` so they inherit the target agent's permissions.
 - A Skill directory name matches its lowercase-hyphen `name`, and `SKILL.md` directly links every supporting resource.
+- BugResolver and `firmware-log-analysis` retain the `GUIDE_SYMPTOMS`, conditional `CONFIRM_DIRECTION`, Usage Symptom Questions, Usage Symptom Profile, and Direction Confirmation contracts. Usage-symptom questions never mix with evidence-material requests.
 - Body content after frontmatter follows the complete Chinese-English two-section structure.
