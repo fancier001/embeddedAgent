@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -17,10 +18,17 @@ SKILLS = PROJECT_ROOT / ".github" / "skills"
 SARIF_FIXTURES = AGENT_KIT_ROOT / "tests" / "fixtures" / "sarif"
 
 
-def run_script(path: Path, *arguments: str) -> subprocess.CompletedProcess[str]:
+def run_script(
+    path: Path,
+    *arguments: str,
+    environment: dict[str, str] | None = None,
+) -> subprocess.CompletedProcess[str]:
+    process_environment = os.environ.copy()
+    process_environment.update(environment or {})
     return subprocess.run(
         [sys.executable, str(path), *arguments],
         check=False,
+        env=process_environment,
         text=True,
         encoding="utf-8",
         stdout=subprocess.PIPE,
@@ -49,6 +57,22 @@ class SkillScriptTests(unittest.TestCase):
             completed = run_script(script, "--input", str(matrix), "--root", str(PROJECT_ROOT))
         self.assertEqual(3, completed.returncode)
         self.assertEqual("INSUFFICIENT_EVIDENCE", json.loads(completed.stdout)["status"])
+
+    def test_traceability_stdout_remains_utf8_with_legacy_console_encoding(self) -> None:
+        script = SKILLS / "embedded-application-development" / "scripts" / "validate_traceability.py"
+        matrix = PROJECT_ROOT / "examples" / "minimal-firmware" / "requirements" / "network-reconnect.yml"
+        completed = run_script(
+            script,
+            "--input",
+            str(matrix),
+            "--root",
+            str(PROJECT_ROOT),
+            environment={"PYTHONIOENCODING": "cp1252"},
+        )
+        self.assertEqual(0, completed.returncode, completed.stdout + completed.stderr)
+        result = json.loads(completed.stdout)
+        self.assertEqual("COMPLETE", result["status"])
+        self.assertTrue(any(item["statement_cn"] for item in result["requirements"]))
 
     def test_profile_plan_never_executes_or_includes_hardware(self) -> None:
         script = SKILLS / "embedded-change-verification" / "scripts" / "profile_gates.py"
