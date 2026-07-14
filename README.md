@@ -61,9 +61,9 @@ Handoff 是另一条人工路径：agent 回复结束后显示按钮，由用户
 - `CONDITIONAL`：用户明确接受剩余风险。
 - `BLOCKED`：缺少决策、资料、工具或权限，无法安全推进。
 - `FAILED`：验证失败或两轮返工后仍有 BLOCKER/MAJOR。
-- `INSUFFICIENT_EVIDENCE`：仅用于评审/故障分析，表示证据不足。
+- `INSUFFICIENT_EVIDENCE`：仅用于评审/Bug/故障分析，表示证据不足。
 
-Orchestrator 的标准流程是：
+Orchestrator 的标准交付流程是：
 
 ```text
 INTAKE → PREFLIGHT → PLAN → IMPLEMENT → VERIFY → REVIEW
@@ -72,6 +72,8 @@ INTAKE → PREFLIGHT → PLAN → IMPLEMENT → VERIFY → REVIEW
                                               │
                          DOCUMENT（按需）→ CLOSE
 ```
+
+Bug 请求先走 `INTAKE → PREFLIGHT → DIAGNOSE`。只要求分析时直接 `CLOSE`；明确要求修复时，诊断结论再进入 `PLAN → IMPLEMENT → VERIFY → REVIEW` 闭环。
 
 命令证据必须包含实际命令、退出码和关键输出。未执行项标为 `NOT_RUN`，不计为通过。
 
@@ -95,7 +97,7 @@ INTAKE → PREFLIGHT → PLAN → IMPLEMENT → VERIFY → REVIEW
 3. 调整 `.github/embedded-project.yml`；未知值保持 `auto`，不要填写未经确认的硬件事实。
 4. 用 VS Code 直接打开固件仓库根目录并信任工作区。若只打开父目录，VS Code 不会自动发现该 `.github`。
 5. 启用 GitHub Copilot Chat，确认 custom agents、prompt files、Agent Skills 和 `agent/runSubagent` 可用；不需要启用递归 subagent。
-6. 在 Chat 的 Customizations/Diagnostics 中确认四个 agent、五个 prompt 和 instructions 均无错误。
+6. 在 Chat 的 Customizations/Diagnostics 中确认四个 agent、六个 prompt 和 instructions 均无错误。
 
 Orchestrator frontmatter 中的 `agents` allowlist 可能依赖目标 VS Code 与 GitHub Copilot 环境中的 Experimental custom-agent/subagent 支持。本 Kit 不声明未经验证的最低版本；请在实际目标环境运行 Customizations/Diagnostics，并用一次 Orchestrator 委派烟测确认 allowlist 生效。
 
@@ -113,6 +115,7 @@ Orchestrator frontmatter 中的 `agents` allowlist 可能依赖目标 VS Code �
 
 - `/new-driver <driver_request>`：由 Orchestrator 完成驱动预检、实现、验证和评审。
 - `/implement-feature <feature_request>`：由 Orchestrator 完成应用行为建模、实现、追踪、验证和评审。
+- `/analyze-bug <bug_input>`：由 QualityReviewer 理解原始错误、追踪代码/配置上下文、验证根因假设并输出证据化诊断。
 - `/analyze-log <log_input>`：由 QualityReviewer 分析日志、ELF/MAP 和证据时间线。
 - `/misra-review <review_target>`：由 QualityReviewer 做 MISRA-oriented 风险筛查。
 - `/verify-change <change_target>`：由 Orchestrator 审计 baseline、构建、测试、评审和文档门禁。
@@ -120,7 +123,7 @@ Orchestrator frontmatter 中的 `agents` allowlist 可能依赖目标 VS Code �
 直接模式：
 
 - 只实现代码：选择 `EmbeddedDeveloper`，提供 Goal、Scope、约束和验收条件。
-- 只做独立评审或日志分析：选择 `QualityReviewer`，提供真实 diff/files、需求、版本和可用产物。
+- 只做独立评审或 Bug/日志分析：选择 `QualityReviewer`，提供原始错误、预期/实际行为、复现步骤、真实 diff/files、环境/版本和可用产物。
 - 只维护文档：选择 `DocKeeper`，提供已经确认的源码/API/测试或根因证据。
 
 ### 安全与权限
@@ -162,7 +165,7 @@ CI 在 Windows 和 Ubuntu 上执行上述验证。真实交互还需按照 [VS C
 ├── agents/                  # 固定四个 agent
 ├── agent-kit/               # Kit 自检脚本、测试、fixtures 和开发依赖
 ├── instructions/            # C、双语和 Kit 配置规则
-├── prompts/                 # 五个薄 slash 入口
+├── prompts/                 # 六个薄 slash 入口
 ├── skills/                  # 五个按需工作流及确定性脚本
 └── workflows/validate.yml
 docs/                        # 产品形态与人工烟测
@@ -255,9 +258,9 @@ Common statuses are:
 - `CONDITIONAL`: the user explicitly accepted remaining risk.
 - `BLOCKED`: a decision, document, tool, or permission is missing, so safe progress is impossible.
 - `FAILED`: verification failed or BLOCKER/MAJOR findings remain after two rework rounds.
-- `INSUFFICIENT_EVIDENCE`: review/fault-analysis only; available evidence cannot support a conclusion.
+- `INSUFFICIENT_EVIDENCE`: review/bug/fault analysis only; available evidence cannot support a conclusion.
 
-The standard Orchestrator flow is:
+The standard Orchestrator delivery flow is:
 
 ```text
 INTAKE → PREFLIGHT → PLAN → IMPLEMENT → VERIFY → REVIEW
@@ -266,6 +269,8 @@ INTAKE → PREFLIGHT → PLAN → IMPLEMENT → VERIFY → REVIEW
                                               │
                          DOCUMENT (as needed) → CLOSE
 ```
+
+Bug requests first follow `INTAKE → PREFLIGHT → DIAGNOSE`. Analysis-only requests then `CLOSE`; an explicitly requested fix continues from the diagnosis into `PLAN → IMPLEMENT → VERIFY → REVIEW`.
 
 Command evidence includes the exact command, exit code, and relevant output. An unexecuted check is `NOT_RUN`, not a pass.
 
@@ -289,7 +294,7 @@ Fields may remain `auto`, in which case agents discover them from the repository
 3. Adjust `.github/embedded-project.yml`. Keep unknown values as `auto`; do not enter unconfirmed hardware facts.
 4. Open the firmware repository root directly in VS Code and trust the workspace. Opening only its parent prevents automatic `.github` discovery.
 5. Enable GitHub Copilot Chat and confirm that custom agents, prompt files, Agent Skills, and `agent/runSubagent` are available. Recursive subagents are not required.
-6. Confirm in Chat Customizations/Diagnostics that all four agents, five prompts, and instructions load without errors.
+6. Confirm in Chat Customizations/Diagnostics that all four agents, six prompts, and instructions load without errors.
 
 The `agents` allowlist in the Orchestrator frontmatter may depend on Experimental custom-agent/subagent support in the target VS Code and GitHub Copilot environment. This kit does not claim an unverified minimum version; run Customizations/Diagnostics in the actual target environment and perform one Orchestrator delegation smoke test to confirm that the allowlist is honored.
 
@@ -307,6 +312,7 @@ Slash commands:
 
 - `/new-driver <driver_request>`: Orchestrator performs driver preflight, implementation, verification, and review.
 - `/implement-feature <feature_request>`: Orchestrator performs application behavior modeling, implementation, traceability, verification, and review.
+- `/analyze-bug <bug_input>`: QualityReviewer understands the original error, traces code/configuration context, tests root-cause hypotheses, and reports an evidence-backed diagnosis.
 - `/analyze-log <log_input>`: QualityReviewer analyzes logs, ELF/MAP artifacts, and the evidence timeline.
 - `/misra-review <review_target>`: QualityReviewer performs MISRA-oriented risk screening.
 - `/verify-change <change_target>`: Orchestrator audits baseline, build, tests, review, and documentation gates.
@@ -314,7 +320,7 @@ Slash commands:
 Direct mode:
 
 - Implementation only: select `EmbeddedDeveloper` and provide the Goal, Scope, constraints, and acceptance criteria.
-- Independent review or log analysis only: select `QualityReviewer` and provide the real diff/files, requirements, version, and available artifacts.
+- Independent review or bug/log analysis only: select `QualityReviewer` and provide the original error, expected/actual behavior, reproduction, real diff/files, environment/version, and available artifacts.
 - Documentation only: select `DocKeeper` and provide confirmed source/API/test or root-cause evidence.
 
 ### Safety and Permissions
@@ -356,7 +362,7 @@ CI runs these checks on Windows and Ubuntu. Real interaction also requires the [
 ├── agents/                  # exactly four agents
 ├── agent-kit/               # kit self-check scripts, tests, fixtures, and dev dependencies
 ├── instructions/            # C, bilingual, and kit configuration rules
-├── prompts/                 # five thin slash entries
+├── prompts/                 # six thin slash entries
 ├── skills/                  # five on-demand workflows with deterministic scripts
 └── workflows/validate.yml
 docs/                        # product forms and manual smoke test

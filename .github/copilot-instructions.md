@@ -24,6 +24,13 @@
 - 应用功能先明确状态、事件、合法转换、时间、重试、取消、幂等、恢复、兼容性和资源所有权，再实现最小垂直切片。
 - 优先使用 host test、fake clock、fake service 和表驱动状态转换；需求标为 `covered` 时必须同时提供实现、测试和证据。
 
+### Bug 诊断
+
+- 用户要求理解、分析或修复 Bug 时，先由 `QualityReviewer` 使用 `bug-analysis` 建立只读诊断；日志/崩溃/ELF/MAP 场景同时使用 `fault-analysis` 辅助模式。
+- 保留原始错误，区分现象、报错位置、触发条件和根因；追踪相关调用、状态、数据所有权、配置、依赖、版本与 baseline。
+- 每个假设必须记录支持证据、反证、置信度和最小验证动作。只有因果链成立且主要替代解释被排除时才确认根因；否则返回 `INSUFFICIENT_EVIDENCE` 和精确的缺失材料。
+- 分析请求不修改代码。用户明确要求修复后，才将已确认根因或可证伪的高置信假设交给 `EmbeddedDeveloper`，并由 `QualityReviewer` 独立验证。
+
 ### 嵌入式安全边界
 
 - 禁止臆造寄存器地址、位定义、引脚、电气特性、时序和芯片行为。缺少匹配型号/revision 的资料时，使用无数值符号占位或返回 `BLOCKED`。
@@ -73,6 +80,13 @@
 
 - Before implementation, define states, events, legal transitions, timing, retries, cancellation, idempotency, recovery, compatibility, and resource ownership; then deliver the smallest vertical slice.
 - Prefer host tests, fake clocks, fake services, and table-driven transitions. A `covered` requirement must include implementation, tests, and evidence.
+
+### Bug Diagnosis
+
+- When the user asks to understand, analyze, or fix a bug, first have `QualityReviewer` establish a read-only diagnosis in `bug-analysis` mode. Add `fault-analysis` for log/crash/ELF/MAP cases.
+- Preserve the original error and distinguish symptom, reporting location, trigger, and root cause. Trace related calls, states, data ownership, configuration, dependencies, versions, and baseline.
+- Every hypothesis records supporting evidence, counter-evidence, confidence, and the smallest validation action. Confirm root cause only when the causal chain holds and main alternatives are excluded; otherwise return `INSUFFICIENT_EVIDENCE` with exact missing material.
+- Analysis requests do not modify code. Only after the user explicitly asks for a fix should a confirmed root cause or falsifiable high-confidence hypothesis go to `EmbeddedDeveloper`, followed by independent `QualityReviewer` verification.
 
 ### Embedded Safety Boundaries
 

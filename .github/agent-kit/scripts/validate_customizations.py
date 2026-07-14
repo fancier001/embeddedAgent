@@ -71,6 +71,11 @@ EXPECTED_PROMPTS: Mapping[str, Mapping[str, str]] = {
         "skill": "firmware-log-analysis",
         "input": "log_input",
     },
+    "analyze-bug.prompt.md": {
+        "name": "analyze-bug",
+        "agent": "QualityReviewer",
+        "input": "bug_input",
+    },
     "misra-review.prompt.md": {
         "name": "misra-review",
         "agent": "QualityReviewer",
@@ -91,7 +96,9 @@ EXPECTED_PROMPTS: Mapping[str, Mapping[str, str]] = {
     },
 }
 
-EXPECTED_SKILLS = frozenset(spec["skill"] for spec in EXPECTED_PROMPTS.values())
+EXPECTED_SKILLS = frozenset(
+    spec["skill"] for spec in EXPECTED_PROMPTS.values() if "skill" in spec
+)
 EXPECTED_SKILL_SCRIPTS: Mapping[str, frozenset[str]] = {
     "embedded-application-development": frozenset({"validate_traceability.py"}),
     "embedded-change-verification": frozenset({"profile_gates.py"}),
@@ -724,13 +731,14 @@ class RepositoryValidator:
             if not isinstance(data.get("argument-hint"), str) or not data.get("argument-hint", "").strip():
                 self._add(path, "PROMPT_ARGUMENT", "argument-hint must be a non-empty string")
 
-            skill_path = f"../skills/{spec['skill']}/SKILL.md"
-            if skill_path not in body:
-                self._add(
-                    path,
-                    "PROMPT_SKILL",
-                    f"prompt must link to its canonical skill: {skill_path}",
-                )
+            if "skill" in spec:
+                skill_path = f"../skills/{spec['skill']}/SKILL.md"
+                if skill_path not in body:
+                    self._add(
+                        path,
+                        "PROMPT_SKILL",
+                        f"prompt must link to its canonical skill: {skill_path}",
+                    )
             input_marker = "${input:" + spec["input"] + "}"
             if input_marker not in body:
                 self._add(

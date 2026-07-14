@@ -148,7 +148,7 @@ def validate_matrix(data: dict[str, Any], root: Path) -> tuple[dict[str, Any], i
 def emit(result: dict[str, Any], output: Path | None) -> None:
     text = json.dumps(result, ensure_ascii=False, indent=2) + "\n"
     if output is None:
-        sys.stdout.write(text)
+        sys.stdout.buffer.write(text.encode("utf-8"))
     else:
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(text, encoding="utf-8", newline="\n")

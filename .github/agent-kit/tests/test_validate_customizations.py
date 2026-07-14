@@ -124,6 +124,11 @@ class CustomizationValidatorTests(unittest.TestCase):
         self.assertIn("PROMPT_SKILL", codes)
         self.assertIn("LINK_MISSING", codes)
 
+    def test_missing_analyze_bug_prompt_is_rejected(self) -> None:
+        prompt = self.repo / ".github" / "prompts" / "analyze-bug.prompt.md"
+        prompt.unlink()
+        self.assertIn("PROMPT_SET", self.codes())
+
     def test_missing_required_skill_script_is_rejected(self) -> None:
         script = (
             self.repo
