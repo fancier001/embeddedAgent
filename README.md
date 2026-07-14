@@ -43,7 +43,7 @@ Handoff 是另一条人工路径：agent 回复结束后显示按钮，由用户
 | Agent | 工具 | 允许写入 | 主要输出 |
 | --- | --- | --- | --- |
 | `Orchestrator` | `agent`, `read`, `search` | 无 | Task Brief、编排状态、质量门和最终汇总 |
-| `BugResolver` | `agent`, `read`, `search`, `execute` | 无 | 错误理解、证据化根因、修复编排和闭环报告 |
+| `BugResolver` | `agent`, `read`, `search`, `execute` | 无 | 问题识别卡、日志时间线、证据化根因、主动索证和修复闭环 |
 | `EmbeddedDeveloper` | `edit`, `read`, `search`, `execute` | 任务范围内功能代码、测试和构建配置 | 最小 diff、API、baseline/build/test 证据 |
 | `QualityReviewer` | `read`, `search`, `execute` | 无 | 高信噪比质量 findings、MISRA 风险和 verdict |
 | `DocKeeper` | `read`, `search`, `edit`, `web` | README、`docs/`、项目画像和授权注释 | 设计、How-to、Reference、ADR、FAQ 和结案记录 |
@@ -70,7 +70,9 @@ INTAKE → PREFLIGHT → PLAN → IMPLEMENT → VERIFY → REVIEW
                          DOCUMENT（按需）→ CLOSE
 ```
 
-Bug 请求通过 `/analyze-bug`、`/analyze-log`、直接选择或 Orchestrator 的人工 handoff 进入 `BugResolver`，两个 manager 不自动嵌套。诊断路径为 `INTAKE → SCOPE → NORMALIZE_ERROR → TRACE_CONTEXT → REPRODUCE_BASELINE → HYPOTHESES → VALIDATE_CAUSE → DECIDE`；用户明确授权修复后，再进入 `PLAN_FIX → IMPLEMENT → VERIFY → QUALITY_REVIEW → REWORK → DOCUMENT → CLOSE`。
+Bug 请求通过 `/analyze-bug`、`/analyze-log`、直接选择或 Orchestrator 的人工 handoff 进入 `BugResolver`，两个 manager 不自动嵌套。诊断路径为 `INTAKE → SCOPE → NORMALIZE_ERROR → IDENTIFY_PROBLEM → TRACE_CONTEXT → REPRODUCE_BASELINE → EVIDENCE_CHECK → AWAIT_EVIDENCE / HYPOTHESES → VALIDATE_CAUSE → DECIDE`；用户明确授权修复后，再进入 `PLAN_FIX → IMPLEMENT → VERIFY → QUALITY_REVIEW → REWORK → DOCUMENT → CLOSE`。
+
+BugResolver 先用结构化 `Problem Identification` 区分已观察问题、类别、疑似子系统、严重度和证据置信度。缺少关键资料时，它会先搜索仓库并完成不依赖缺失项的安全初判，再通过一张 `Evidence Request` 表集中请求最小资料；资料补充前不确认根因、不重复索取，也不调用 Developer。日志分析覆盖 bare-metal、RTOS、模组 SDK、Embedded Linux 与 hybrid，保留原始日志偏移和时钟域；没有可靠时间证据时不伪造统一时间线。
 
 命令证据必须包含实际命令、退出码和关键输出。未执行项标为 `NOT_RUN`，不计为通过。
 
@@ -112,15 +114,15 @@ Orchestrator 与 BugResolver frontmatter 中的 `agents` allowlist 可能依赖�
 
 - `/new-driver <driver_request>`：由 Orchestrator 完成驱动预检、实现、验证和评审。
 - `/implement-feature <feature_request>`：由 Orchestrator 完成应用行为建模、实现、追踪、验证和评审。
-- `/analyze-bug <bug_input>`：由 BugResolver 理解原始错误、追踪代码/配置上下文、验证根因假设；用户授权时继续协调修复与质量评估。
-- `/analyze-log <log_input>`：由 BugResolver 分析日志、ELF/MAP 和证据时间线。
+- `/analyze-bug <bug_input>`：由 BugResolver 先识别问题，再追踪代码/配置上下文、验证根因假设；缺资料时主动集中索证，用户授权时继续协调修复与质量评估。
+- `/analyze-log <log_input>`：由 BugResolver 分析多产品形态日志、事件关联、ELF/MAP、产物身份和证据时间线。
 - `/misra-review <review_target>`：由 QualityReviewer 做 MISRA-oriented 风险筛查。
 - `/verify-change <change_target>`：由 Orchestrator 审计 baseline、构建、测试、评审和文档门禁。
 
 直接模式：
 
 - 只实现代码：选择 `EmbeddedDeveloper`，提供 Goal、Scope、约束和验收条件。
-- 分析或解决 Bug/日志问题：选择 `BugResolver`，提供原始错误、预期/实际行为、复现步骤、环境/版本和可用产物，并明确是否授权修改。
+- 分析或解决 Bug/日志问题：选择 `BugResolver`，可先提供已有的原始错误或日志；Agent 会识别问题并在本地发现后集中请求仍缺少的最小资料。需要解决时明确是否授权修改。
 - 只做独立质量评估：选择 `QualityReviewer`，提供需求、真实 diff/files 和可用构建/测试/静态分析证据。
 - 只维护文档：选择 `DocKeeper`，提供已经确认的源码/API/测试或根因证据。
 
@@ -238,7 +240,7 @@ A handoff is a separate human-controlled path: a button appears after an agent r
 | Agent | Tools | Allowed writes | Main output |
 | --- | --- | --- | --- |
 | `Orchestrator` | `agent`, `read`, `search` | None | Task Briefs, orchestration state, quality gates, and final synthesis |
-| `BugResolver` | `agent`, `read`, `search`, `execute` | None | Error understanding, evidence-backed root cause, repair orchestration, and closure report |
+| `BugResolver` | `agent`, `read`, `search`, `execute` | None | Problem-identification card, log timeline, evidence-backed root cause, active evidence request, and repair closure |
 | `EmbeddedDeveloper` | `edit`, `read`, `search`, `execute` | In-scope functional code, tests, and build configuration | Minimal diff, APIs, baseline/build/test evidence |
 | `QualityReviewer` | `read`, `search`, `execute` | None | High-signal quality findings, MISRA risks, and verdict |
 | `DocKeeper` | `read`, `search`, `edit`, `web` | README, `docs/`, project profile, and authorized comments | Design, How-to, Reference, ADR, FAQ, and closure records |
@@ -265,7 +267,9 @@ INTAKE → PREFLIGHT → PLAN → IMPLEMENT → VERIFY → REVIEW
                          DOCUMENT (as needed) → CLOSE
 ```
 
-Bug requests enter `BugResolver` through `/analyze-bug`, `/analyze-log`, direct selection, or Orchestrator's manual handoff; the two managers are never auto-nested. Its diagnostic path is `INTAKE → SCOPE → NORMALIZE_ERROR → TRACE_CONTEXT → REPRODUCE_BASELINE → HYPOTHESES → VALIDATE_CAUSE → DECIDE`. After the user explicitly authorizes a fix, it continues through `PLAN_FIX → IMPLEMENT → VERIFY → QUALITY_REVIEW → REWORK → DOCUMENT → CLOSE`.
+Bug requests enter `BugResolver` through `/analyze-bug`, `/analyze-log`, direct selection, or Orchestrator's manual handoff; the two managers are never auto-nested. Its diagnostic path is `INTAKE → SCOPE → NORMALIZE_ERROR → IDENTIFY_PROBLEM → TRACE_CONTEXT → REPRODUCE_BASELINE → EVIDENCE_CHECK → AWAIT_EVIDENCE / HYPOTHESES → VALIDATE_CAUSE → DECIDE`. After the user explicitly authorizes a fix, it continues through `PLAN_FIX → IMPLEMENT → VERIFY → QUALITY_REVIEW → REWORK → DOCUMENT → CLOSE`.
+
+BugResolver first uses a structured Problem Identification to separate the observed problem, category, suspected subsystem, severity, and evidence confidence. When critical material is missing, it searches the repository and finishes safe preliminary analysis before requesting the smallest evidence set once through an Evidence Request table. Until evidence arrives, it neither confirms root cause, repeats the request, nor invokes Developer. Log analysis covers bare-metal, RTOS, module SDK, Embedded Linux, and hybrid systems while preserving original offsets and clock domains; it never invents a unified timeline without reliable timing evidence.
 
 Command evidence includes the exact command, exit code, and relevant output. An unexecuted check is `NOT_RUN`, not a pass.
 
@@ -307,15 +311,15 @@ Slash commands:
 
 - `/new-driver <driver_request>`: Orchestrator performs driver preflight, implementation, verification, and review.
 - `/implement-feature <feature_request>`: Orchestrator performs application behavior modeling, implementation, traceability, verification, and review.
-- `/analyze-bug <bug_input>`: BugResolver understands the original error, traces code/configuration context, tests root-cause hypotheses, and coordinates repair plus quality assessment when authorized.
-- `/analyze-log <log_input>`: BugResolver analyzes logs, ELF/MAP artifacts, and the evidence timeline.
+- `/analyze-bug <bug_input>`: BugResolver identifies the problem first, traces code/configuration context, tests root-cause hypotheses, actively requests missing evidence as one set, and coordinates repair plus quality assessment when authorized.
+- `/analyze-log <log_input>`: BugResolver analyzes multi-product logs, event correlation, ELF/MAP artifacts, artifact identity, and the evidence timeline.
 - `/misra-review <review_target>`: QualityReviewer performs MISRA-oriented risk screening.
 - `/verify-change <change_target>`: Orchestrator audits baseline, build, tests, review, and documentation gates.
 
 Direct mode:
 
 - Implementation only: select `EmbeddedDeveloper` and provide the Goal, Scope, constraints, and acceptance criteria.
-- Bug/log analysis or resolution: select `BugResolver` and provide the original error, expected/actual behavior, reproduction, environment/version, and available artifacts, plus whether changes are authorized.
+- Bug/log analysis or resolution: select `BugResolver` and provide any available original error or log. The agent identifies the problem, discovers local context, and asks once for the remaining minimum evidence. State whether changes are authorized when resolution is required.
 - Independent quality assessment only: select `QualityReviewer` and provide requirements, the real diff/files, and available build/test/static-analysis evidence.
 - Documentation only: select `DocKeeper` and provide confirmed source/API/test or root-cause evidence.
 

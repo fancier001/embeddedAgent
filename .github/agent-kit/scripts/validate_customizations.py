@@ -112,6 +112,29 @@ EXPECTED_SKILL_SCRIPTS: Mapping[str, frozenset[str]] = {
     "firmware-log-analysis": frozenset({"artifact_evidence.py"}),
     "misra-risk-review": frozenset({"normalize_sarif.py"}),
 }
+REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
+    "bug-resolver.agent.md": frozenset(
+        {
+            "IDENTIFY_PROBLEM",
+            "EVIDENCE_CHECK",
+            "AWAIT_EVIDENCE",
+            "## Problem Identification",
+            "## Evidence Request",
+        }
+    ),
+}
+REQUIRED_SKILL_BODY_MARKERS: Mapping[str, frozenset[str]] = {
+    "firmware-log-analysis": frozenset(
+        {
+            "IDENTIFY_PROBLEM",
+            "EVIDENCE_CHECK",
+            "AWAIT_EVIDENCE",
+            "Normalized Events",
+            "Anomalies and Correlations",
+            "Next Evidence Needed",
+        }
+    ),
+}
 KNOWN_AGENT_NAMES = frozenset(spec["name"] for spec in EXPECTED_AGENTS.values())
 REQUIRED_PRODUCT_FILES = (
     ".github/agent-contracts.md",
@@ -578,7 +601,7 @@ class RepositoryValidator:
             path = agents_dir / filename
             if not path.is_file():
                 continue
-            data, _ = self._frontmatter(path)
+            data, body = self._frontmatter(path)
             if data is None:
                 continue
             self._check_frontmatter_fields(path, data, AGENT_FRONTMATTER_FIELDS)
@@ -615,6 +638,14 @@ class RepositoryValidator:
                     "AGENT_NESTING",
                     "non-delegating specialists must not declare an agents allowlist",
                 )
+
+            for marker in sorted(REQUIRED_AGENT_BODY_MARKERS.get(filename, frozenset())):
+                if marker not in body:
+                    self._add(
+                        path,
+                        "AGENT_BODY_CONTRACT",
+                        f"agent body must contain behavior marker {marker!r}",
+                    )
 
             handoffs = data.get("handoffs", [])
             if not isinstance(handoffs, list):
@@ -674,7 +705,7 @@ class RepositoryValidator:
             path = skills_dir / name / "SKILL.md"
             if not path.is_file():
                 continue
-            data, _ = self._frontmatter(path)
+            data, body = self._frontmatter(path)
             if data is None:
                 continue
             self._check_frontmatter_fields(path, data, SKILL_FRONTMATTER_FIELDS)
@@ -686,6 +717,14 @@ class RepositoryValidator:
                 self._add(path, "SKILL_INVOCABLE", "user-invocable must be false")
             if "context" in data:
                 self._add(path, "SKILL_CONTEXT", "experimental context: fork is not supported")
+
+            for marker in sorted(REQUIRED_SKILL_BODY_MARKERS.get(name, frozenset())):
+                if marker not in body:
+                    self._add(
+                        path,
+                        "SKILL_BODY_CONTRACT",
+                        f"skill body must contain behavior marker {marker!r}",
+                    )
 
             expected_scripts = EXPECTED_SKILL_SCRIPTS.get(name, frozenset())
             scripts_dir = path.parent / "scripts"

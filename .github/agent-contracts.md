@@ -130,6 +130,42 @@ Task Brief 规则：
 
 Evidence 与 Hypothesis 必须分开。MISRA 默认是风险筛查；缺少已配置标准版本、deviation 与实际工具证据时，不得声称合规或虚构规则号。
 
+### Problem Identification 输出契约
+
+`BugResolver` 必须在 Bug Analysis 之前输出以下结构。字段缺失时写 `Unknown`，不得用假设填空：
+
+```md
+## Problem Identification
+
+- Problem Statement: <仅基于已观察事实的一句话问题定义>
+- Category: 功能/状态机 | 崩溃/异常 | 内存 | 并发/时序 | 资源 | 硬件/I/O | 协议/网络 | 配置/构建/版本 | 性能/功耗 | 其他/未知
+- Suspected Subsystem: <受影响模块或运行域；未知时写 Unknown>
+- Observed Severity: BLOCKER | MAJOR | MINOR | UNKNOWN
+- Trigger / Conditions: <已观察触发条件；不要写未验证原因>
+- Reproducibility: <步骤、频率和 Agent 是否复现>
+- Affected Scope: <设备、版本、配置、模块或用户>
+- Evidence Confidence: HIGH | MEDIUM | LOW
+```
+
+`Observed Severity` 只表达已观察影响，不表示原因已确认。问题陈述必须区分事实、推断和未知项；类别或子系统可以随着新增证据更新，但必须说明变化依据。
+
+### Evidence Request 输出契约
+
+只有在 Agent 已先搜索仓库与现有产物后，才能请求用户补充材料。所有请求集中在一张表中：
+
+```md
+## Evidence Request
+
+| Priority | Material | Why Needed | Accepted Form | Privacy/Redaction | Blocking Decision |
+|---|---|---|---|---|---|
+| REQUIRED_NOW/HELPFUL | ... | ... | pasted excerpt/path/file/version | ... | ... |
+```
+
+- `REQUIRED_NOW`：缺少材料会阻止问题分类、关键假设判别、产物匹配或修复决策；Agent 暂停根因确认和 Developer 委派。
+- `HELPFUL`：材料只提高置信度，不得单独阻止已有证据支持的安全分析。
+- 不得重复请求用户已提供或仓库内可发现的材料。用户补充后重新执行证据检查，再继续假设验证。
+- 如果无法继续交互或用户不能提供关键材料，最终状态为 `INSUFFICIENT_EVIDENCE`，并保留该表；缺少产品决策、权限或必需硬件资料时使用 `BLOCKED`。
+
 ### Bug Analysis 输出契约
 
 `BugResolver` 的 `bug-analysis` 报告必须在通用 Result Report 之后追加以下结构；字段无证据时写 `Unknown` 或 `Not confirmed`，不得删除：
@@ -314,6 +350,42 @@ Every `QualityReviewer` finding uses:
 ```
 
 Evidence and Hypothesis must remain separate. MISRA is risk screening by default; without a configured standard version, deviation record, and actual tool evidence, do not claim compliance or invent rule numbers.
+
+### Problem Identification Output Contract
+
+`BugResolver` emits the following structure before Bug Analysis. Use `Unknown` for missing fields and never fill them with assumptions:
+
+```md
+## Problem Identification
+
+- Problem Statement: <one-sentence definition based only on observed facts>
+- Category: functional/state-machine | crash/exception | memory | concurrency/timing | resource | hardware/I/O | protocol/network | configuration/build/version | performance/power | other/unknown
+- Suspected Subsystem: <affected module or execution domain; Unknown when unavailable>
+- Observed Severity: BLOCKER | MAJOR | MINOR | UNKNOWN
+- Trigger / Conditions: <observed trigger; do not insert an unverified cause>
+- Reproducibility: <steps, frequency, and whether the Agent reproduced it>
+- Affected Scope: <devices, versions, configurations, modules, or users>
+- Evidence Confidence: HIGH | MEDIUM | LOW
+```
+
+`Observed Severity` describes observed impact only and does not imply root-cause certainty. Keep facts, inferences, and unknowns separate. Category or subsystem may change with new evidence, but the report must state why.
+
+### Evidence Request Output Contract
+
+The Agent may request user material only after searching the repository and existing artifacts. Consolidate every request in one table:
+
+```md
+## Evidence Request
+
+| Priority | Material | Why Needed | Accepted Form | Privacy/Redaction | Blocking Decision |
+|---|---|---|---|---|---|
+| REQUIRED_NOW/HELPFUL | ... | ... | pasted excerpt/path/file/version | ... | ... |
+```
+
+- `REQUIRED_NOW`: without the material, problem classification, critical hypothesis discrimination, artifact matching, or a repair decision cannot continue; pause root-cause confirmation and Developer delegation.
+- `HELPFUL`: the material only improves confidence and must not block safe analysis already supported by evidence.
+- Never re-request material already supplied by the user or discoverable in the repository. After new evidence arrives, repeat the evidence check before hypothesis validation.
+- If interaction cannot continue or the user cannot supply critical material, return `INSUFFICIENT_EVIDENCE` and retain this table. Use `BLOCKED` for a missing product decision, authority, or required hardware source.
 
 ### Bug Analysis Output Contract
 

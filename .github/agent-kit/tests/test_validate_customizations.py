@@ -81,6 +81,18 @@ class CustomizationValidatorTests(unittest.TestCase):
         (self.repo / ".github" / "agents" / "bug-resolver.agent.md").unlink()
         self.assertIn("AGENT_SET", self.codes())
 
+    def test_bug_resolver_behavior_contract_is_required(self) -> None:
+        agent = self.repo / ".github" / "agents" / "bug-resolver.agent.md"
+        agent.write_text(
+            agent.read_text(encoding="utf-8").replace(
+                "IDENTIFY_PROBLEM",
+                "REMOVED_PROBLEM_IDENTIFICATION",
+            ),
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assertIn("AGENT_BODY_CONTRACT", self.codes())
+
     def test_extra_markdown_in_agents_directory_is_rejected(self) -> None:
         shutil.copyfile(
             FIXTURES / "negative" / "extra-agent.md",
@@ -156,6 +168,24 @@ class CustomizationValidatorTests(unittest.TestCase):
         )
         script.unlink()
         self.assertIn("SKILL_SCRIPT_SET", self.codes())
+
+    def test_log_analysis_output_contract_is_required(self) -> None:
+        skill = (
+            self.repo
+            / ".github"
+            / "skills"
+            / "firmware-log-analysis"
+            / "SKILL.md"
+        )
+        skill.write_text(
+            skill.read_text(encoding="utf-8").replace(
+                "Normalized Events",
+                "Removed Event Output",
+            ),
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assertIn("SKILL_BODY_CONTRACT", self.codes())
 
     def test_invalid_project_profile_is_rejected(self) -> None:
         shutil.copyfile(

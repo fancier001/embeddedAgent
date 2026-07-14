@@ -57,10 +57,31 @@
 运行 `/analyze-bug UART ISR 连续接收第 9 个字节后发生邻近内存破坏；请理解错误并分析根因，不修改源码`，范围指向 `examples/minimal-firmware/fixtures/defects/seeded_isr_overrun.c`。验收：
 
 - BugResolver 选择 `bug-analysis`，保留原始问题并记录预期/实际行为、环境、复现和 baseline。
+- 报告首先输出 `Problem Identification`，包含问题陈述、类别、疑似子系统、观察严重度、触发条件、复现性、影响范围和证据置信度；不得把问题分类写成根因。
 - 此分析任务不得调用 Developer 修改代码；QualityReviewer 不参与根因分析。只有用户明确授权修复后，BugResolver 才协调 Developer 实现并调用 QualityReviewer 做质量评估。
 - 工具顺序体现 `search → read → execute` 的证据需求：定位错误/符号和调用路径，读取完整上下文，再运行最小目标测试；工作区 tracked 源文件保持不变。
 - 报告区分 Failure Point、Trigger 和 Root Cause，Hypotheses 表包含支持证据、反证、置信度和最小验证动作。
 - 不能建立完整因果链时返回 `INSUFFICIENT_EVIDENCE` 和精确缺失材料，不得把最高概率假设写成根因。
+
+### 主动问题识别与索证场景
+
+运行 `/analyze-bug 设备偶发重启，请分析`，不提供日志、版本、复现条件或产物。验收：
+
+- BugResolver 先搜索项目画像、日志格式、复位处理、看门狗、版本入口和现有产物，再决定需要用户提供什么。
+- 输出初步 `Problem Identification`；未知字段保持 `Unknown`，`Observed Severity` 只根据已观察影响判断。
+- 仅用一张 `Evidence Request` 表集中请求最小资料，列明 `REQUIRED_NOW/HELPFUL`、原因、可接受形式、脱敏要求和阻塞的决策；不得逐项追问或请求仓库已有内容。
+- 关键资料补充前停在 `AWAIT_EVIDENCE`，不得确认根因、调用 Developer 或把 `HELPFUL` 当作强制阻塞。
+- 在同一任务补充请求的资料后，Agent 回到 `EVIDENCE_CHECK` 并继续分析，不重复索取已经提供的内容。
+
+### 跨产品日志场景
+
+分别向 `/analyze-log` 提供代表性 RTOS、模组 SDK、Embedded Linux 和 hybrid 日志。验收：
+
+- RTOS 日志识别 task/ISR、优先级、队列/锁、栈水位和看门狗上下文。
+- 模组日志关联 AT command/response/URC、网络状态、session、重试和超时。
+- Linux 日志识别 journal/dmesg、unit、PID/TID、signal、`errno` 和 kernel/user-space 边界。
+- Hybrid 日志按运行域保留各自 build 和时钟域，仅通过明确事件、协议序号或 correlation ID 关联，不按文本顺序强行合并。
+- 每个结果包含 `Log Scope`、`Normalized Events`、`Anomalies and Correlations`、`Artifact Identity`、`Timeline`、`Next Evidence Needed`；原始行/偏移必须保留，无时间基准时规范化时间写 `Unknown`。
 
 ### 符号化正例与负例
 
@@ -143,10 +164,31 @@ Run `/implement-feature` for the example reconnect behavior: 1/2/4 second backof
 Run `/analyze-bug Neighboring memory is corrupted after the UART ISR receives the ninth consecutive byte; understand the error and analyze the cause without modifying source`, scoped to `examples/minimal-firmware/fixtures/defects/seeded_isr_overrun.c`. Acceptance criteria:
 
 - BugResolver selects `bug-analysis`, preserves the original problem, and records expected/actual behavior, environment, reproduction, and baseline.
+- The report emits Problem Identification first with problem statement, category, suspected subsystem, observed severity, trigger, reproducibility, affected scope, and evidence confidence; classification is not presented as root cause.
 - This analysis-only task does not invoke Developer to edit code, and QualityReviewer does not participate in root-cause analysis. Only after explicit repair authorization may BugResolver coordinate Developer implementation and invoke QualityReviewer for quality assessment.
 - Tool use follows the evidence needs of `search → read → execute`: locate errors/symbols and call paths, inspect full context, then run the smallest targeted test; tracked source files remain unchanged.
 - The report distinguishes Failure Point, Trigger, and Root Cause. Its Hypotheses table includes supporting evidence, counter-evidence, confidence, and the smallest validation action.
 - If a complete causal chain cannot be established, the result is `INSUFFICIENT_EVIDENCE` with exact missing material, not the most likely hypothesis presented as root cause.
+
+### Active problem-identification and evidence-request scenario
+
+Run `/analyze-bug The device restarts intermittently; analyze it` without logs, versions, reproduction, or artifacts. Acceptance criteria:
+
+- BugResolver searches the project profile, log format, reset handling, watchdog paths, version entry points, and existing artifacts before deciding what to request.
+- It emits a provisional Problem Identification; unknown fields remain `Unknown`, and Observed Severity reflects observed impact only.
+- One Evidence Request table asks for the minimum set with `REQUIRED_NOW/HELPFUL`, rationale, accepted form, redaction guidance, and blocked decision. It neither drip-feeds questions nor asks for repository material already available.
+- Before critical material arrives, it remains in `AWAIT_EVIDENCE`, does not confirm root cause or invoke Developer, and does not treat `HELPFUL` as a mandatory blocker.
+- After the requested material is supplied in the same task, the agent returns to `EVIDENCE_CHECK`, continues analysis, and never requests supplied material twice.
+
+### Cross-product log scenarios
+
+Give `/analyze-log` representative RTOS, module-SDK, Embedded-Linux, and hybrid logs. Acceptance criteria:
+
+- RTOS logs identify task/ISR, priority, queue/lock, stack-watermark, and watchdog context.
+- Module logs correlate AT command/response/URC, network state, session, retry, and timeout.
+- Linux logs identify journal/dmesg, unit, PID/TID, signal, `errno`, and the kernel/user-space boundary.
+- Hybrid logs preserve build and clock domain per execution domain, correlating only through explicit events, protocol sequence, or correlation ID rather than text order.
+- Every result includes Log Scope, Normalized Events, Anomalies and Correlations, Artifact Identity, Timeline, and Next Evidence Needed. Original lines/offsets remain present, and normalized time is `Unknown` without a reliable time base.
 
 ### Positive and negative symbolization
 
