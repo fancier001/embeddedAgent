@@ -15,7 +15,7 @@ user-invocable: false
 ### 输入与模式
 
 - 接收 `log_input`，内容可以是日志片段、仓库内文件路径或经用户明确纳入范围的日志/转储产物。
-- 使用 `QualityReviewer` 的 `fault-analysis` 模式，并先读取 `.github/agent-contracts.md` 与 `.github/embedded-project.yml`。
+- 使用 `QualityReviewer` 的 `bug-analysis` 主模式和 `fault-analysis` 辅助模式，并先读取 `.github/agent-contracts.md` 与 `.github/embedded-project.yml`。
 - 保留日志、地址、寄存器、错误码和工具诊断原文；不得把私有日志发送到 Web 服务。
 
 ### 工作流
@@ -34,14 +34,14 @@ user-invocable: false
 
 ### 输出
 
-报告 `Status`、`Symptom`、`Artifact Identity`、`Timeline`、`Evidence`、`Hypotheses`、`Root Cause`、`Fix Recommendation`、`Commands and Exit Codes`、`Risks` 和 `Next Evidence Needed`。未经证实的根因必须明确标记为假设。
+按共享 Bug Analysis 输出契约报告，并增加 `Artifact Identity`、`Timeline` 和 `Next Evidence Needed`。未经证实的根因必须写 `Not confirmed` 并保留为假设。
 
 ## English
 
 ### Input and mode
 
 - Accept `log_input` as a pasted log, a repository file path, or log/dump artifacts explicitly placed in scope by the user.
-- Use the `QualityReviewer` `fault-analysis` mode and read `.github/agent-contracts.md` plus `.github/embedded-project.yml` first.
+- Use the `QualityReviewer` `bug-analysis` primary mode with `fault-analysis` as an auxiliary mode, and read `.github/agent-contracts.md` plus `.github/embedded-project.yml` first.
 - Preserve logs, addresses, registers, error codes, and tool diagnostics verbatim. Never send private logs to a Web service.
 
 ### Workflow
@@ -60,4 +60,4 @@ Prefer [`scripts/artifact_evidence.py`](scripts/artifact_evidence.py) for eviden
 
 ### Output
 
-Report `Status`, `Symptom`, `Artifact Identity`, `Timeline`, `Evidence`, `Hypotheses`, `Root Cause`, `Fix Recommendation`, `Commands and Exit Codes`, `Risks`, and `Next Evidence Needed`. Label every unproven root-cause statement explicitly as a hypothesis.
+Follow the shared Bug Analysis output contract and add `Artifact Identity`, `Timeline`, and `Next Evidence Needed`. Write `Not confirmed` for an unproven root cause and keep it explicitly as a hypothesis.

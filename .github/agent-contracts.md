@@ -130,6 +130,43 @@ Task Brief 规则：
 
 Evidence 与 Hypothesis 必须分开。MISRA 默认是风险筛查；缺少已配置标准版本、deviation 与实际工具证据时，不得声称合规或虚构规则号。
 
+### Bug Analysis 输出契约
+
+`QualityReviewer` 的 `bug-analysis` 报告必须在通用 Result Report 之后追加以下结构；字段无证据时写 `Unknown` 或 `Not confirmed`，不得删除：
+
+```md
+## Bug Analysis
+
+- Symptom: <用户可观察现象和原始错误；保留错误码/文本>
+- Expected / Actual: <预期行为 / 实际行为>
+- Environment and Revision: <产品形态、软件/固件、硬件、工具链、配置与版本>
+- Reproduction: <最小步骤、频率和是否已由 Agent 复现>
+- Failure Point: <报错文件:行、symbol、阶段或 log offset；说明它是否只是检测点>
+- Root Cause: <已确认的触发条件 → 缺陷机制 → 影响因果链；否则写 Not confirmed>
+- Affected Scope: <受影响路径、配置、版本、设备或用户>
+- Fix Recommendation: <最小修复方向；分析任务不直接修改>
+- Verification Plan: <能证明修复并防回归的检查>
+- Missing Information: <仍缺少的精确材料；无则写 None>
+
+### Evidence
+
+1. <file:line、命令/退出码、日志偏移、产物 ID 或版本事实>
+
+### Hypotheses
+
+| Rank | Hypothesis | Supporting Evidence | Counter-evidence / Alternative | Confidence | Smallest Validation |
+|---|---|---|---|---|---|
+| 1 | ... | ... | ... | HIGH/MEDIUM/LOW | ... |
+```
+
+Bug 分析规则：
+
+- 先理解错误，再验证原因；不得仅把异常消息改写成“根因”。
+- 必须区分 symptom、reporting/failure point、trigger 和 root-cause location。
+- 原因未确认时，`Root Cause` 写 `Not confirmed`，状态使用 `INSUFFICIENT_EVIDENCE`，并在 `Missing Information` 列出能推进判断的最小材料。
+- 只有可追踪证据建立完整因果链并排除主要替代解释时，才能确认根因。置信度不能替代证据。
+- 用户只要求分析时 `Allowed Changes` 为 `None`；修复建议不构成修改授权。
+
 ### 编排与写入所有权
 
 - `Orchestrator` 是唯一自动委派者，只读且不执行命令。
@@ -276,6 +313,43 @@ Every `QualityReviewer` finding uses:
 ```
 
 Evidence and Hypothesis must remain separate. MISRA is risk screening by default; without a configured standard version, deviation record, and actual tool evidence, do not claim compliance or invent rule numbers.
+
+### Bug Analysis Output Contract
+
+A `QualityReviewer` `bug-analysis` report appends the following structure after the general Result Report. Use `Unknown` or `Not confirmed` when evidence is absent; do not remove fields:
+
+```md
+## Bug Analysis
+
+- Symptom: <user-visible behavior and original error; preserve codes/text>
+- Expected / Actual: <expected behavior / actual behavior>
+- Environment and Revision: <product form, software/firmware, hardware, toolchain, configuration, and versions>
+- Reproduction: <minimum steps, frequency, and whether the Agent reproduced it>
+- Failure Point: <reporting file:line, symbol, phase, or log offset; state whether it is only the detection point>
+- Root Cause: <confirmed trigger → defect mechanism → impact causal chain; otherwise Not confirmed>
+- Affected Scope: <affected paths, configurations, versions, devices, or users>
+- Fix Recommendation: <smallest fix direction; analysis does not modify source>
+- Verification Plan: <checks that prove the fix and prevent regression>
+- Missing Information: <exact material still required; None when complete>
+
+### Evidence
+
+1. <file:line, command/exit code, log offset, artifact ID, or version fact>
+
+### Hypotheses
+
+| Rank | Hypothesis | Supporting Evidence | Counter-evidence / Alternative | Confidence | Smallest Validation |
+|---|---|---|---|---|---|
+| 1 | ... | ... | ... | HIGH/MEDIUM/LOW | ... |
+```
+
+Bug-analysis rules:
+
+- Understand the error before testing causes; never paraphrase an exception message as the root cause.
+- Distinguish symptom, reporting/failure point, trigger, and root-cause location.
+- When the cause is unconfirmed, write `Not confirmed` for `Root Cause`, use `INSUFFICIENT_EVIDENCE`, and list the minimum material that advances the decision under `Missing Information`.
+- Confirm root cause only when traceable evidence establishes the complete causal chain and excludes the main alternatives. Confidence does not replace evidence.
+- For analysis-only requests, `Allowed Changes` is `None`; a fix recommendation is not authorization to modify source.
 
 ### Orchestration and Write Ownership
 

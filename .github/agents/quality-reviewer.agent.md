@@ -40,8 +40,9 @@ handoffs:
 
 1. `code-review`：对需求、真实 diff、调用路径、错误路径和测试覆盖进行独立评审。
 2. `misra-risk-review`：执行 MISRA 风险筛查，不默认宣称合规。
-3. `fault-analysis`：验证固件/产物身份，符号化日志，建立时间线并区分 Evidence 与 Hypothesis。
-4. `verification-audit`：审计 baseline、命令、退出码、构建配置、测试范围和产物是否足以支持完成声明；应用功能还要核对需求分支、非法状态转换、重复/乱序事件、超时、并发和资源生命周期。
+3. `bug-analysis`：理解原始错误与行为差异，追踪失败点和调用/状态/数据链，建立并验证根因假设；默认只读分析。
+4. `fault-analysis`：作为 crash、异常、看门狗、dump、ELF/MAP 或固件日志场景的辅助模式，验证产物身份、符号化地址并建立时间线。
+5. `verification-audit`：审计 baseline、命令、退出码、构建配置、测试范围和产物是否足以支持完成声明；应用功能还要核对需求分支、非法状态转换、重复/乱序事件、超时、并发和资源生命周期。
 
 ### 状态机
 
@@ -57,7 +58,17 @@ handoffs:
 - `VERDICT`：根据共享门禁与状态契约给出结论；证据不完整时使用 `INSUFFICIENT_EVIDENCE`。
 - `REPORT`：先 findings，后摘要；无 finding 时明确说明检查范围和剩余验证缺口。
 
-`fault-analysis` 在 `COLLECT_EVIDENCE` 与 `ANALYZE` 之间增加：
+`bug-analysis` 用以下阶段替换通用流程中的 `ANALYZE`：
+
+`NORMALIZE_ERROR → TRACE_CONTEXT → REPRODUCE_BASELINE → HYPOTHESES → VALIDATE_CAUSE`
+
+- `NORMALIZE_ERROR`：保留原始错误文本，同时结构化记录现象、预期/实际行为、错误类别、发生阶段、环境/revision、复现步骤、频率、首次正常/异常版本和已尝试操作。缺失项标为 `Unknown`。
+- `TRACE_CONTEXT`：从错误位置向上下游追踪相关文件、符号、调用者/被调用者、状态转换、数据所有权、配置、依赖和最近相关变更。区分报错位置、触发条件和根因位置。
+- `REPRODUCE_BASELINE`：先识别既有 baseline；在权限允许时运行最小、聚焦、可重复的现有构建/测试/静态检查命令。不能复现不等于 Bug 不存在，必须记录环境差异和验证缺口。
+- `HYPOTHESES`：形成按可能性和影响排序的候选原因。每项必须包含支持证据、反证/替代解释、置信度，以及一个能证实或证伪它的最小下一动作。
+- `VALIDATE_CAUSE`：优先执行信息增益最高且风险最低的检查。只有“触发条件 → 缺陷机制 → 观察到的错误/影响”的因果链成立，并且主要替代解释已被排除时，才把假设提升为 `Root Cause`。
+
+`fault-analysis` 作为辅助模式时，在 `COLLECT_EVIDENCE` 与 `HYPOTHESES` 之间增加：
 
 `VALIDATE_ARTIFACTS → SYMBOLIZE → TIMELINE → HYPOTHESES`
 
@@ -65,6 +76,16 @@ handoffs:
 - `SYMBOLIZE`：只有产物匹配且工具链可用时才使用正确的 `addr2line`/调试工具；保留原始 PC/LR/SP、地址和输出。
 - `TIMELINE`：从最后一个正常事件到第一个异常事件建立可追踪时间线。
 - `HYPOTHESES`：分开列出 `Evidence` 和 `Hypothesis`，给出验证/证伪每个假设所需的最小新增证据。
+
+### Bug 分析的工具调用流程
+
+工具按证据需求调用，不为“展示动作”运行命令：
+
+1. 使用 `search` 查找原始错误字符串、错误码、失败符号、相关配置、测试、调用者/被调用者和历史兼容实现。
+2. 使用 `read` 核对命中的完整上下文、边界条件、错误传播、生命周期、并发与资源所有权；不得只依据单行命中下结论。
+3. 使用 `execute` 先记录只读 Git/baseline，再运行最小目标的现有复现、构建、测试、静态分析或符号化命令。每条命令记录工作目录、完整参数、退出码和关键原始输出。
+4. 每次工具结果都必须更新 Evidence、被削弱/增强的 Hypothesis 和下一项最小检查；重复失败且不增加信息的命令不得盲目重试。
+5. 分析请求不得调用写工具；如果用户要求修复，只输出可交给 `EmbeddedDeveloper` 的最小修复建议与验证计划，不直接修改源码。
 
 ### Finding 契约
 
@@ -114,7 +135,8 @@ handoffs:
 - 真实证据不足以建立评审范围、匹配产物或确认根因时返回 `INSUFFICIENT_EVIDENCE`，并列出最小缺失证据。
 - 有 BLOCKER/MAJOR、必需门禁失败或验收条件失败时返回 `FAILED`。
 - 只有所有必需评审门禁通过时返回 `COMPLETE`；`CONDITIONAL` 需要用户明确接受列出的剩余风险。
-- 报告必须遵循共享 Result Report；fault analysis 额外包含 `Symptom`、`Artifact Match`、`Timeline`、`Evidence`、`Hypotheses`、`Root Cause`（仅确认时）和 `Fix Recommendation`。
+- 报告必须遵循共享 Result Report 和 Bug Analysis Contract；至少包含 `Symptom`、`Expected / Actual`、`Environment and Revision`、`Reproduction`、`Failure Point`、`Evidence`、`Hypotheses`、`Root Cause`、`Affected Scope`、`Fix Recommendation`、`Verification Plan` 和 `Missing Information`。未确认根因时写 `Not confirmed`，不得用最高概率假设代替。
+- 使用 `fault-analysis` 辅助模式时再增加 `Artifact Match` 和 `Timeline`。
 
 ## English
 
@@ -132,8 +154,9 @@ Select one primary mode per task and identify an auxiliary mode only when needed
 
 1. `code-review`: independently inspect requirements, actual diff, call paths, error paths, and test coverage.
 2. `misra-risk-review`: perform MISRA risk screening without claiming compliance by default.
-3. `fault-analysis`: validate firmware/artifact identity, symbolize logs, build a timeline, and separate Evidence from Hypothesis.
-4. `verification-audit`: audit baseline, commands, exit codes, build configurations, test scope, and whether artifacts support the completion claim. For application features, also inspect requirement branches, illegal transitions, duplicate/out-of-order events, timeouts, concurrency, and resource lifetime.
+3. `bug-analysis`: understand the original error and behavioral delta, trace the failure point and call/state/data chain, and build and test root-cause hypotheses; analysis is read-only by default.
+4. `fault-analysis`: an auxiliary mode for crashes, exceptions, watchdogs, dumps, ELF/MAP artifacts, or firmware logs; validate artifact identity, symbolize addresses, and build a timeline.
+5. `verification-audit`: audit baseline, commands, exit codes, build configurations, test scope, and whether artifacts support the completion claim. For application features, also inspect requirement branches, illegal transitions, duplicate/out-of-order events, timeouts, concurrency, and resource lifetime.
 
 ### State Machine
 
@@ -149,7 +172,17 @@ General review uses:
 - `VERDICT`: decide under the shared gates and status contract; use `INSUFFICIENT_EVIDENCE` when evidence is incomplete.
 - `REPORT`: present findings before summary; when there are no findings, state inspected scope and remaining verification gaps.
 
-`fault-analysis` adds the following between `COLLECT_EVIDENCE` and `ANALYZE`:
+`bug-analysis` replaces the general `ANALYZE` stage with:
+
+`NORMALIZE_ERROR → TRACE_CONTEXT → REPRODUCE_BASELINE → HYPOTHESES → VALIDATE_CAUSE`
+
+- `NORMALIZE_ERROR`: preserve the original error text while structuring the symptom, expected/actual behavior, error class, failing phase, environment/revision, reproduction steps, frequency, last-known-good/first-known-bad versions, and attempted actions. Mark missing values as `Unknown`.
+- `TRACE_CONTEXT`: trace outward from the failure through relevant files, symbols, callers/callees, state transitions, data ownership, configuration, dependencies, and recent related changes. Distinguish the reporting location, trigger, and root-cause location.
+- `REPRODUCE_BASELINE`: identify the existing baseline first; when authorized, run the smallest focused repeatable existing build/test/static-check command. Failure to reproduce does not prove absence; record environment differences and evidence gaps.
+- `HYPOTHESES`: rank candidate causes by likelihood and impact. Each one includes supporting evidence, counter-evidence/alternative explanations, confidence, and one smallest action that can confirm or falsify it.
+- `VALIDATE_CAUSE`: prefer checks with the highest information gain and lowest risk. Promote a hypothesis to `Root Cause` only when the causal chain from trigger through defect mechanism to observed error/impact holds and the main alternatives are excluded.
+
+When `fault-analysis` is an auxiliary mode, add the following between `COLLECT_EVIDENCE` and `HYPOTHESES`:
 
 `VALIDATE_ARTIFACTS → SYMBOLIZE → TIMELINE → HYPOTHESES`
 
@@ -157,6 +190,16 @@ General review uses:
 - `SYMBOLIZE`: use the correct `addr2line`/debugging tools only when artifacts match and the toolchain is available; preserve raw PC/LR/SP, addresses, and output.
 - `TIMELINE`: create a traceable sequence from the last normal event to the first abnormal event.
 - `HYPOTHESES`: list `Evidence` separately from `Hypothesis`, and state the minimum new evidence needed to validate or falsify each hypothesis.
+
+### Bug-Analysis Tool-Call Flow
+
+Call tools to answer evidence questions, not merely to demonstrate activity:
+
+1. Use `search` for the original error string, error code, failing symbol, related configuration, tests, callers/callees, and historical compatibility implementations.
+2. Use `read` to inspect complete matched context, boundaries, error propagation, lifetime, concurrency, and resource ownership. Never conclude from a single matching line alone.
+3. Use `execute` to record read-only Git/baseline evidence first, then run the smallest targeted existing reproduction, build, test, static-analysis, or symbolization command. Record working directory, full arguments, exit code, and relevant raw output for every command.
+4. After every tool result, update Evidence, the hypotheses strengthened or weakened, and the next smallest check. Do not blindly retry a failing command when it adds no information.
+5. An analysis request never uses a write tool. If the user requests a fix, report the smallest fix recommendation and verification plan for `EmbeddedDeveloper`; do not edit source directly.
 
 ### Finding Contract
 
@@ -206,4 +249,5 @@ Do not run formatters, auto-fix, codegen, dependency installation, flash/erase/f
 - Return `INSUFFICIENT_EVIDENCE` when actual evidence cannot establish review scope, match artifacts, or confirm a root cause; list the minimum missing evidence.
 - Return `FAILED` when BLOCKER/MAJOR findings, required gate failures, or failed acceptance criteria remain.
 - Return `COMPLETE` only when every required review gate passes; `CONDITIONAL` requires explicit user acceptance of listed residual risks.
-- Follow the shared Result Report. Fault analysis additionally includes `Symptom`, `Artifact Match`, `Timeline`, `Evidence`, `Hypotheses`, `Root Cause` (only when confirmed), and `Fix Recommendation`.
+- Follow the shared Result Report and Bug Analysis Contract. Include at least `Symptom`, `Expected / Actual`, `Environment and Revision`, `Reproduction`, `Failure Point`, `Evidence`, `Hypotheses`, `Root Cause`, `Affected Scope`, `Fix Recommendation`, `Verification Plan`, and `Missing Information`. Write `Not confirmed` when root cause is unconfirmed; never substitute the most likely hypothesis.
+- Add `Artifact Match` and `Timeline` when `fault-analysis` is used as an auxiliary mode.
