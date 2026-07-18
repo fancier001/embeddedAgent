@@ -8,17 +8,18 @@
 
 ### 目的与适用范围
 
-本文档是 `Orchestrator`、`BugResolver`、`EmbeddedDeveloper`、`QualityReviewer`、`DocKeeper` 的共享输入、输出和安全契约。五个 Agent 开始工作前必须读取本文件与 `.github/embedded-project.yml`；角色文件只定义专属行为，不得降低本契约要求。
+本文档是 `Orchestrator`、`BugResolver`、`EmbeddedDeveloper`、`QualityReviewer`、`DocKeeper` 的共享输入、输出和安全契约。五个 Agent 开始工作前必须读取本文件与 `.github/embedded-project.yml`，并发现可选的 `.project/project.yml`；存在时加载当前任务路径适用的项目规则，缺失时按旧项目兼容流程继续。角色文件只定义专属行为，不得降低本契约要求。
 
 规则优先级如下：
 
 1. 用户在当前任务中的明确要求和授权。
 2. 目标仓库的真实代码、构建、CI、文档和硬件证据。
-3. `.github/embedded-project.yml` 中非 `auto` 的已确认配置。
-4. 对 `auto` 字段的只读探测结果。
-5. 仅用于空白工程的模板默认建议。
+3. 可选 `.project/project.yml` 注册且与当前任务路径匹配的项目规则。
+4. `.github/embedded-project.yml` 中非 `auto` 的已确认配置。
+5. 对 `auto` 字段的只读探测结果。
+6. 仅用于空白工程的模板默认建议。
 
-若画像与仓库事实冲突，报告“配置漂移”，不得静默选择一方或改写工程以迎合画像。
+Agent 使用 Task Brief 的 `Scope`、`Allowed Changes` 和当前真实 diff 匹配每条规则的 `applies_to`；适用且 `required: true` 的规则必须读取。若项目规则或画像与仓库事实冲突，报告“配置漂移”，不得静默选择一方或改写工程以迎合配置。
 
 ### Task Brief 输入契约
 
@@ -37,6 +38,7 @@
 - Verification Commands: <命令、工作目录、配置；未知时写 Discover safely>
 - Acceptance Criteria: <可以独立判断 PASS/FAIL 的条件>
 - Documentation Requirement: <None，或触发原因、受众、文档类型与路径>
+- Git Delivery: <none | commit | commit-and-push | auto>
 ```
 
 Task Brief 规则：
@@ -45,6 +47,7 @@ Task Brief 规则：
 - `Allowed Changes` 是写权限上限，不是建议范围。未列出的 tracked 文件不得修改。
 - `Forbidden Actions` 必须继承本契约安全边界；Task Brief 不能授权超出用户意图的高风险动作。
 - `Verification Commands` 中的 flash/HIL 配置只描述能力，不构成执行授权。
+- `Git Delivery` 只接受 `none`、`commit`、`commit-and-push`、`auto`；不接受 remote、URL、目标分支或 refspec。`none` 时不得 commit 或 push；`auto` 是本轮自动 commit+push 的明确授权，但 policy 不能替代该授权。
 - 缺少会改变 API、硬件值、数据格式或安全策略的输入时，执行者必须返回 `BLOCKED`。
 
 ### 产品形态契约
@@ -246,276 +249,172 @@ Bug 分析规则：
 - `BugResolver` 是 Bug 诊断与解决流程的专职编排者，可执行受限的只读诊断命令，但不直接修改文件；仅可按需调用 `EmbeddedDeveloper`、`QualityReviewer` 和 `DocKeeper`。
 - `EmbeddedDeveloper` 是唯一常规功能代码写入者，也负责相关测试和必要构建配置。
 - `QualityReviewer` 只做独立质量评估并只读源码；`execute` 仅用于只读 Git、非源码改写的构建/测试审计和静态分析，不负责 Bug 根因诊断或符号化。
-- `DocKeeper` 只可写 `docs/`、根 README、`.github/embedded-project.yml` 和明确授权的非行为性代码注释。
-- 任何工作树写入必须串行。无依赖只读评审可以并行；并行结果由 Orchestrator 去重并保留证据来源。
-- 自动 subagent 委派只用于各 manager 内部闭环；两个 manager 不得自动相互调用。frontmatter handoff 是 `send: false` 的人工流程切换，不得被描述为自动继续。
-- Developer/Reviewer 返工最多两轮；超过限制仍有 BLOCKER/MAJOR 或必需门失败，返回 `FAILED`。
+- `DocKeeper` 只可�]=�]��G����ƭy�lusion.
 
-仅在公共 API、架构、硬件假设、操作流程或已确认根因变化时触发 DocKeeper。文档必须完整双语，发布前不得保留同步占位标记。
+The standard Orchestrator delivery flow is:
 
-### 安全与证据边界
+```text
+INTAKE → PREFLIGHT → PLAN → IMPLEMENT → VERIFY → REVIEW
+                                              │
+                       up to two REWORK rounds ◀───┘
+                                              │
+                         DOCUMENT (as needed) → CLOSE
+```
 
-- 保护 dirty worktree，禁止破坏性 Git、覆盖无关改动、无关重构、静默安装依赖和未经授权的源码改写工具。
-- 未获得用户针对当前任务的明确授权，禁止 flash、erase、fuse、reset、板卡上电、HIL、连接/控制真实设备或其他物理硬件动作。画像中的命令永远不构成授权。
-- 不得虚构寄存器、地址、位值、引脚、时钟、时序、电气约束、revision、测试结果、标准规则号或来源。
-- 私有源码、客户数据、凭据、内部 URL 和未脱敏日志不得上传或放入 Web 查询。DocKeeper 的 Web 仅限官方公开资料。
-- `volatile` 只提供编译器可见性，不保证原子性、互斥或内存顺序；并发设计必须使用平台适用的同步机制。
-- 证据必须可追溯到文件/行、命令/退出码、日志偏移、产物 ID 或官方文档编号/revision/page。无法追溯的结论必须标为 assumption/hypothesis。
+Bug requests enter `BugResolver` through `/analyze-bug`, `/analyze-log`, direct selection, or Orchestrator's manual handoff; the two managers are never auto-nested. Its diagnostic path is `INTAKE → GUIDE_SYMPTOMS → CONFIRM_DIRECTION (when needed) → SCOPE → NORMALIZE_ERROR → IDENTIFY_PROBLEM → TRACE_CONTEXT → REPRODUCE_BASELINE → EVIDENCE_CHECK → AWAIT_EVIDENCE / HYPOTHESES → VALIDATE_CAUSE → DECIDE`. After the user explicitly authorizes a fix, it continues through `PLAN_FIX → IMPLEMENT → VERIFY → QUALITY_REVIEW → REWORK → DOCUMENT → CLOSE`.
+
+BugResolver first uses Usage Symptom Profile to understand the user's goal, actual operations, expected/actual behavior, frequency/boundaries, environment, impact, and recovery. When direction-changing symptoms are missing, it asks them together through one Usage Symptom Questions table with at most five questions in the first set and permits `Unknown`. It asks for direction confirmation only when symptoms indicate different modules/root-cause paths or conflict; it does not trace deeply or delegate Developer before confirmation, and proceeds directly when the scenario is clear. It then emits Problem Identification grounded in that Profile to separate the observed problem, category, suspected subsystem, severity, and evidence confidence.
+
+When critical evidence is missing, BugResolver searches the repository and finishes safe preliminary analysis before requesting the smallest logs, versions, configuration, or ELF/MAP/dump artifacts once through a separate Evidence Request table. Symptom questions and evidence requests never mix. Until evidence arrives, it neither confirms root cause, repeats the request, nor invokes Developer. Log analysis covers bare-metal, RTOS, module SDK, Embedded Linux, and hybrid systems while preserving original offsets and clock domains; it never invents a unified timeline without reliable timing evidence.
+
+Command evidence includes the exact command, exit code, and relevant output. An unexecuted check is `NOT_RUN`, not a pass.
+
+### Project Profile
+
+[`.github/embedded-project.yml`](.github/embedded-project.yml) is the entry point for project facts. After installation, confirm:
+
+- `product_form`, MCU/SoC, RTOS, toolchain, and C standard.
+- Source/driver/application/services/middleware/protocols/test/docs/vendor/generated paths; absent application path fields are equivalent to `auto`.
+- Host-side `commands.configure`, `commands.build`, `commands.test`, and `commands.static_analysis` commands.
+- Hardware commands isolated under `commands.hardware.flash`, `commands.hardware.erase`, `commands.hardware.fuse`, `commands.hardware.reset`, and `commands.hardware.hil`; they are disabled by default and require explicit approval.
+- ELF, MAP, log, and static-analysis report locations.
+- MISRA edition, deviation file, and hardware-document revision.
+
+Fields may remain `auto`, in which case agents discover them from the repository. Profile/repository conflicts are reported as configuration drift. See [Embedded Product Forms](docs/product-forms.md) for detailed review areas.
+
+### Project-Level Constraints
+
+The optional root [`.project/`](.project/README.md) directory is a sibling of `.github/` and stores target-project conventions, path policy, Git delivery policy, and extensions. Its absence returns `NOT_CONFIGURED` for legacy compatibility. When present, [`.project/project.yml`](.project/project.yml) registers rule files and `applies_to` globs under `rules`; agents load only matching rules, and the directory is validated strictly.
+
+`python .github/agent-kit/scripts/project_policy.py rules --root . --path <repo-relative-path>` deterministically emits applicable rules and Git policy. Repeat `--path` for multiple paths, or use `--all` for audit.
+
+The default [Git delivery policy](.project/git/delivery.yml) defines automation, scope, commit template/checks, and push branch/check rules, but cannot store a remote, URL, or target ref. Both `automation` switches default to off, and Task Brief `Git Delivery` accepts only `none`, `commit`, `commit-and-push`, or `auto`. The strict [commit template](.project/git/commit.template) is copied into the repository and has no runtime dependency on an external drive.
+
+Push preflight resolves the current branch, branch remote/merge, and one push URL only from this project's local `.git` config. Global/system config, environment, `.project`, and user text cannot override it. Missing upstream, detached HEAD, multiple push URLs, protected branches, out-of-scope paths, or fingerprint drift block delivery; the tool itself performs no commit or push.
+
+`Git Delivery: auto` decides only after the repair, tests, required checks, independent review, and required documentation pass. Missing required message metadata blocks for input; no diff means no delivery; any unmet automatic-upload prerequisite leaves Git unchanged and makes the agent output only the complete commit content. It explicitly stages, creates one commit, and pushes after fingerprint/SHA revalidation only when policy enables both commit and push, the index starts empty, changes exactly match the repair scope, HEAD equals the local upstream, and the target is safe and unique. A push failure keeps the local commit without automatic rollback.
+
+`extensions` may hold namespaced project-integration configuration, and `.project/` may contain other subdirectories and content, so project rules can grow without changing the five-agent structure.
+
+### Installation
+
+1. Place this kit at the target firmware repository root and merge `.github` rather than overwriting configuration. Install sibling `.project` only when project-level rules are wanted; legacy projects may omit it.
+2. Manually merge `.github/copilot-instructions.md` and preserve the target project's existing rules.
+3. Adjust `.github/embedded-project.yml`. Keep unknown values as `auto`; do not enter unconfirmed hardware facts.
+4. When using `.project`, adjust `project.yml`, applicable rules, and Git policy. Keep `automation.commit/push: false` until paths, branches, and checks are confirmed. Never add a remote, URL, or target branch to policy.
+5. Open the firmware repository root directly in VS Code and trust the workspace. Opening only its parent prevents automatic `.github` discovery.
+6. Enable GitHub Copilot Chat and confirm that custom agents, prompt files, Agent Skills, and `agent/runSubagent` are available. Recursive subagents are not required.
+7. Confirm in Chat Customizations/Diagnostics that all five agents, six prompts, and instructions load without errors, then run the Kit validator for `.project` references and Git policy.
+
+The `agents` allowlists in the Orchestrator and BugResolver frontmatter may depend on Experimental custom-agent/subagent support in the target VS Code and GitHub Copilot environment. This kit does not claim an unverified minimum version; run Customizations/Diagnostics in the actual target environment and perform both a general delegation smoke test and a bug-resolution delegation smoke test to confirm that the allowlists are honored.
+
+The repository intentionally has no overwriting installation script. Compare and merge directories during upgrades, especially the profile, `.project/` rules, global rules, and local prompt customizations.
+
+### Usage
+
+Recommended entry point:
+
+```text
+Select Orchestrator: Add an SPI driver for W25Q128, reusing the existing HAL and completing host build, tests, and independent review. Stop rather than guessing register values if a matching datasheet is unavailable.
+```
+
+Slash commands:
+
+- `/new-driver <driver_request>`: Orchestrator performs driver preflight, implementation, verification, and review.
+- `/implement-feature <feature_request>`: Orchestrator performs application behavior modeling, implementation, traceability, verification, and review.
+- `/analyze-bug <bug_input>`: BugResolver first guides and normalizes usage symptoms, confirms direction only when needed, then identifies the problem, traces code/configuration context, tests root-cause hypotheses, actively requests missing evidence as one set, and coordinates repair plus quality assessment when authorized.
+- `/analyze-log <log_input>`: even with logs supplied, BugResolver establishes usage context and direction before analyzing multi-product logs, event correlation, ELF/MAP artifacts, artifact identity, and the evidence timeline.
+- `/misra-review <review_target>`: QualityReviewer performs MISRA-oriented risk screening.
+- `/verify-change <change_target>`: Orchestrator audits baseline, build, tests, review, and documentation gates.
+
+Direct mode:
+
+- Implementation only: select `EmbeddedDeveloper` and provide the Goal, Scope, constraints, and acceptance criteria.
+- Bug/log analysis or resolution: select `BugResolver` and provide any available original error or log. The agent guides you to complete the real goal, steps, expected/actual behavior, frequency/boundaries, environment, and impact; once direction is clear, it identifies the problem, discovers local context, and asks once for the remaining minimum evidence. State whether changes are authorized when resolution is required.
+- Independent quality assessment only: select `QualityReviewer` and provide requirements, the real diff/files, and available build/test/static-analysis evidence.
+- Documentation only: select `DocKeeper` and provide confirmed source/API/test or root-cause evidence.
+- Automatic Git delivery: set Task Brief `Git Delivery` to only `none`, `commit`, `commit-and-push`, or `auto` and enable matching `.project` `automation`. The remote, URL, and target branch always come from this project's `.git`. Orchestrator delegates a separate delivery task to `EmbeddedDeveloper` only after gates and independent review. `auto` safely chooses between automatic commit-plus-push and outputting only the complete commit content; it never degrades to automatic commit-only.
+
+### Safety and Permissions
+
+- VS Code approval settings govern `execute` for BugResolver, EmbeddedDeveloper, and QualityReviewer. BugResolver runs only read-only diagnostics and symbolization; Reviewer runs only read-only Git, build/test audit, and static analysis.
+- Flash, erase, fuse, reset, HIL, device power, release, and external deployment always require explicit human authorization. A command's presence in the profile is not authorization.
+- A `.project` Git policy constrains work but is not authorization. Commit/push stages only explicit task paths; protected branches, force push, `push -u`, custom refspecs, and automatic `.git/config` changes are forbidden.
+- DocKeeper uses the web only for official or vendor public sources and never uploads private source, logs, customer data, or credentials.
+- Do not run write tasks concurrently in one checkout. Parallel writing may be considered only after one-task-per-worktree/branch isolation exists.
+- Agents do not replace human code review, hardware verification, functional-safety assessment, or formal MISRA compliance tools.
+- Skill scripts use exit code `0` for success, `2` for invalid input, `3` for insufficient evidence, and `4` for external-tool failure. `profile_gates.py` only plans/validates gate evidence and never executes profile commands; hardware never enters host gates.
+
+### Validate the Kit
+
+Install development dependencies and run static validation:
+
+```sh
+python -m pip install -r .github/agent-kit/requirements-dev.txt
+python .github/agent-kit/scripts/validate_customizations.py --root .
+python -m unittest discover -s .github/agent-kit/tests -p "test_*.py"
+```
+
+Build the host example:
+
+```sh
+cmake -S examples/minimal-firmware -B build/minimal-firmware
+cmake --build build/minimal-firmware
+ctest --test-dir build/minimal-firmware --output-on-failure
+```
+
+CI runs these checks on Windows and Ubuntu. Real interaction also requires the [VS Code Manual Smoke Test](docs/manual-smoke-test.md), covering discovery, project-constraint invocation, controlled Git delivery, automatic orchestration, missing documents, baseline failure, seeded-defect review, ELF mismatch, and hardware approval.
+
+### Layout
+
+```text
+.github/
+├── copilot-instructions.md
+├── embedded-project.yml
+├── agent-contracts.md
+├── agents/                  # exactly five agents
+├── agent-kit/               # kit self-check scripts, tests, fixtures, and dev dependencies
+├── instructions/            # C, bilingual, and kit configuration rules
+├── prompts/                 # six thin slash entries
+├── skills/                  # five on-demand workflows with deterministic scripts
+└── workflows/validate.yml
+.project/
+├── project.yml              # project constraint manifest and extension entry point
+├── README.md                # bilingual usage guide
+├── rules/                   # project-specific rules invoked by repository path
+└── git/
+    ├── delivery.yml         # automation, scope, safety, branch rules, and checks; no target
+    └── commit.template      # strict commit message template
+docs/                        # product forms and manual smoke test
+examples/minimal-firmware/   # CMake/CTest + fake HAL
+```
+
+### Bilingual Rules
+
+First-party Markdown in the README, `docs/`, `.github/`, and `.project/` uses:
+
+```md
+# <Document Title>
+
+> 中文：本文档采用固定双语结构。更新中文或英文内容时，必须同步更新另一部分，保持两部分语义一致。
+>
+> English: This document uses a fixed bilingual structure. When either the Chinese or English content is updated, the other section must be updated as well to keep both sections semantically aligned.
+
+## 中文 / Chinese
+
+<完整中文内容>
 
 ## English
 
-### Purpose and Scope
-
-This document is the shared input, output, and safety contract for `Orchestrator`, `BugResolver`, `EmbeddedDeveloper`, `QualityReviewer`, and `DocKeeper`. All five agents must read this file and `.github/embedded-project.yml` before work. Role files define specialist behavior and cannot weaken this contract.
-
-Rule precedence is:
-
-1. Explicit user requirements and authorization for the current task.
-2. Actual source, build, CI, documentation, and hardware evidence in the target repository.
-3. Confirmed non-`auto` values in `.github/embedded-project.yml`.
-4. Read-only discovery for `auto` fields.
-5. Template suggestions used only for an empty project.
-
-When the profile conflicts with repository truth, report “configuration drift”; never silently choose a side or rewrite the project to match the profile.
-
-### Task Brief Input Contract
-
-Every automatic delegation or manual handoff must produce a self-contained Task Brief. Write `Unknown` for missing values and state whether they block work; never depend on “above,” “same as before,” or conversation memory that was not handed over.
-
-```md
-## Task Brief
-
-- Goal: <one verifiable outcome>
-- Scope: <files, modules, and interfaces allowed for inspection or change>
-- Out of Scope: <explicitly excluded work>
-- Product Context: <product_form, MCU/SoC, RTOS, toolchain, firmware/hardware/document revision>
-- Inputs and Evidence: <requirements, issue, diff, logs, ELF/MAP, datasheet, baseline>
-- Allowed Changes: <writable paths and allowed change types; None for read-only tasks>
-- Forbidden Actions: <forbidden commands/paths, hardware actions, and data boundary>
-- Verification Commands: <commands, working directory, configuration; Discover safely when unknown>
-- Acceptance Criteria: <conditions that independently determine PASS/FAIL>
-- Documentation Requirement: <None, or trigger, audience, document type, and path>
+<Complete English content>
 ```
 
-Task Brief rules:
+Vendor, generated, third-party documentation, and license text are not automatically bilingualized. The release gate does not accept an unowned `TODO(sync)`.
 
-- `Goal` targets one deliverable outcome; split large work into ordered vertical slices.
-- `Allowed Changes` is the maximum write authority, not a suggested scope. Do not modify unlisted tracked files.
-- `Forbidden Actions` inherits this contract's safety boundary. A Task Brief cannot authorize high-risk action beyond user intent.
-- A configured flash/HIL command in `Verification Commands` describes capability and is not execution authorization.
-- If missing input would change an API, hardware value, data format, or safety policy, the worker must return `BLOCKED`.
+### Extension Principles
 
-### Product-Form Contract
-
-Configured `product_form` values are:
-
-- `bare-metal`: focus on MMIO, ISR, atomicity, timing, stack, startup/exception, and low-power flows.
-- `rtos`: focus on task/ISR boundaries, priority, synchronization, deadlock, priority inversion, heap, timeouts, and object lifetime.
-- `module-sdk`: focus on API/URC behavior, state machines, network lifecycle, reconnection, logging, and backward compatibility.
-- `embedded-linux`: focus on POSIX, threads/processes, cross-compilation, system interfaces, signals, file descriptors, and resource cleanup.
-- `hybrid`: combine all relevant checks and bind each evidence item/finding to an execution domain.
-
-Application features record states, events, timing, retry/cancellation, idempotency, recovery, and resource ownership under `Inputs and Evidence` or `Acceptance Criteria`, and include a requirement traceability matrix in result evidence. Every `covered` row must link implementation, tests, and evidence.
-
-The default template may use `auto` for an unconfigured value. Agents must discover it read-only from README, build/CI, dependencies, entry points, and neighboring modules, then report the inference and confidence. When it cannot be determined, request evidence rather than guessing.
-
-### Status Contract
-
-Task-level `Status` is one of:
-
-| Status | Meaning |
-|---|---|
-| `COMPLETE` | Every required acceptance criterion and gate has evidence and is `PASS`. |
-| `CONDITIONAL` | The user explicitly accepted the specific residual risks listed in the report; never use before acceptance. |
-| `BLOCKED` | A product decision, source, tool, permission, or hardware authorization is missing, so work cannot safely continue. |
-| `FAILED` | Executed verification failed, or BLOCKER/MAJOR/required gate failures remain after two rework rounds. |
-| `INSUFFICIENT_EVIDENCE` | Review and fault analysis only: evidence cannot establish scope, artifact match, a finding, or root cause. |
-
-Verification `Gate` is one of:
-
-| Gate Status | Meaning |
-|---|---|
-| `PASS` | Executed with reproducible evidence satisfying the condition. |
-| `FAIL` | Executed and proven not to satisfy the condition. |
-| `BLOCKED` | Could not execute because a source, tool, permission, or decision is missing. |
-| `NOT_RUN` | Not executed; the reason and impact are mandatory, and it never means pass. |
-
-A required `FAIL` gate makes the task `FAILED`; a required `BLOCKED` gate makes it `BLOCKED`. A required `NOT_RUN` gate prevents `COMPLETE`.
-
-### Result Report Output Contract
-
-Every agent final result uses this structure. Write `None` instead of removing an empty field:
-
-```md
-## Result Report
-
-- Status: COMPLETE | CONDITIONAL | BLOCKED | FAILED | INSUFFICIENT_EVIDENCE
-- Summary: <conclusion-first summary>
-- Files/APIs: <key files read or changed; new/changed interfaces>
-- Commands and Exit Codes: <working directory, full command, exit code; None when not run>
-- Evidence: <diff, tests, build, logs, artifact ID, official source revision/page>
-- Assumptions: <inference, confidence, and confirmation method>
-- Risks: <residual risk, impact, and owner>
-- Next Steps: <smallest next action; may be None when complete>
-
-| Quality Gate | Result | Evidence / Reason |
-|---|---|---|
-| Scope/Acceptance | PASS/FAIL/BLOCKED/NOT_RUN | ... |
-| Build | PASS/FAIL/BLOCKED/NOT_RUN | ... |
-| Tests | PASS/FAIL/BLOCKED/NOT_RUN | ... |
-| Static Analysis | PASS/FAIL/BLOCKED/NOT_RUN | ... |
-| Independent Review | PASS/FAIL/BLOCKED/NOT_RUN | ... |
-| Documentation | PASS/FAIL/BLOCKED/NOT_RUN | ... |
-| Hardware Evidence | PASS/FAIL/BLOCKED/NOT_RUN | ... |
-```
-
-Include only task-relevant evidence, but do not omit gate rows. Use `NOT_RUN` with `Not required: <reason>` for an inapplicable gate. Command evidence includes exit codes; build artifacts should include path, version/build ID, and configuration when available.
-
-### Review Finding Contract
-
-Every `QualityReviewer` finding uses:
-
-```md
-### <Severity>: <short title>
-
-- Dimension: Spec | Standards | Spec, Standards
-- Location: <file:line, symbol, or log offset>
-- Evidence: <reproducible fact>
-- Rationale: <trigger, failure mechanism, and impact>
-- Recommendation: <smallest fix or next evidence>
-- Confidence: HIGH | MEDIUM | LOW
-```
-
-Evidence and Hypothesis must remain separate. MISRA is risk screening by default; without a configured standard version, deviation record, and actual tool evidence, do not claim compliance or invent rule numbers.
-
-### Usage Symptom Guidance Output Contract
-
-Before problem identification or root-cause analysis, `BugResolver` normalizes how the user operated the product, what they did, and what they observed. When direction-changing symptoms are missing, guide the user with one consolidated table containing at most five questions in the first set:
-
-```md
-## Usage Symptom Questions
-
-| Priority | Question | Why It Matters | Example Answer |
-|---|---|---|---|
-| REQUIRED_FOR_DIRECTION/HELPFUL | ... | ... | ... |
-```
-
-Prioritize user goal/real scenario; operation sequence from normal state to failure; expected versus actual behavior; frequency/pattern/trigger window/boundaries; and software/firmware/hardware revisions, last-known-good/first-known-bad, impact, and recovery. Ask only high-information questions not already answered by the current input, and never repeat questions for complete input. The user may answer `Unknown`; non-critical unknowns do not block analysis. Allow at most one non-repeating follow-up set, and only when answers create a new contradiction or direction ambiguity.
-
-Maintain this normalized result for every analysis, using `Unknown` for unavailable fields:
-
-```md
-## Usage Symptom Profile
-
-- User Goal / Scenario: <user goal and real usage scenario>
-- Operation Sequence: <operations and events from normal state to failure>
-- Expected Behavior: <behavior defined by the user or requirement>
-- Actual Behavior: <observable behavior and original error>
-- Frequency / Pattern: <frequency, pattern, duration, and trigger window>
-- Preconditions / Boundary Conditions: <prior state, load, network, power, timing, and boundary values>
-- Environment / Revision: <software, firmware, hardware, configuration, and toolchain revisions>
-- Last Known Good / First Known Bad: <last good and first bad version or time>
-- Impact / Scope: <affected devices, users, functions, and observed impact>
-- Recovery / Workaround: <automatic/manual recovery and known workaround>
-- Direction Confirmation: CONFIRMED | NOT_REQUIRED | PENDING
-```
-
-When symptoms could indicate two or more modules or root-cause paths, expected versus actual behavior is unclear, or inputs conflict, set direction to `PENDING`, emit one `Current Understanding`, list concrete `Possible Directions`, and ask the user to confirm or correct them. Do not begin deep call-path tracing, confirm root cause, or delegate Developer before confirmation. Use `NOT_REQUIRED` and continue directly when direction is clear; use `CONFIRMED` after user confirmation.
-
-`Usage Symptom Questions` collects usage symptoms only. Request logs, version manifests, configuration, ELF/MAP, dumps, and other material only through `Evidence Request`; never mix the two request types.
-
-### Problem Identification Output Contract
-
-`BugResolver` emits the following structure after the Usage Symptom Profile direction is `CONFIRMED` or `NOT_REQUIRED` and before Bug Analysis. Use `Unknown` for missing fields and never fill them with assumptions:
-
-```md
-## Problem Identification
-
-- Usage Symptom Basis: <reference confirmed facts from the Usage Symptom Profile that support this direction>
-- Problem Statement: <one-sentence definition based only on observed facts>
-- Category: functional/state-machine | crash/exception | memory | concurrency/timing | resource | hardware/I/O | protocol/network | configuration/build/version | performance/power | other/unknown
-- Suspected Subsystem: <affected module or execution domain; Unknown when unavailable>
-- Observed Severity: BLOCKER | MAJOR | MINOR | UNKNOWN
-- Trigger / Conditions: <observed trigger; do not insert an unverified cause>
-- Reproducibility: <steps, frequency, and whether the Agent reproduced it>
-- Affected Scope: <devices, versions, configurations, modules, or users>
-- Evidence Confidence: HIGH | MEDIUM | LOW
-```
-
-`Observed Severity` describes observed impact only and does not imply root-cause certainty. Keep facts, inferences, and unknowns separate. Category or subsystem may change with new evidence, but the report must state why. `Usage Symptom Basis` must agree with a Profile whose direction is confirmed or does not require confirmation; never replace user-observed usage symptoms with speculation from a log.
-
-### Evidence Request Output Contract
-
-The Agent may request user material only after searching the repository and existing artifacts. Consolidate every request in one table:
-
-```md
-## Evidence Request
-
-| Priority | Material | Why Needed | Accepted Form | Privacy/Redaction | Blocking Decision |
-|---|---|---|---|---|---|
-| REQUIRED_NOW/HELPFUL | ... | ... | pasted excerpt/path/file/version | ... | ... |
-```
-
-- `REQUIRED_NOW`: without the material, problem classification, critical hypothesis discrimination, artifact matching, or a repair decision cannot continue; pause root-cause confirmation and Developer delegation.
-- `HELPFUL`: the material only improves confidence and must not block safe analysis already supported by evidence.
-- Never re-request material already supplied by the user or discoverable in the repository. After new evidence arrives, repeat the evidence check before hypothesis validation.
-- If interaction cannot continue or the user cannot supply critical material, return `INSUFFICIENT_EVIDENCE` and retain this table. Use `BLOCKED` for a missing product decision, authority, or required hardware source.
-
-### Bug Analysis Output Contract
-
-A `BugResolver` `bug-analysis` report appends the following structure after the general Result Report. Use `Unknown` or `Not confirmed` when evidence is absent; do not remove fields:
-
-```md
-## Bug Analysis
-
-- Symptom: <user-visible behavior and original error; preserve codes/text>
-- Expected / Actual: <expected behavior / actual behavior>
-- Environment and Revision: <product form, software/firmware, hardware, toolchain, configuration, and versions>
-- Reproduction: <minimum steps, frequency, and whether the Agent reproduced it>
-- Failure Point: <reporting file:line, symbol, phase, or log offset; state whether it is only the detection point>
-- Root Cause: <confirmed trigger → defect mechanism → impact causal chain; otherwise Not confirmed>
-- Affected Scope: <affected paths, configurations, versions, devices, or users>
-- Fix Recommendation: <smallest fix direction; analysis does not modify source>
-- Verification Plan: <checks that prove the fix and prevent regression>
-- Missing Information: <exact material still required; None when complete>
-
-### Evidence
-
-1. <file:line, command/exit code, log offset, artifact ID, or version fact>
-
-### Hypotheses
-
-| Rank | Hypothesis | Supporting Evidence | Counter-evidence / Alternative | Confidence | Smallest Validation |
-|---|---|---|---|---|---|
-| 1 | ... | ... | ... | HIGH/MEDIUM/LOW | ... |
-```
-
-Bug-analysis rules:
-
-- Understand the error before testing causes; never paraphrase an exception message as the root cause.
-- Distinguish symptom, reporting/failure point, trigger, and root-cause location.
-- When the cause is unconfirmed, write `Not confirmed` for `Root Cause`, use `INSUFFICIENT_EVIDENCE`, and list the minimum material that advances the decision under `Missing Information`.
-- Confirm root cause only when traceable evidence establishes the complete causal chain and excludes the main alternatives. Confidence does not replace evidence.
-- For analysis-only requests, `Allowed Changes` is `None`; a fix recommendation is not authorization to modify source.
-
-### Orchestration and Write Ownership
-
-- `Orchestrator` is the default general-delivery entry point; it is read-only and does not execute commands. Bug requests transition to `BugResolver` through a manual handoff or dedicated prompt, never nested manager auto-invocation.
-- `BugResolver` is the dedicated orchestrator for bug diagnosis and resolution. It may run restricted read-only diagnostic commands but never edits files directly; it may invoke only `EmbeddedDeveloper`, `QualityReviewer`, and `DocKeeper` as needed.
-- `EmbeddedDeveloper` is the only routine functional-code writer and owns related tests and necessary build configuration.
-- `QualityReviewer` performs independent quality assessment only and reads source without editing it. Its `execute` access is restricted to read-only Git, non-source-rewriting build/test audit, and static analysis; it does not diagnose bug root causes or symbolize faults.
-- `DocKeeper` may write only `docs/`, the root README, `.github/embedded-project.yml`, and explicitly authorized non-behavioral code comments.
-- Serialize every working-tree write. Independent read-only reviews may run in parallel; Orchestrator deduplicates results while preserving evidence provenance.
-- Automatic subagent delegation drives the internal loop of each manager; the two managers must not auto-invoke each other. A frontmatter handoff is a manual `send: false` workflow transition and must not be described as automatic continuation.
-- Allow at most two Developer/Reviewer rework rounds. Return `FAILED` if BLOCKER/MAJOR findings or required gate failures remain.
-
-Invoke DocKeeper only when a public API, architecture, hardware assumption, operating procedure, or confirmed root cause changed. Documentation must be fully bilingual and contain no synchronization placeholder at release.
-
-### Safety and Evidence Boundary
-
-- Preserve the dirty worktree. No destructive Git, unrelated overwrite/refactor, silent dependency installation, or unauthorized source-rewriting tools.
-- Without explicit user authorization for the current task, do not flash, erase, fuse, reset, power a board, run HIL, connect/control a physical device, or perform other physical-hardware actions. Commands in the profile never constitute authorization.
-- Never fabricate registers, addresses, bit values, pins, clocks, timing, electrical constraints, revisions, test results, standards rule numbers, or sources.
-- Never upload or place private source, customer data, credentials, internal URLs, or unsanitized logs in Web queries. DocKeeper Web access is restricted to public official sources.
-- `volatile` provides compiler visibility only and does not guarantee atomicity, mutual exclusion, or memory ordering; concurrency design requires platform-appropriate synchronization.
-- Evidence must trace to a file/line, command/exit code, log offset, artifact ID, or official document identifier/revision/page. Anything untraceable must be labeled as an assumption or hypothesis.
+- Do not add a sixth agent casually for a new workflow; extend an existing role mode or add an on-demand skill first.
+- Prompts provide manual entry and agent routing; complex checklists, templates, and scripts belong in skills.
+- Maintain shared rules once and link them from agents and skills to avoid repeated context.
+- Put project-specific rules under `.project/` and register them through the manifest. Use namespaced `extensions` for other structured integrations; preserve unknown extensions without executing them automatically.
+- The kit fully supports VS Code only. GitHub cloud/CLI may ignore handoffs or VS Code-specific allowlists and are outside v1 acceptance.
