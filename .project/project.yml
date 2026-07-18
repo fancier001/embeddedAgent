@@ -1,0 +1,28 @@
+# Project policy manifest / 项目策略清单
+# All referenced paths are relative to .project. applies_to values are
+# repository-root-relative globs.
+schema_version: 1
+
+project:
+  primary: auto
+  aliases: []
+
+rules:
+  - id: repository-path-policy
+    path: rules/path-policy.md
+    applies_to:
+      - "**"
+    required: true
+  - id: embedded-c-conventions
+    path: rules/coding-conventions.md
+    applies_to:
+      - "**/*.c"
+      - "**/*.h"
+      - "**/CMakeLists.txt"
+    required: true
+
+git_policy: git/delivery.yml
+
+# Namespaced integrations may add data here. Core agents preserve unknown
+# extensions but do not execute them.
+extensions: {}

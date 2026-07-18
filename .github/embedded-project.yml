@@ -3,7 +3,7 @@
 # 只填写已确认值。未知值保留为 "auto"，由 Agent 只读探测工程事实。
 
 schema_version: 1
-kit_version: "1.1.0"
+kit_version: "1.2.0"
 
 # Configured values: bare-metal, rtos, module-sdk, embedded-linux, hybrid.
 # "auto" means not configured yet and requires read-only discovery.

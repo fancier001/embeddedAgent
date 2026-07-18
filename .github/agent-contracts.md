@@ -8,17 +8,18 @@
 
 ### 目的与适用范围
 
-本文档是 `Orchestrator`、`BugResolver`、`EmbeddedDeveloper`、`QualityReviewer`、`DocKeeper` 的共享输入、输出和安全契约。五个 Agent 开始工作前必须读取本文件与 `.github/embedded-project.yml`；角色文件只定义专属行为，不得降低本契约要求。
+本文档是 `Orchestrator`、`BugResolver`、`EmbeddedDeveloper`、`QualityReviewer`、`DocKeeper` 的共享输入、输出和安全契约。五个 Agent 开始工作前必须读取本文件与 `.github/embedded-project.yml`，并发现可选的 `.project/project.yml`；存在时加载当前任务路径适用的项目规则，缺失时按旧项目兼容流程继续。角色文件只定义专属行为，不得降低本契约要求。
 
 规则优先级如下：
 
 1. 用户在当前任务中的明确要求和授权。
 2. 目标仓库的真实代码、构建、CI、文档和硬件证据。
-3. `.github/embedded-project.yml` 中非 `auto` 的已确认配置。
-4. 对 `auto` 字段的只读探测结果。
-5. 仅用于空白工程的模板默认建议。
+3. 可选 `.project/project.yml` 注册且与当前任务路径匹配的项目规则。
+4. `.github/embedded-project.yml` 中非 `auto` 的已确认配置。
+5. 对 `auto` 字段的只读探测结果。
+6. 仅用于空白工程的模板默认建议。
 
-若画像与仓库事实冲突，报告“配置漂移”，不得静默选择一方或改写工程以迎合画像。
+Agent 使用 Task Brief 的 `Scope`、`Allowed Changes` 和当前真实 diff 匹配每条规则的 `applies_to`；适用且 `required: true` 的规则必须读取。若项目规则或画像与仓库事实冲突，报告“配置漂移”，不得静默选择一方或改写工程以迎合配置。
 
 ### Task Brief 输入契约
 
@@ -37,6 +38,7 @@
 - Verification Commands: <命令、工作目录、配置；未知时写 Discover safely>
 - Acceptance Criteria: <可以独立判断 PASS/FAIL 的条件>
 - Documentation Requirement: <None，或触发原因、受众、文档类型与路径>
+- Git Delivery: <none | commit | commit-and-push | auto>
 ```
 
 Task Brief 规则：
@@ -45,6 +47,7 @@ Task Brief 规则：
 - `Allowed Changes` 是写权限上限，不是建议范围。未列出的 tracked 文件不得修改。
 - `Forbidden Actions` 必须继承本契约安全边界；Task Brief 不能授权超出用户意图的高风险动作。
 - `Verification Commands` 中的 flash/HIL 配置只描述能力，不构成执行授权。
+- `Git Delivery` 只接受 `none`、`commit`、`commit-and-push`、`auto`；不接受 remote、URL、目标分支或 refspec。`none` 时不得 commit 或 push；`auto` 是本轮自动 commit+push 的明确授权，但 policy 不能替代该授权。
 - 缺少会改变 API、硬件值、数据格式或安全策略的输入时，执行者必须返回 `BLOCKED`。
 
 ### 产品形态契约
@@ -246,12 +249,28 @@ Bug 分析规则：
 - `BugResolver` 是 Bug 诊断与解决流程的专职编排者，可执行受限的只读诊断命令，但不直接修改文件；仅可按需调用 `EmbeddedDeveloper`、`QualityReviewer` 和 `DocKeeper`。
 - `EmbeddedDeveloper` 是唯一常规功能代码写入者，也负责相关测试和必要构建配置。
 - `QualityReviewer` 只做独立质量评估并只读源码；`execute` 仅用于只读 Git、非源码改写的构建/测试审计和静态分析，不负责 Bug 根因诊断或符号化。
-- `DocKeeper` 只可写 `docs/`、根 README、`.github/embedded-project.yml` 和明确授权的非行为性代码注释。
+- `DocKeeper` 只可写 `docs/`、根 README、`.github/embedded-project.yml`、Task Brief 明确授权的 `.project/` 项目规范和明确授权的非行为性代码注释。
 - 任何工作树写入必须串行。无依赖只读评审可以并行；并行结果由 Orchestrator 去重并保留证据来源。
 - 自动 subagent 委派只用于各 manager 内部闭环；两个 manager 不得自动相互调用。frontmatter handoff 是 `send: false` 的人工流程切换，不得被描述为自动继续。
 - Developer/Reviewer 返工最多两轮；超过限制仍有 BLOCKER/MAJOR 或必需门失败，返回 `FAILED`。
 
 仅在公共 API、架构、硬件假设、操作流程或已确认根因变化时触发 DocKeeper。文档必须完整双语，发布前不得保留同步占位标记。
+
+### Git 交付契约
+
+- 只有 `EmbeddedDeveloper` 可执行常规 commit/push；必须在实现、验证和独立评审完成后使用单独的交付 Task Brief。`Orchestrator` 只编排和核对结果。
+- 执行前读取 `.project/project.yml` 指向的 `.project/git/delivery.yml`。对应 `automation.commit`/`automation.push` 必须为 `true`，且 `Git Delivery` 必须授权当前操作；push 授权包含 commit，不反向隐含。
+- `Git Delivery: auto` 只在修复、测试、必需检查、独立评审和必要文档均为 `PASS` 后进入 `AUTO_DECIDE`。完整 commit 消息必须先由仓库模板生成并严格校验；缺少 Project、Jira、RN、测试说明或其他必填 metadata 时返回 `BLOCKED` 请求补充，禁止保留占位符。
+- `project_policy.py git-plan --operation auto --delivery auto` 只读返回 `AUTO_COMMIT_AND_PUSH`、`OUTPUT_COMMIT_MESSAGE` 或无有效 diff 时的 `NO_DELIVERY`。消息文件必须位于仓库外的操作系统临时目录，不能成为工作树变更。
+- `OUTPUT_COMMIT_MESSAGE` 不得运行 `git add`、`git commit` 或 `git push`；面向用户的交付输出只包含已校验的完整 commit 内容，不附加路径、push 目标或未满足条件的诊断。`AUTO_COMMIT_AND_PUSH` 才允许继续写入，且不提供“仅自动 commit”的降级路径。
+- 若当前任务修改 Git policy，只能用任务开始时的已提交 policy 判断本轮交付；未提交的放宽配置从后续任务生效，不能自我授权同一任务的 commit/push。
+- 使用 `project_policy.py git-plan` 做只读预检；暂存前检查 `git status` 与真实 diff，只显式暂存本任务文件。每个路径必须匹配 `scope.allowed_paths` 且不匹配 `scope.denied_paths`；禁止全仓库暂存。
+- 提交消息从 `.project/git/commit.template` 生成，并通过 `project_policy.py message` 严格校验。Agent 参与代码、检查、重构、测试或文档时必须如实填写 AI 字段。所有 `commit.checks` 与必需质量门通过后才可提交；不得使用 `--no-verify`。
+- push 的当前分支、remote alias、push URL 和目标远端 ref 只能由 `project_policy.py git-plan` 从当前仓库 `.git` 的 local config 解析；Task Brief、`.project`、全局 Git config、环境变量和命令参数均不得覆盖。push 前再次带 fingerprint 预检，配置漂移时停止。
+- `AUTO_COMMIT_AND_PUSH` 必须从初始空 index 开始，且 HEAD 与本地 upstream tracking ref 完全一致、没有既有 incoming/outgoing commit、全部工作树变更正好等于本次修复路径。显式暂存后复查 staged diff，创建一个新 commit，记录完整 SHA，再以首次 fingerprint 和 `--expected-commit <SHA>` 运行第二次 push 预检；outgoing commits 必须只有该 SHA。
+- 实际 push 在与预检相同的 local-only、禁用 global/system/env config 注入的 Git 环境中，仅使用预检结果执行 `git -C <root> push <resolved-remote> HEAD:<resolved-remote-ref>`。禁止 `push -u`、force push、删除远端分支、自定义 refspec 和修改 `.git/config`。
+- auto 模式在任何 Git 写入前条件不满足时选择 `OUTPUT_COMMIT_MESSAGE` 并保持 Git 不变。commit 成功后若第二次预检或 push 失败，保留本地 commit，不自动回滚；报告完整 commit 内容、SHA 和失败事实。
+- policy 或模板缺失/无效、路径/分支不匹配、dirty worktree 无法隔离、upstream/remote 目标不明确、检查失败时返回 `BLOCKED`。不得自行放宽策略后继续交付。
 
 ### 安全与证据边界
 
@@ -266,17 +285,18 @@ Bug 分析规则：
 
 ### Purpose and Scope
 
-This document is the shared input, output, and safety contract for `Orchestrator`, `BugResolver`, `EmbeddedDeveloper`, `QualityReviewer`, and `DocKeeper`. All five agents must read this file and `.github/embedded-project.yml` before work. Role files define specialist behavior and cannot weaken this contract.
+This document is the shared input, output, and safety contract for `Orchestrator`, `BugResolver`, `EmbeddedDeveloper`, `QualityReviewer`, and `DocKeeper`. All five agents must read this file and `.github/embedded-project.yml`, then discover optional `.project/project.yml`. Load applicable project rules when it exists; continue in legacy-compatible mode when it does not. Role files define specialist behavior and cannot weaken this contract.
 
 Rule precedence is:
 
 1. Explicit user requirements and authorization for the current task.
 2. Actual source, build, CI, documentation, and hardware evidence in the target repository.
-3. Confirmed non-`auto` values in `.github/embedded-project.yml`.
-4. Read-only discovery for `auto` fields.
-5. Template suggestions used only for an empty project.
+3. Project rules registered by optional `.project/project.yml` and matching current task paths.
+4. Confirmed non-`auto` values in `.github/embedded-project.yml`.
+5. Read-only discovery for `auto` fields.
+6. Template suggestions used only for an empty project.
 
-When the profile conflicts with repository truth, report “configuration drift”; never silently choose a side or rewrite the project to match the profile.
+Agents match each rule's `applies_to` against the Task Brief `Scope`, `Allowed Changes`, and actual diff; they must read every applicable rule with `required: true`. When a project rule or profile conflicts with repository truth, report “configuration drift”; never silently choose a side or rewrite the project to match configuration.
 
 ### Task Brief Input Contract
 
@@ -295,6 +315,7 @@ Every automatic delegation or manual handoff must produce a self-contained Task 
 - Verification Commands: <commands, working directory, configuration; Discover safely when unknown>
 - Acceptance Criteria: <conditions that independently determine PASS/FAIL>
 - Documentation Requirement: <None, or trigger, audience, document type, and path>
+- Git Delivery: <none | commit | commit-and-push | auto>
 ```
 
 Task Brief rules:
@@ -303,6 +324,7 @@ Task Brief rules:
 - `Allowed Changes` is the maximum write authority, not a suggested scope. Do not modify unlisted tracked files.
 - `Forbidden Actions` inherits this contract's safety boundary. A Task Brief cannot authorize high-risk action beyond user intent.
 - A configured flash/HIL command in `Verification Commands` describes capability and is not execution authorization.
+- `Git Delivery` accepts only `none`, `commit`, `commit-and-push`, or `auto`; it never accepts a remote, URL, target branch, or refspec. Do not commit or push for `none`. `auto` is explicit authorization for automatic commit plus push in this run, but policy never replaces that authorization.
 - If missing input would change an API, hardware value, data format, or safety policy, the worker must return `BLOCKED`.
 
 ### Product-Form Contract
@@ -504,12 +526,28 @@ Bug-analysis rules:
 - `BugResolver` is the dedicated orchestrator for bug diagnosis and resolution. It may run restricted read-only diagnostic commands but never edits files directly; it may invoke only `EmbeddedDeveloper`, `QualityReviewer`, and `DocKeeper` as needed.
 - `EmbeddedDeveloper` is the only routine functional-code writer and owns related tests and necessary build configuration.
 - `QualityReviewer` performs independent quality assessment only and reads source without editing it. Its `execute` access is restricted to read-only Git, non-source-rewriting build/test audit, and static analysis; it does not diagnose bug root causes or symbolize faults.
-- `DocKeeper` may write only `docs/`, the root README, `.github/embedded-project.yml`, and explicitly authorized non-behavioral code comments.
+- `DocKeeper` may write only `docs/`, the root README, `.github/embedded-project.yml`, Task-Brief-authorized project rules under `.project/`, and explicitly authorized non-behavioral code comments.
 - Serialize every working-tree write. Independent read-only reviews may run in parallel; Orchestrator deduplicates results while preserving evidence provenance.
 - Automatic subagent delegation drives the internal loop of each manager; the two managers must not auto-invoke each other. A frontmatter handoff is a manual `send: false` workflow transition and must not be described as automatic continuation.
 - Allow at most two Developer/Reviewer rework rounds. Return `FAILED` if BLOCKER/MAJOR findings or required gate failures remain.
 
 Invoke DocKeeper only when a public API, architecture, hardware assumption, operating procedure, or confirmed root cause changed. Documentation must be fully bilingual and contain no synchronization placeholder at release.
+
+### Git Delivery Contract
+
+- Only `EmbeddedDeveloper` performs routine commit/push operations, using a separate delivery Task Brief after implementation, verification, and independent review complete. `Orchestrator` only coordinates and checks the result.
+- Before delivery, read `.project/git/delivery.yml` through `.project/project.yml`. The matching `automation.commit`/`automation.push` value must be `true`, and `Git Delivery` must authorize the operation; push authorization includes commit, not conversely.
+- Enter `AUTO_DECIDE` for `Git Delivery: auto` only after the repair, tests, required checks, independent review, and required documentation are all `PASS`. First generate the complete commit message from the repository template and validate it strictly. Missing Project, Jira, RN, test notes, or other required metadata returns `BLOCKED` for input; never leave placeholders.
+- Read-only `project_policy.py git-plan --operation auto --delivery auto` returns `AUTO_COMMIT_AND_PUSH`, `OUTPUT_COMMIT_MESSAGE`, or `NO_DELIVERY` when there is no effective diff. Store the message file in an operating-system temporary directory outside the repository so it cannot become a worktree change.
+- `OUTPUT_COMMIT_MESSAGE` runs no `git add`, `git commit`, or `git push`. Its user-facing delivery output contains only the complete validated commit content, without paths, push target, or failed-condition diagnostics. Only `AUTO_COMMIT_AND_PUSH` permits writes, and there is no automatic commit-only fallback.
+- If the current task changes Git policy, evaluate delivery against the committed policy present at task start. An uncommitted relaxation takes effect only for a later task and cannot self-authorize commit/push in the same task.
+- Use `project_policy.py git-plan` for read-only preflight. Inspect `git status` and the actual diff, stage only explicit task files, require every path to match `scope.allowed_paths` and no path to match `scope.denied_paths`, and never stage repository-wide.
+- Generate the message from `.project/git/commit.template` and strictly validate it with `project_policy.py message`. When an agent participated in code, inspection, refactoring, tests, or documentation, disclose that in the AI fields. Run every `commit.checks` entry and required quality gate; never bypass hooks with `--no-verify`.
+- Resolve the current branch, remote alias, push URL, and target remote ref only from this repository's local `.git` config through `project_policy.py git-plan`. Task Briefs, `.project`, global Git config, environment variables, and command arguments cannot override them. Repeat preflight with the fingerprint immediately before push and stop on drift.
+- `AUTO_COMMIT_AND_PUSH` requires an initially empty index, HEAD exactly equal to the local upstream tracking ref, no existing incoming/outgoing commit, and a worktree change set exactly equal to the repair paths. Reinspect the staged diff after explicit staging, create one new commit, record its full SHA, then run the second push preflight with the first fingerprint and `--expected-commit <SHA>`; outgoing commits must contain only that SHA.
+- In the same local-only Git environment used by preflight, with global/system/environment config injection disabled, the only permitted push form is `git -C <root> push <resolved-remote> HEAD:<resolved-remote-ref>`. Never use `push -u`, force push, remote deletion, custom refspecs, or `.git/config` mutation.
+- Before any Git write, an unmet auto-upload condition selects `OUTPUT_COMMIT_MESSAGE` and leaves Git unchanged. If commit succeeds but the second preflight or push fails, keep the local commit without rollback and report the complete message, SHA, and failure fact.
+- Return `BLOCKED` for missing/invalid policy or template, path/branch mismatch, unisolatable dirty worktree, ambiguous upstream/remote target, or failed checks. Never loosen policy merely to continue delivery.
 
 ### Safety and Evidence Boundary
 

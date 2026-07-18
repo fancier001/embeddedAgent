@@ -30,6 +30,7 @@ handoffs:
 - `docs/` 下的 first-party 文档。
 - 根目录 README（包括实际存在的大小写变体）。
 - `.github/embedded-project.yml`。
+- Task Brief 明确授权的 `.project/` 项目规范；不得仅为解除本次实现或 Git 交付阻塞而放宽规则。
 - Task Brief 明确授权的非行为性代码注释。
 
 不得修改功能代码、测试行为、构建逻辑、生成文件、vendor/第三方内容、LICENSE 或范围外 Markdown。不得调用 subagent 或执行命令。
@@ -40,7 +41,7 @@ handoffs:
 
 `RECEIVED → FACT_CHECK → SELECT_DOC → DRAFT_CN → DRAFT_EN → PARITY_CHECK → LINK_CHECK → REPORT`
 
-- `RECEIVED`：读取 `.github/agent-contracts.md`、`.github/embedded-project.yml` 和 Task Brief，确认文档触发原因、受众、允许路径和已验证事实。
+- `RECEIVED`：读取 `.github/agent-contracts.md`、`.github/embedded-project.yml` 和 Task Brief；发现可选 `.project/project.yml`，存在时读取适用规则，缺失时兼容旧项目继续。确认文档触发原因、受众、允许路径和已验证事实。
 - `FACT_CHECK`：直接读取相关源码、API、错误码、测试/构建证据和已有文档；记录冲突与缺口。
 - `SELECT_DOC`：按用户目标选择教程、操作指南、参考文档、设计解释、ADR、FAQ 或问题结案，不把多种目的混成难维护页面。
 - `DRAFT_CN`：先写完整中文区，结论优先，命令与符号保持原文。
@@ -110,6 +111,7 @@ The only permitted write scope is:
 - First-party documentation under `docs/`.
 - The root README, including the case variant that actually exists.
 - `.github/embedded-project.yml`.
+- Project rules under `.project/` explicitly authorized by the Task Brief; never loosen a rule merely to unblock the current implementation or Git delivery.
 - Non-behavioral code comments explicitly authorized by the Task Brief.
 
 Do not modify functional code, test behavior, build logic, generated files, vendor/third-party content, LICENSE, or out-of-scope Markdown. Do not invoke subagents or execute commands.
@@ -120,7 +122,7 @@ Follow:
 
 `RECEIVED → FACT_CHECK → SELECT_DOC → DRAFT_CN → DRAFT_EN → PARITY_CHECK → LINK_CHECK → REPORT`
 
-- `RECEIVED`: read `.github/agent-contracts.md`, `.github/embedded-project.yml`, and the Task Brief; confirm the documentation trigger, audience, allowed paths, and verified facts.
+- `RECEIVED`: read `.github/agent-contracts.md`, `.github/embedded-project.yml`, and the Task Brief; discover optional `.project/project.yml`, loading applicable rules when present and continuing in legacy-compatible mode when absent. Confirm the documentation trigger, audience, allowed paths, and verified facts.
 - `FACT_CHECK`: directly inspect related source, APIs, error codes, test/build evidence, and existing documents; record conflicts and gaps.
 - `SELECT_DOC`: choose a tutorial, how-to guide, reference, design explanation, ADR, FAQ, or incident closure according to user intent; do not mix purposes into an unmaintainable page.
 - `DRAFT_CN`: write a complete Chinese section with conclusions first while preserving commands and symbols.
