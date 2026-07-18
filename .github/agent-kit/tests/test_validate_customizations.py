@@ -41,6 +41,16 @@ class CustomizationValidatorTests(unittest.TestCase):
             self.repo / ".github" / "embedded-project.yml",
         )
 
+    def read_yaml(self, relative: str):
+        return yaml.safe_load((self.repo / relative).read_text(encoding="utf-8"))
+
+    def write_yaml(self, relative: str, value) -> None:
+        (self.repo / relative).write_text(
+            yaml.safe_dump(value, allow_unicode=True, sort_keys=False),
+            encoding="utf-8",
+            newline="\n",
+        )
+
     def install_negative_markdown(self, name: str) -> None:
         destination = self.repo / "docs" / name
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -73,9 +83,150 @@ class CustomizationValidatorTests(unittest.TestCase):
         )
         self.assertEqual([], self.diagnostics())
 
+    def test_missing_project_directory_is_accepted_for_legacy_projects(self) -> None:
+        shutil.rmtree(self.repo / ".project")
+        self.assertFalse(
+            any(item.code.startswith("PROJECT_DIRECTORY") for item in self.diagnostics())
+        )
+
+    def test_existing_project_directory_requires_manifest(self) -> None:
+        (self.repo / ".project" / "project.yml").unlink()
+        codes = self.codes()
+        self.assertIn("PROJECT_DIRECTORY_MISSING", codes)
+
+    def test_invalid_project_directory_manifest_is_rejected(self) -> None:
+        manifest = self.read_yaml(".project/project.yml")
+        manifest["rules"] = []
+        self.write_yaml(".project/project.yml", manifest)
+        self.assertIn("PROJECT_DIRECTORY_SCHEMA", self.codes())
+
+    def test_missing_and_outside_project_references_are_rejected(self) -> None:
+        manifest = self.read_yaml(".project/project.yml")
+        manifest["rules"][0]["path"] = "../README.md"
+        manifest["git_policy"] = "git/missing.yml"
+        self.write_yaml(".project/project.yml", manifest)
+        diagnostics = self.diagnostics()
+        project_references = [
+            item for item in diagnostics if item.code == "PROJECT_REFERENCE"
+        ]
+        self.assertTrue(any("leaves .project" in item.message for item in project_references))
+        self.assertTrue(any("is missing" in item.message for item in project_references))
+
+    def test_missing_optional_project_constraint_is_accepted(self) -> None:
+        manifest = self.read_yaml(".project/project.yml")
+        manifest["rules"][1]["path"] = "rules/optional-local-rule.md"
+        manifest["rules"][1]["required"] = False
+        self.write_yaml(".project/project.yml", manifest)
+        self.assertEqual([], self.diagnostics())
+
+    def test_duplicate_project_rule_ids_are_rejected(self) -> None:
+        manifest = self.read_yaml(".project/project.yml")
+        manifest["rules"][1]["id"] = manifest["rules"][0]["id"]
+        self.write_yaml(".project/project.yml", manifest)
+        self.assertIn("PROJECT_RULE_ID", self.codes())
+
+    def test_project_and_git_globs_must_be_repository_relative(self) -> None:
+        manifest = self.read_yaml(".project/project.yml")
+        manifest["rules"][0]["applies_to"] = ["../outside/**"]
+        self.write_yaml(".project/project.yml", manifest)
+        policy = self.read_yaml(".project/git/delivery.yml")
+        policy["scope"]["allowed_paths"] = ["C:/outside/**"]
+        self.write_yaml(".project/git/delivery.yml", policy)
+        self.assertIn("PROJECT_GLOB", self.codes())
+
+    def test_git_delivery_policy_preserves_authorization_and_force_safety(self) -> None:
+        policy = self.read_yaml(".project/git/delivery.yml")
+        policy["safety"]["require_task_authorization"] = False
+        policy["safety"]["allow_force_push"] = True
+        self.write_yaml(".project/git/delivery.yml", policy)
+        diagnostics = self.diagnostics()
+        policy_errors = [
+            item for item in diagnostics if item.code == "GIT_POLICY_SCHEMA"
+        ]
+        self.assertTrue(
+            any("require_task_authorization" in item.message for item in policy_errors)
+        )
+        self.assertTrue(any("allow_force_push" in item.message for item in policy_errors))
+
+    def test_git_delivery_policy_rejects_push_target_overrides(self) -> None:
+        policy = self.read_yaml(".project/git/delivery.yml")
+        policy["extensions"] = {"provider": {"push-url": "https://unsafe.invalid"}}
+        self.write_yaml(".project/git/delivery.yml", policy)
+        self.assertIn("GIT_TARGET_OVERRIDE", self.codes())
+
+    def test_commit_template_subject_and_field_order_are_strict(self) -> None:
+        template = self.repo / ".project" / "git" / "commit.template"
+        original = template.read_text(encoding="utf-8")
+        template.write_text(
+            original.replace(
+                "<Project><Function block>: <Summary>",
+                "<Project>: <Summary>",
+            ),
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assertIn("COMMIT_TEMPLATE_SUBJECT", self.codes())
+        template.write_text(
+            original.replace("<Change Reason>:\n<Root Cause>:", "<Root Cause>:\n<Change Reason>:"),
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assertIn("COMMIT_TEMPLATE_ORDER", self.codes())
+
+    def test_project_extension_namespaces_remain_extensible(self) -> None:
+        manifest = self.read_yaml(".project/project.yml")
+        manifest["extensions"] = {
+            "example.vendor/tool": {"config": "rules/tool.yml", "enabled": True}
+        }
+        self.write_yaml(".project/project.yml", manifest)
+        policy = self.read_yaml(".project/git/delivery.yml")
+        policy["extensions"] = {"review-ticket": {"required": False}}
+        self.write_yaml(".project/git/delivery.yml", policy)
+        self.assertEqual([], self.diagnostics())
+
     def test_missing_agent_is_rejected(self) -> None:
         (self.repo / ".github" / "agents" / "doc-keeper.agent.md").unlink()
         self.assertIn("AGENT_SET", self.codes())
+
+    def test_project_directory_contract_is_required_at_public_entry_points(self) -> None:
+        for name in ("orchestrator.agent.md", "embedded-developer.agent.md"):
+            agent = self.repo / ".github" / "agents" / name
+            with self.subTest(agent=name):
+                original = agent.read_text(encoding="utf-8")
+                agent.write_text(
+                    original.replace(".project/project.yml", ".project/REMOVED.yml"),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("AGENT_BODY_CONTRACT", self.codes())
+                agent.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_auto_delivery_contract_is_required_at_execution_entry_points(self) -> None:
+        required = {
+            "orchestrator.agent.md": (
+                "`AUTO_DECIDE`",
+                "`AUTO_COMMIT_AND_PUSH`",
+                "`OUTPUT_COMMIT_MESSAGE`",
+            ),
+            "embedded-developer.agent.md": (
+                "`AUTO_DECIDE`",
+                "`AUTO_COMMIT_AND_PUSH`",
+                "`OUTPUT_COMMIT_MESSAGE`",
+                "--expected-commit",
+            ),
+        }
+        for name, markers in required.items():
+            agent = self.repo / ".github" / "agents" / name
+            original = agent.read_text(encoding="utf-8")
+            for marker in markers:
+                with self.subTest(agent=name, marker=marker):
+                    agent.write_text(
+                        original.replace(marker, "REMOVED_AUTO_DELIVERY_CONTRACT"),
+                        encoding="utf-8",
+                        newline="\n",
+                    )
+                    self.assertIn("AGENT_BODY_CONTRACT", self.codes())
+            agent.write_text(original, encoding="utf-8", newline="\n")
 
     def test_missing_bug_resolver_agent_is_rejected(self) -> None:
         (self.repo / ".github" / "agents" / "bug-resolver.agent.md").unlink()
@@ -223,6 +374,13 @@ class CustomizationValidatorTests(unittest.TestCase):
 
     def test_missing_bilingual_section_is_rejected(self) -> None:
         self.install_negative_markdown("broken-bilingual.md")
+        self.assertIn("BILINGUAL_SECTIONS", self.codes())
+
+    def test_project_markdown_requires_bilingual_sections(self) -> None:
+        shutil.copyfile(
+            FIXTURES / "negative" / "broken-bilingual.md",
+            self.repo / ".project" / "rules" / "broken-bilingual.md",
+        )
         self.assertIn("BILINGUAL_SECTIONS", self.codes())
 
     def test_unresolved_todo_sync_in_prose_is_rejected(self) -> None:

@@ -8,9 +8,10 @@
 
 ### 上下文入口
 
-- 开始任务前读取 [项目画像](embedded-project.yml) 和 [Agent 公共契约](agent-contracts.md)。
+- 开始任务前读取 [项目画像](embedded-project.yml) 和 [Agent 公共契约](agent-contracts.md)，再发现可选的 [项目级规则清单](../.project/project.yml)。存在时用 Task Brief 范围、允许路径和真实 diff 匹配 `applies_to` 并读取全部适用规则；缺失时兼容旧项目继续。
+- 具有 `execute` 的角色优先用只读工具 `python .github/agent-kit/scripts/project_policy.py rules --root . --path <path>` 统一路径匹配；只读角色按公共契约继承结果，不因此扩大工具权限。
 - 项目画像中的显式事实优先；字段为 `auto` 时，再从 README、CI、Make/CMake、VS Code tasks、相邻模块和现有测试中探测。
-- 如果项目画像与仓库实际状态冲突，报告配置漂移并停止依赖该冲突事实，不静默改写画像或仓库。
+- 如果项目级约束或项目画像与仓库实际状态冲突，报告配置漂移并停止依赖该冲突事实，不静默改写配置或仓库。
 
 ### 现有工程优先
 
@@ -44,6 +45,13 @@
 - 未获明确授权不得执行 flash、erase、fuse、reset、设备电源控制、HIL、发布或外部部署命令。
 - 不执行破坏性 Git 命令，不静默安装依赖，不运行与任务无关的格式化、代码生成或迁移。
 
+### Git 交付
+
+- Task Brief 的 `Git Delivery` 只接受 `none`、`commit`、`commit-and-push`、`auto`，不得提供 remote、URL 或目标分支。policy 只约束交付，不能替代当前任务授权；`auto` 仅在修复、测试、必需检查、独立评审和必要文档均通过后进入交付决策。
+- `EmbeddedDeveloper` 用 `project_policy.py message` 校验仓库 commit 模板，用 `git-plan` 做只读预检；仅在对应 `automation` 启用、路径规则和检查通过时显式暂存本任务文件。
+- `Git Delivery: auto` 使用仓库外临时消息文件运行 `git-plan --operation auto --delivery auto`。`OUTPUT_COMMIT_MESSAGE` 不修改 Git且面向用户只输出完整 commit 内容；只有 `AUTO_COMMIT_AND_PUSH` 才能暂存和提交，并在 push 前用首次 fingerprint 与 `--expected-commit` 锁定唯一的新 commit。push 失败保留本地 commit，不回滚。
+- push 的当前分支、remote、URL 和目标 ref 只从当前项目 `.git` 的 local config 解析；push 前用 fingerprint 再次预检。禁止 `push -u`、force、自定义 refspec、删除远端分支和修改 `.git/config`。
+
 ### 证据与完成标准
 
 - 每个子任务使用公共契约中的 `Task Brief`，每个结果使用统一 Agent Report。
@@ -58,7 +66,7 @@
 - `BugResolver` 专门编排 Bug 诊断与解决，可运行只读诊断命令并调用开发、质量评估和文档角色，但不直接修改文件；两个 manager 不自动相互调用。
 - `EmbeddedDeveloper` 是唯一常规功能代码修改者，并负责构建和测试证据。
 - `QualityReviewer` 只做独立质量评估，不负责 Bug 根因分析，也不修改功能代码。
-- `DocKeeper` 维护 README、`docs/`、项目画像和明确授权的非行为性注释，不修改功能行为。
+- `DocKeeper` 维护 README、`docs/`、项目画像、明确授权的 `.project/` 项目规范和非行为性注释，不修改功能行为。
 - 自动 subagent 委派与用户点击的 handoff 是不同机制；handoff 不代表任务已经自动提交或执行。
 
 ### 双语协作
@@ -71,9 +79,10 @@
 
 ### Context Entry Points
 
-- Read the [project profile](embedded-project.yml) and [shared agent contract](agent-contracts.md) before starting a task.
+- Before starting a task, read the [project profile](embedded-project.yml) and [shared agent contract](agent-contracts.md), then discover the optional [project rule manifest](../.project/project.yml). When present, match `applies_to` against the Task Brief scope, allowed paths, and actual diff and read every applicable rule; when absent, continue in legacy-compatible mode.
+- Roles with `execute` should use read-only `python .github/agent-kit/scripts/project_policy.py rules --root . --path <path>` for consistent matching. Read-only roles inherit the result through the shared contract without expanding permissions.
 - Explicit facts in the project profile take precedence. When a field is `auto`, discover it from the README, CI, Make/CMake files, VS Code tasks, neighboring modules, and existing tests.
-- If the profile conflicts with the repository, report configuration drift and stop relying on the conflicting fact. Do not silently rewrite either the profile or repository.
+- If a project-level constraint or the profile conflicts with the repository, report configuration drift and stop relying on the conflicting fact. Do not silently rewrite configuration or the repository.
 
 ### Existing Project First
 
@@ -107,6 +116,13 @@
 - Do not run flash, erase, fuse, reset, device power-control, HIL, release, or external deployment commands without explicit authorization.
 - Do not use destructive Git commands, silently install dependencies, or run unrelated formatting, code generation, or migrations.
 
+### Git Delivery
+
+- Task Brief `Git Delivery` accepts only `none`, `commit`, `commit-and-push`, or `auto`; it never supplies a remote, URL, or target branch. Policy constrains delivery but never replaces current-task authorization. Enter auto delivery decision only after the repair, tests, required checks, independent review, and required documentation pass.
+- `EmbeddedDeveloper` validates the repository commit template with `project_policy.py message` and performs read-only `git-plan` preflight. Explicitly stage task files only when matching `automation` is enabled and path rules and checks pass.
+- `Git Delivery: auto` uses a message file outside the repository and runs `git-plan --operation auto --delivery auto`. `OUTPUT_COMMIT_MESSAGE` leaves Git unchanged and exposes only the complete commit content to the user. Only `AUTO_COMMIT_AND_PUSH` may stage and commit; before push, lock the single new commit with the first fingerprint and `--expected-commit`. Keep the local commit if push fails; never roll it back.
+- Resolve the current branch, remote, URL, and target ref only from this project's local `.git` config, then repeat preflight with the fingerprint immediately before push. Never use `push -u`, force, custom refspecs, remote deletion, or `.git/config` mutation.
+
 ### Evidence and Completion
 
 - Use the shared contract's `Task Brief` for every delegated task and the common Agent Report for every result.
@@ -121,7 +137,7 @@
 - `BugResolver` exclusively orchestrates bug diagnosis and resolution. It may run read-only diagnostic commands and invoke development, quality-assessment, and documentation roles, but it does not edit files directly; the two managers never auto-invoke each other.
 - `EmbeddedDeveloper` is the sole routine functional-code writer and supplies build and test evidence.
 - `QualityReviewer` performs independent quality assessment only; it neither diagnoses bug root causes nor modifies functional code.
-- `DocKeeper` maintains the README, `docs/`, the project profile, and explicitly authorized non-behavioral comments without changing functional behavior.
+- `DocKeeper` maintains the README, `docs/`, the project profile, explicitly authorized project rules under `.project/`, and non-behavioral comments without changing functional behavior.
 - Automatic subagent delegation and user-selected handoffs are different mechanisms. A handoff does not mean a task was automatically submitted or executed.
 
 ### Bilingual Collaboration

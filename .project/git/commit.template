@@ -1,0 +1,17 @@
+<Project><Function block>: <Summary>
+<Change Type>:new requirements/bug fix
+<Change Reason>:
+<Root Cause>:
+<Solution>:
+<Jira ID>:
+<AI-Tool-Used>: Y/N
+<AI-Tool-Scenario>: Code Generation / Code Inspection / Code Refactoring / Test Case / Design Document / Other
+<AI-Tool-Detail>:
+<Affected Function Name>:
+<Applicable Project>:
+<RN>:N
+<RN description>:
+<<<Test Notes>>>
+<Test-Proposal>: N
+<Stress-Test>:N
+<HW-Test>:N

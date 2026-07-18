@@ -9,7 +9,7 @@
 ### 前置条件
 
 1. 使用支持 custom agents、subagents、prompt files 和 Agent Skills 的当前 VS Code Stable 与 GitHub Copilot Chat。
-2. 直接打开包含 `.github/` 的固件仓库根目录，不要只打开其父目录。
+2. 直接打开固件仓库根目录，不要只打开其父目录；`.project/` 与 `.github/` 同级但可选。
 3. 信任工作区，并确认 `agent/runSubagent` 可用；不要启用递归 subagent。
 4. 在 Chat 的 Customizations/Diagnostics 中确认没有解析错误。
 5. 使用临时分支或可丢弃示例工程执行会产生修改的场景。
@@ -20,6 +20,7 @@
 - `/` 菜单出现 `/new-driver`、`/implement-feature`、`/analyze-bug`、`/analyze-log`、`/misra-review`、`/verify-change`。
 - 内部 skills 不生成重复 slash 入口。
 - 三个 scoped instructions 和全局 `copilot-instructions.md` 均被发现。
+- Kit validator 在 `.project/` 缺失时兼容旧项目；存在时接受严格 `project.yml`，并能报告缺失/越界规则引用、重复 ID、无效 Git policy/commit 模板、push 目标覆盖字段和非双语项目 Markdown。
 
 ### 自动编排场景
 
@@ -37,6 +38,31 @@
 - BLOCKER/MAJOR 由 Orchestrator 路由回 Developer，最多两轮。
 - 只有需要设计/FAQ 更新时才调用 DocKeeper。
 - 最终门禁区分 `COMPLETE`、`CONDITIONAL`、`BLOCKED` 和 `FAILED`，`NOT_RUN` 不算通过。
+
+### 项目级约束场景
+
+在临时分支中给 `.project/rules/coding-conventions.md` 增加一条容易观察的测试规则，并确保其 `applies_to` 只匹配 `examples/minimal-firmware/**/*.c`。分别请求修改匹配的 C 文件和不匹配的 `docs/` 文件。验收：
+
+- 两个任务都发现 `.project/project.yml`；C 任务加载并遵循该规则，文档任务不把不适用规则强加到输出。删除整个 `.project/` 后工具返回 `NOT_CONFIGURED`，旧项目流程继续。
+- 删除已注册且 `required: true` 的规则文件会返回 `BLOCKED`；仅增加未注册文件不会使 Agent 自动采用其中内容。
+- 将规则写成与真实 CMake/CI 冲突的事实时，Agent 报告配置漂移，不静默改代码迎合规则。
+- `extensions` 中加入未知命名空间后 validator 仍通过，Agent 保留但不执行该扩展。
+
+### 自动 Git 交付场景
+
+只在临时 feature 分支和可丢弃仓库/本地 bare remote 中测试。先保持 policy 的 `automation.commit/push: false`，再把 Task Brief `Git Delivery` 设为 `commit`：Agent 不提交，并说明开关未启用。然后仅启用 commit、授权一个允许路径并完成门禁与独立评审：
+
+- Orchestrator 使用单独 `DELIVERY` 阶段调用 EmbeddedDeveloper；实现阶段不会提前提交，Task Brief 只使用 `none | commit | commit-and-push | auto`，不包含 remote、URL 或目标分支。`auto` 只有在修复、测试、必需检查、独立评审和必要文档均为 `PASS` 后进入 `AUTO_DECIDE`。
+- Developer 从 `.project/git/commit.template` 生成消息并运行 `project_policy.py message`；QDM047/Webui、多 Jira 示例通过，缺字段、乱序、未知字段、占位符及 AI/RN/Test Notes 条件错误均阻塞。
+- Developer 先运行只读 `git-plan`，只显式暂存本任务文件并复查 staged diff；无关 staged 文件、排除路径和全仓库暂存都不会进入提交。
+- `Git Delivery: commit` 时只创建 commit。`commit-and-push` 正向用例必须从当前项目 local `.git/config` 解析 branch remote/merge，pushurl 优先于 url，并核对 outgoing commits 的全部路径。
+- global config/环境中放置冲突 URL 不影响结果；无 upstream、detached HEAD、错误 merge ref、多个 pushurl、保护分支、路径越界、失败检查或含混 remote 均阻塞。URL 凭据在 JSON/日志中脱敏。
+- 首次预检后修改 local `.git/config`，第二次带 fingerprint 的预检必须阻塞；linked worktree 通过 `--git-common-dir` 解析。两次预检前后 HEAD、index、worktree、config 和 bare remote 状态不变。
+- 实际 push 只允许 `git -C <root> push <resolved-remote> HEAD:<resolved-remote-ref>`；禁止 `push -u`、force、自定义 refspec、删除远端分支和修改 `.git/config`。
+- auto 消息写入仓库外临时文件。无有效 diff 返回 `NO_DELIVERY`；缺 Project/Jira/RN/测试说明等 metadata 返回 `BLOCKED`，不会生成占位内容。
+- 在 automation 任一开关关闭、无 upstream、多个 pushurl、保护分支、存在既有 incoming/outgoing commit、初始 index 非空、无关 dirty 文件或检查失败时，auto 返回 `OUTPUT_COMMIT_MESSAGE`。验证 HEAD、index、worktree、config 和 bare remote 完全不变，且用户输出只包含完整 commit 内容，不包含路径、push 目标或原因诊断。
+- 正向 auto 用例要求本地 tracking ref 与 HEAD 一致且无既有 incoming/outgoing commit。它只暂存修复路径并创建一个新 commit；第二次预检传入首次 fingerprint 和该 commit 的完整 SHA，outgoing commits 只能为该 SHA，随后远端只新增该 commit。
+- 首次决策后修改 config/分支，或给第二次预检传错误 `--expected-commit`，必须在 push 前停止并保留已经创建的本地 commit。模拟远端/网络拒绝也必须保留该 commit，并准确报告完整消息、SHA 和 push 失败事实，绝不自动回滚。
 
 ### 安全与失败场景
 
@@ -111,18 +137,18 @@ ctest --test-dir build/minimal-firmware --output-on-failure
 - 直接选择 EmbeddedDeveloper 时，仍要求 Task Brief；缺失信息应先补齐或列为假设。
 - 直接选择 BugResolver 时，可先给出现有的原始错误或日志；Agent 必须引导补齐会影响方向的使用现象。需要解决时仍须明确是否允许修改。
 - 直接选择 QualityReviewer 时，只提供质量评估目标、diff/files、需求和可用构建证据；不得要求其诊断根因或协调修复。
-- 直接选择 DocKeeper 时，只允许修改 README、`docs/`、项目画像和明确授权的注释。
+- 直接选择 DocKeeper 时，只允许修改 README、`docs/`、项目画像、明确授权的 `.project/` 规范和注释；不得为了通过当前任务而放宽规则。
 
 ### 记录
 
-记录 VS Code/Copilot 版本、测试日期、所用 profile、每个场景状态和失败截图。真实烟测通过后再更新发布记录；不能用 Cursor 或其他兼容编辑器结果代替 VS Code 验收。
+记录 VS Code/Copilot 版本、测试日期、所用 profile、project manifest/Git policy、每个场景状态和失败截图。真实烟测通过后再更新发布记录；不能用 Cursor 或其他兼容编辑器结果代替 VS Code 验收。
 
 ## English
 
 ### Prerequisites
 
 1. Use current VS Code Stable and GitHub Copilot Chat versions that support custom agents, subagents, prompt files, and Agent Skills.
-2. Open the firmware repository root that contains `.github/` directly; do not open only its parent directory.
+2. Open the firmware repository root directly rather than its parent. `.project/` is an optional sibling of `.github/`.
 3. Trust the workspace and confirm that `agent/runSubagent` is available. Do not enable recursive subagents.
 4. Confirm that Chat Customizations/Diagnostics reports no parsing errors.
 5. Run mutation scenarios on a temporary branch or disposable example copy.
@@ -133,6 +159,7 @@ ctest --test-dir build/minimal-firmware --output-on-failure
 - The `/` menu shows `/new-driver`, `/implement-feature`, `/analyze-bug`, `/analyze-log`, `/misra-review`, and `/verify-change`.
 - Internal skills do not create duplicate slash entries.
 - All three scoped instruction sets and the global `copilot-instructions.md` are discovered.
+- The Kit validator preserves legacy compatibility when `.project/` is absent. When present, it accepts strict `project.yml` and reports missing/outside references, duplicate IDs, invalid Git policy/commit templates, push-target override fields, and non-bilingual project Markdown.
 
 ### Automatic Orchestration Scenario
 
@@ -150,6 +177,31 @@ Acceptance criteria:
 - Orchestrator routes BLOCKER/MAJOR findings back to Developer, for at most two rounds.
 - DocKeeper runs only when design or FAQ updates are needed.
 - The final gate distinguishes `COMPLETE`, `CONDITIONAL`, `BLOCKED`, and `FAILED`; `NOT_RUN` is not a pass.
+
+### Project-level constraint scenario
+
+On a temporary branch, add one easily observed test rule to `.project/rules/coding-conventions.md` and make its `applies_to` match only `examples/minimal-firmware/**/*.c`. Request one change to a matching C file and another to a non-matching `docs/` file. Acceptance criteria:
+
+- Both tasks discover `.project/project.yml`. The C task loads and follows the rule; the documentation task does not impose the inapplicable rule. Removing `.project/` makes the tool return `NOT_CONFIGURED` and the legacy workflow continues.
+- Deleting a registered rule with `required: true` returns `BLOCKED`; adding an unregistered file does not make agents automatically adopt its contents.
+- When a rule states a fact conflicting with actual CMake/CI, the agent reports configuration drift instead of silently changing code to satisfy the rule.
+- Adding an unknown namespace under `extensions` still passes validation; agents preserve it without execution.
+
+### Automatic Git delivery scenario
+
+Test only on a temporary feature branch and disposable repository/local bare remote. First leave `automation.commit/push: false`, then set Task Brief `Git Delivery` to `commit`: the agent does not commit and explains that automation is disabled. Next enable commit only, authorize one allowed path, and complete gates plus independent review:
+
+- Orchestrator invokes EmbeddedDeveloper in a separate `DELIVERY` stage; implementation never commits early. Task Brief uses only `none | commit | commit-and-push | auto` and contains no remote, URL, or target branch. `auto` enters `AUTO_DECIDE` only after the repair, tests, required checks, independent review, and required documentation are `PASS`.
+- Developer generates the message from `.project/git/commit.template` and runs `project_policy.py message`. The QDM047/Webui multiple-Jira fixture passes; missing, out-of-order, unknown, placeholder, and invalid AI/RN/Test Notes combinations block.
+- Developer runs read-only `git-plan`, explicitly stages task files only, and reinspects the staged diff. Unrelated staged files, denied paths, and repository-wide staging never enter the commit.
+- `Git Delivery: commit` creates only the commit. A `commit-and-push` positive case resolves branch remote/merge only from local `.git/config`, prefers pushurl to url, and checks every outgoing-commit path.
+- Conflicting global/environment URL values do not affect resolution. Missing upstream, detached HEAD, wrong merge ref, multiple pushurls, protected branches, path mismatch, failed checks, or ambiguity block. JSON/log credentials are redacted.
+- After initial preflight, mutate local `.git/config`; the second fingerprinted preflight must block. A linked worktree resolves through `--git-common-dir`. HEAD, index, worktree, config, and bare-remote state remain unchanged across each preflight.
+- The only allowed push is `git -C <root> push <resolved-remote> HEAD:<resolved-remote-ref>`. Never use `push -u`, force, custom refspecs, remote deletion, or `.git/config` mutation.
+- Store the auto message in a temporary file outside the repository. No effective diff returns `NO_DELIVERY`; missing Project/Jira/RN/test-note metadata returns `BLOCKED` without invented placeholders.
+- With either automation switch off, missing upstream, multiple pushurls, a protected branch, pre-existing incoming/outgoing commits, a nonempty initial index, unrelated dirty files, or failed checks, auto returns `OUTPUT_COMMIT_MESSAGE`. Verify HEAD, index, worktree, config, and bare remote are unchanged, and the user output contains only the complete commit content without paths, push target, or reason diagnostics.
+- A positive auto case requires HEAD equal to the local tracking ref and no existing incoming/outgoing commits. It stages only repair paths and creates one new commit; the second preflight receives the first fingerprint and that commit's full SHA, outgoing commits contain only that SHA, and the remote gains only that commit.
+- After the first decision, mutate config/branch or pass a wrong `--expected-commit` to the second preflight; it must stop before push while keeping the created local commit. Simulated remote/network rejection also keeps the commit and accurately reports the complete message, SHA, and push failure without automatic rollback.
 
 ### Safety and Failure Scenarios
 
@@ -224,8 +276,8 @@ Acceptance criteria:
 - When selecting EmbeddedDeveloper directly, still provide a Task Brief; missing facts are clarified or recorded as assumptions.
 - When selecting BugResolver directly, you may begin with the available original error or log; the agent must guide completion of usage symptoms that could change direction. Explicitly state whether changes are authorized when resolution is required.
 - When selecting QualityReviewer directly, provide only the quality-assessment target, diff/files, requirements, and available build evidence; do not ask it to diagnose root cause or coordinate repair.
-- When selecting DocKeeper directly, restrict changes to the README, `docs/`, the project profile, and explicitly authorized comments.
+- When selecting DocKeeper directly, restrict changes to the README, `docs/`, the project profile, explicitly authorized `.project/` rules, and comments; never loosen a rule merely to pass the current task.
 
 ### Record
 
-Record the VS Code/Copilot versions, test date, profile used, status of each scenario, and screenshots of failures. Update release records only after a real smoke test passes; Cursor or another compatible editor does not substitute for VS Code acceptance.
+Record the VS Code/Copilot versions, test date, profile, project manifest/Git policy, status of each scenario, and screenshots of failures. Update release records only after a real smoke test passes; Cursor or another compatible editor does not substitute for VS Code acceptance.

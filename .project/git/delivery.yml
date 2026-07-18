@@ -1,0 +1,59 @@
+# Git delivery policy / Git 交付策略
+# Remote aliases, URLs, and target refs are intentionally absent. Push targets
+# are resolved only from the current repository's local .git configuration.
+schema_version: 1
+
+automation:
+  commit: false
+  push: false
+
+scope:
+  allowed_paths:
+    - ".github/**"
+    - ".project/**"
+    - "docs/**"
+    - "examples/minimal-firmware/**"
+    - "README.md"
+  denied_paths:
+    - "**/build/**"
+    - "**/generated/**"
+    - "**/vendor/**"
+    - "**/artifacts/**"
+    - "**/*.elf"
+    - "**/*.map"
+
+commit:
+  template: git/commit.template
+  change_types:
+    - new requirements
+    - bug fix
+  jira_pattern: '^[A-Z][A-Z0-9]+-[0-9]+$'
+  ai_scenarios:
+    - Code Generation
+    - Code Inspection
+    - Code Refactoring
+    - Test Case
+    - Design Document
+    - Other
+  checks:
+    - "python .github/agent-kit/scripts/validate_customizations.py --root ."
+    - "python -m unittest discover -s .github/agent-kit/tests -p test_*.py -v"
+
+push:
+  allowed_branches:
+    - "agent/**"
+    - "feature/**"
+    - "fix/**"
+    - "docs/**"
+  protected_branches:
+    - main
+    - master
+  checks:
+    - "python .github/agent-kit/scripts/validate_customizations.py --root ."
+
+safety:
+  require_task_authorization: true
+  explicit_staging: true
+  allow_force_push: false
+
+extensions: {}

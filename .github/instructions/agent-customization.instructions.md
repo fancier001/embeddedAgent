@@ -1,6 +1,6 @@
 ---
 name: Agent Kit Configuration Rules
-applyTo: ".github/agents/**/*.agent.md,.github/prompts/**/*.prompt.md,.github/instructions/**/*.instructions.md,.github/skills/**/SKILL.md"
+applyTo: ".github/agents/**/*.agent.md,.github/prompts/**/*.prompt.md,.github/instructions/**/*.instructions.md,.github/skills/**/SKILL.md,.project/**/*.md,.project/**/*.yml,.project/**/*.yaml"
 description: 五 Agent Kit 配置和最小权限规则 / Five-agent kit configuration and least-privilege rules
 ---
 
@@ -19,6 +19,8 @@ description: 五 Agent Kit 配置和最小权限规则 / Five-agent kit configur
 - Prompt 只负责输入和 agent 路由，不声明 `tools`，以继承目标 agent 权限。
 - Skill 目录名必须与 `name` 一致、使用小写连字符；附属资源必须从 `SKILL.md` 直接链接。
 - BugResolver 及 `firmware-log-analysis` 必须保留 `GUIDE_SYMPTOMS`、按需 `CONFIRM_DIRECTION`、`Usage Symptom Questions`、`Usage Symptom Profile` 和 `Direction Confirmation` 契约；使用现象问题不得与证据材料请求混用。
+- 可选的 `.project/project.yml` 是项目级约束唯一入口；规范文件必须通过 `rules` 注册，Git policy 必须通过 `git_policy` 引用。结构化扩展数据放入 `extensions`。
+- Git policy 不得保存 remote、URL 或目标 ref；必须保留当前任务显式授权、显式路径暂存和禁止 force push 的安全不变量，启用 `automation` 不能单独构成 commit/push 授权。
 - Frontmatter 之外的正文遵循完整中英双区结构。
 
 ## English
@@ -30,4 +32,6 @@ description: 五 Agent Kit 配置和最小权限规则 / Five-agent kit configur
 - Prompts only capture input and route to an agent. They omit `tools` so they inherit the target agent's permissions.
 - A Skill directory name matches its lowercase-hyphen `name`, and `SKILL.md` directly links every supporting resource.
 - BugResolver and `firmware-log-analysis` retain the `GUIDE_SYMPTOMS`, conditional `CONFIRM_DIRECTION`, Usage Symptom Questions, Usage Symptom Profile, and Direction Confirmation contracts. Usage-symptom questions never mix with evidence-material requests.
+- Optional `.project/project.yml` is the sole project-level constraint entry point. Register rule files through `rules`, reference Git policy through `git_policy`, and place structured extension data under `extensions`.
+- Git policy never stores a remote, URL, or target ref. It retains explicit current-task authorization, explicit-path staging, and no-force-push safety; enabling `automation` never authorizes commit/push by itself.
 - Body content after frontmatter follows the complete Chinese-English two-section structure.

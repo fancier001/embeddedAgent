@@ -1,0 +1,20 @@
+<QDM047><Webui>: Fix WAN setting DHCP option
+<Change Type>:bug fix
+<Change Reason>:WAN setting DHCP option cannot be configured
+<Root Cause>:Webui logic does not persist the selected DHCP option
+<Solution>:Update the Webui logic to persist and apply the DHCP option
+<Jira ID>:QDM047-5567
+<Jira ID>:QDM047-5566
+<AI-Tool-Used>:Y
+<AI-Tool-Scenario>:Code Inspection
+<AI-Tool-Detail>:Used Codex to inspect the existing logic and verify the change
+<Affected Function Name>:Webui
+<Applicable Project>:QDM047
+<RN>:Y
+<RN description>:Fixed the bug that the DHCP option does not work in the WAN Setting menu.
+<<<Test Notes>>>
+<Test-Proposal>:Y
+  1. Open the WAN Setting menu.
+  2. Change the DHCP option and verify that it is applied.
+<Stress-Test>:N
+<HW-Test>:N

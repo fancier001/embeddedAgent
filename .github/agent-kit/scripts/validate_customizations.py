@@ -113,6 +113,16 @@ EXPECTED_SKILL_SCRIPTS: Mapping[str, frozenset[str]] = {
     "misra-risk-review": frozenset({"normalize_sarif.py"}),
 }
 REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
+    "orchestrator.agent.md": frozenset(
+        {
+            ".project/project.yml",
+            "`DELIVERY`",
+            "`Git Delivery`",
+            "`AUTO_DECIDE`",
+            "`AUTO_COMMIT_AND_PUSH`",
+            "`OUTPUT_COMMIT_MESSAGE`",
+        }
+    ),
     "bug-resolver.agent.md": frozenset(
         {
             "GUIDE_SYMPTOMS",
@@ -127,6 +137,19 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "## Evidence Request",
         }
     ),
+    "embedded-developer.agent.md": frozenset(
+        {
+            ".project/project.yml",
+            "project_policy.py",
+            "Git Delivery",
+            "stage explicit file paths only",
+            "`AUTO_DECIDE`",
+            "`AUTO_COMMIT_AND_PUSH`",
+            "`OUTPUT_COMMIT_MESSAGE`",
+            "--expected-commit",
+        }
+    ),
+    "doc-keeper.agent.md": frozenset({".project/"}),
 }
 REQUIRED_SKILL_BODY_MARKERS: Mapping[str, frozenset[str]] = {
     "firmware-log-analysis": frozenset(
@@ -151,6 +174,7 @@ REQUIRED_PRODUCT_FILES = (
     ".github/copilot-instructions.md",
     ".github/instructions/c-code.instructions.md",
     ".github/instructions/markdown-bilingual.instructions.md",
+    ".github/agent-kit/scripts/project_policy.py",
 )
 
 AGENT_FRONTMATTER_FIELDS = frozenset(
@@ -384,6 +408,177 @@ PROJECT_PROFILE_SCHEMA: Mapping[str, Any] = {
     },
 }
 
+PROJECT_DIRECTORY_SCHEMA: Mapping[str, Any] = {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": False,
+    "required": ["schema_version", "project", "rules", "git_policy", "extensions"],
+    "properties": {
+        "schema_version": {"const": 1},
+        "project": {
+            "type": "object",
+            "additionalProperties": False,
+            "required": ["primary", "aliases"],
+            "properties": {
+                "primary": {"type": "string", "minLength": 1},
+                "aliases": {
+                    "type": "array",
+                    "items": {"type": "string", "minLength": 1},
+                    "uniqueItems": True,
+                },
+            },
+        },
+        "rules": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["id", "path", "applies_to", "required"],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "pattern": r"^[a-z0-9]+(?:-[a-z0-9]+)*$",
+                    },
+                    "path": {"type": "string", "pattern": r"^.+\.md$"},
+                    "applies_to": {
+                        "type": "array",
+                        "items": {"type": "string", "minLength": 1},
+                        "minItems": 1,
+                        "uniqueItems": True,
+                    },
+                    "required": {"type": "boolean"},
+                },
+            },
+            "minItems": 1,
+        },
+        "git_policy": {"type": "string", "pattern": r"^.+\.ya?ml$"},
+        # Project-owned integrations may add namespaced data without changing
+        # the core loader contract or the validator schema.
+        "extensions": {"type": "object", "additionalProperties": True},
+    },
+}
+
+PATH_GLOB_LIST: Mapping[str, Any] = {
+    "type": "array",
+    "items": {"type": "string", "minLength": 1},
+    "uniqueItems": True,
+}
+NON_EMPTY_PATH_GLOB_LIST: Mapping[str, Any] = {
+    **PATH_GLOB_LIST,
+    "minItems": 1,
+}
+
+GIT_DELIVERY_POLICY_SCHEMA: Mapping[str, Any] = {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": False,
+    "required": [
+        "schema_version",
+        "automation",
+        "scope",
+        "commit",
+        "push",
+        "safety",
+        "extensions",
+    ],
+    "properties": {
+        "schema_version": {"const": 1},
+        "automation": {
+            "type": "object",
+            "additionalProperties": False,
+            "required": ["commit", "push"],
+            "properties": {
+                "commit": {"type": "boolean"},
+                "push": {"type": "boolean"},
+            },
+        },
+        "scope": {
+            "type": "object",
+            "additionalProperties": False,
+            "required": ["allowed_paths", "denied_paths"],
+            "properties": {
+                "allowed_paths": NON_EMPTY_PATH_GLOB_LIST,
+                "denied_paths": NON_EMPTY_PATH_GLOB_LIST,
+            },
+        },
+        "commit": {
+            "type": "object",
+            "additionalProperties": False,
+            "required": [
+                "template",
+                "change_types",
+                "jira_pattern",
+                "ai_scenarios",
+                "checks",
+            ],
+            "properties": {
+                "template": {"type": "string", "pattern": r"^.+$"},
+                "change_types": {
+                    "type": "array",
+                    "items": {"type": "string", "minLength": 1},
+                    "minItems": 1,
+                    "uniqueItems": True,
+                },
+                "jira_pattern": {"type": "string", "minLength": 1},
+                "ai_scenarios": {
+                    "type": "array",
+                    "items": {"type": "string", "minLength": 1},
+                    "minItems": 1,
+                    "uniqueItems": True,
+                },
+                "checks": PATH_GLOB_LIST,
+            },
+        },
+        "push": {
+            "type": "object",
+            "additionalProperties": False,
+            "required": ["allowed_branches", "protected_branches", "checks"],
+            "properties": {
+                "allowed_branches": NON_EMPTY_PATH_GLOB_LIST,
+                "protected_branches": NON_EMPTY_PATH_GLOB_LIST,
+                "checks": PATH_GLOB_LIST,
+            },
+        },
+        "safety": {
+            "type": "object",
+            "additionalProperties": False,
+            "required": [
+                "require_task_authorization",
+                "explicit_staging",
+                "allow_force_push",
+            ],
+            "properties": {
+                "require_task_authorization": {"const": True},
+                "explicit_staging": {"const": True},
+                "allow_force_push": {"const": False},
+            },
+        },
+        "extensions": {"type": "object", "additionalProperties": True},
+    },
+}
+
+FORBIDDEN_GIT_TARGET_KEYS = frozenset(
+    {"remote", "url", "push_url", "pushurl", "target_branch", "target_ref"}
+)
+COMMIT_TEMPLATE_FIELD_ORDER = (
+    "Change Type",
+    "Change Reason",
+    "Root Cause",
+    "Solution",
+    "Jira ID",
+    "AI-Tool-Used",
+    "AI-Tool-Scenario",
+    "AI-Tool-Detail",
+    "Affected Function Name",
+    "Applicable Project",
+    "RN",
+    "RN description",
+    "<<<Test Notes>>>",
+    "Test-Proposal",
+    "Stress-Test",
+    "HW-Test",
+)
+
 TEXT_EXTENSIONS = {
     ".c",
     ".h",
@@ -492,6 +687,7 @@ class RepositoryValidator:
         self._validate_skills()
         self._validate_prompts()
         self._validate_profile()
+        self._validate_project_directory()
         self._validate_bilingual_markdown()
         self._validate_markdown_links()
         return sorted(set(self.diagnostics))
@@ -827,11 +1023,242 @@ class RepositoryValidator:
             location = ".".join(str(part) for part in error.absolute_path) or "<root>"
             self._add(path, "PROFILE_SCHEMA", f"{location}: {error.message}")
 
+    def _project_reference(
+        self, owner: Path, reference: str, *, required: bool = True
+    ) -> Path | None:
+        project_dir = (self.root / ".project").resolve()
+        if "\\" in reference:
+            self._add(owner, "PROJECT_REFERENCE", f"use '/' in project reference: {reference}")
+            return None
+        candidate = (project_dir / reference).resolve()
+        try:
+            candidate.relative_to(project_dir)
+        except ValueError:
+            self._add(owner, "PROJECT_REFERENCE", f"reference leaves .project: {reference}")
+            return None
+        if not candidate.is_file():
+            if required:
+                self._add(
+                    owner, "PROJECT_REFERENCE", f"referenced file is missing: {reference}"
+                )
+            return None
+        return candidate
+
+    def _validate_repository_glob(self, owner: Path, value: str, location: str) -> None:
+        if (
+            not value
+            or value.startswith(("/", "\\"))
+            or "\\" in value
+            or re.match(r"^[A-Za-z]:", value)
+            or any(part == ".." for part in value.split("/"))
+        ):
+            self._add(
+                owner,
+                "PROJECT_GLOB",
+                f"{location} must be a repository-relative '/' glob: {value!r}",
+            )
+
+    def _validate_git_delivery_policy(self, path: Path) -> None:
+        text = self._read_text(path)
+        if text is None:
+            return
+        try:
+            policy = yaml.safe_load(text)
+        except yaml.YAMLError as exc:
+            self._add(path, "GIT_POLICY_YAML", f"invalid YAML: {exc}")
+            return
+        errors = sorted(
+            Draft202012Validator(GIT_DELIVERY_POLICY_SCHEMA).iter_errors(policy),
+            key=lambda error: [str(part) for part in error.absolute_path],
+        )
+        for error in errors:
+            location = ".".join(str(part) for part in error.absolute_path) or "<root>"
+            self._add(path, "GIT_POLICY_SCHEMA", f"{location}: {error.message}")
+        if not isinstance(policy, dict):
+            return
+        override_locations: list[str] = []
+
+        def collect_overrides(value: Any, prefix: str = "") -> None:
+            if isinstance(value, dict):
+                for key, child in value.items():
+                    location = f"{prefix}.{key}" if prefix else str(key)
+                    normalized = str(key).lower().replace("-", "_")
+                    if normalized in FORBIDDEN_GIT_TARGET_KEYS:
+                        override_locations.append(location)
+                    collect_overrides(child, location)
+            elif isinstance(value, list):
+                for index, child in enumerate(value):
+                    collect_overrides(child, f"{prefix}[{index}]")
+
+        collect_overrides(policy)
+        for location in override_locations:
+            self._add(
+                path,
+                "GIT_TARGET_OVERRIDE",
+                f"{location} must not override a remote, URL, or target ref",
+            )
+        for section, fields in (
+            ("scope", ("allowed_paths", "denied_paths")),
+            ("push", ("allowed_branches", "protected_branches")),
+        ):
+            section_value = policy.get(section)
+            if not isinstance(section_value, dict):
+                continue
+            for field in fields:
+                values = section_value.get(field)
+                if not isinstance(values, list):
+                    continue
+                for index, value in enumerate(values):
+                    if isinstance(value, str):
+                        self._validate_repository_glob(
+                            path, value, f"{section}.{field}[{index}]"
+                        )
+        commit = policy.get("commit")
+        if not isinstance(commit, dict):
+            return
+        jira_pattern = commit.get("jira_pattern")
+        if isinstance(jira_pattern, str):
+            try:
+                re.compile(jira_pattern)
+            except re.error as exc:
+                self._add(
+                    path,
+                    "GIT_POLICY_JIRA_PATTERN",
+                    f"commit.jira_pattern is invalid: {exc}",
+                )
+        template = commit.get("template")
+        if isinstance(template, str):
+            template_path = self._project_reference(path, template)
+            if template_path is not None:
+                self._validate_commit_template(template_path)
+
+    def _validate_commit_template(self, path: Path) -> None:
+        text = self._read_text(path)
+        if text is None:
+            return
+        lines = [
+            line.strip()
+            for line in text.splitlines()
+            if line.strip() and not line.lstrip().startswith("#")
+        ]
+        if not lines or lines[0] != "<Project><Function block>: <Summary>":
+            self._add(
+                path,
+                "COMMIT_TEMPLATE_SUBJECT",
+                "first line must be <Project><Function block>: <Summary>",
+            )
+            return
+        names: list[str] = []
+        for line in lines[1:]:
+            if line == "<<<Test Notes>>>":
+                names.append(line)
+                continue
+            match = re.fullmatch(r"<([^<>]+)>:.*", line)
+            if match is None:
+                self._add(
+                    path,
+                    "COMMIT_TEMPLATE_LINE",
+                    f"invalid template line: {line}",
+                )
+                return
+            names.append(match.group(1))
+        if names != list(COMMIT_TEMPLATE_FIELD_ORDER):
+            self._add(
+                path,
+                "COMMIT_TEMPLATE_ORDER",
+                "template fields are missing, unknown, or out of order",
+            )
+
+    def _validate_project_directory(self) -> None:
+        project_dir = self.root / ".project"
+        if not project_dir.exists():
+            return
+        if not project_dir.is_dir():
+            self._add(
+                project_dir,
+                "PROJECT_DIRECTORY_INVALID",
+                ".project exists but is not a directory",
+            )
+            return
+        path = project_dir / "project.yml"
+        text = self._read_text(path) if path.is_file() else None
+        if text is None:
+            if not path.is_file():
+                self._add(
+                    path,
+                    "PROJECT_DIRECTORY_MISSING",
+                    "project.yml is required when .project exists",
+                )
+            return
+        if not (project_dir / "README.md").is_file():
+            self._add(
+                project_dir / "README.md",
+                "PROJECT_DIRECTORY_README",
+                "README.md is required when .project exists",
+            )
+        try:
+            manifest = yaml.safe_load(text)
+        except yaml.YAMLError as exc:
+            self._add(path, "PROJECT_DIRECTORY_YAML", f"invalid YAML: {exc}")
+            return
+        errors = sorted(
+            Draft202012Validator(PROJECT_DIRECTORY_SCHEMA).iter_errors(manifest),
+            key=lambda error: [str(part) for part in error.absolute_path],
+        )
+        for error in errors:
+            location = ".".join(str(part) for part in error.absolute_path) or "<root>"
+            self._add(path, "PROJECT_DIRECTORY_SCHEMA", f"{location}: {error.message}")
+        if not isinstance(manifest, dict):
+            return
+
+        seen_ids: set[str] = set()
+        rules = manifest.get("rules")
+        if isinstance(rules, list):
+            for index, rule in enumerate(rules):
+                if not isinstance(rule, dict):
+                    continue
+                rule_id = rule.get("id")
+                if isinstance(rule_id, str):
+                    if rule_id in seen_ids:
+                        self._add(
+                            path,
+                            "PROJECT_RULE_ID",
+                            f"duplicate rules id: {rule_id}",
+                        )
+                    seen_ids.add(rule_id)
+                reference = rule.get("path")
+                if isinstance(reference, str):
+                    self._project_reference(
+                        path,
+                        reference,
+                        required=rule.get("required") is not False,
+                    )
+                applies_to = rule.get("applies_to")
+                if isinstance(applies_to, list):
+                    for glob_index, value in enumerate(applies_to):
+                        if isinstance(value, str):
+                            self._validate_repository_glob(
+                                path,
+                                value,
+                                f"rules[{index}].applies_to[{glob_index}]",
+                            )
+
+        git_policy = manifest.get("git_policy")
+        if isinstance(git_policy, str):
+            policy_path = self._project_reference(path, git_policy)
+            if policy_path is not None:
+                self._validate_git_delivery_policy(policy_path)
+
     def _markdown_files(self) -> Iterable[Path]:
         readme = self.root / "README.md"
         if readme.is_file():
             yield readme
-        for base in (self.root / ".github", self.root / "docs", self.root / "examples"):
+        for base in (
+            self.root / ".github",
+            self.root / ".project",
+            self.root / "docs",
+            self.root / "examples",
+        ):
             if not base.is_dir():
                 continue
             for path in base.rglob("*.md"):
