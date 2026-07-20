@@ -2,7 +2,7 @@
 name: analyze-bug
 description: 理解错误、验证根因假设并输出证据化 Bug 分析 / Understand errors, test root-cause hypotheses, and report evidence-backed bug analysis
 agent: BugResolver
-argument-hint: Bug 描述、原始错误、复现步骤、相关文件或日志 / Bug description, original error, reproduction, related files, or logs
+argument-hint: Bug 描述、原始错误、复现步骤、是否修复及 Git Delivery / Bug description, error, reproduction, fix authorization, and Git Delivery
 ---
 
 # Analyze Bug
@@ -21,6 +21,8 @@ argument-hint: Bug 描述、原始错误、复现步骤、相关文件或日志 
 
 默认只读分析：保留原始错误，方向为 `CONFIRMED` 或 `NOT_REQUIRED` 后输出引用 Usage Symptom Profile 的共享 `Problem Identification`，再核对环境、revision、复现和 baseline；使用 `search → read → execute` 的证据流程追踪上下文、建立假设并运行最小安全验证。存在 crash、dump、ELF/MAP 或运行日志时同时启用 `fault-analysis` 辅助模式。关键证据缺失时，先搜索仓库并完成安全初判，再用一张共享 `Evidence Request` 表集中索取证据产物并暂停根因确认；不得重复索取、调用 Developer 或把最高概率假设写成已确认根因。
 
+若输入明确授权修复，切换到 `bug-resolution`，提取并在整个修复闭环保留显式 `Git Delivery` 与 commit metadata。输入未提供交付选择时，交付前 Task Brief 使用 `Git Delivery: none` 防止提前写入；门禁全部通过后的 `DELIVERY` 生成一次 `Commit Delivery Confirmation`，建议 `commit` 为待确认默认值。推荐值不构成授权，`commit-and-push`/`auto` 必须显式选择。Jira ID 始终由用户主动提供；其余 commit 字段由 Agent 根据项目、根因、真实 diff、测试和评审证据生成完整预览，只请求用户确认或修正。Project 仅在仍为 `auto` 且无法唯一解析时额外询问。未确认时返回 `BLOCKED`，不得写 Git或生成占位 commit；确认后用单独交付 Task Brief 调用 `EmbeddedDeveloper`，`auto` 进入 `AUTO_DECIDE`。
+
 ## English
 
 Use the `bug-analysis` mode in the `BugResolver` system prompt and the Bug Analysis output contract in `.github/agent-contracts.md` for this input:
@@ -30,3 +32,5 @@ Use the `bug-analysis` mode in the `BugResolver` system prompt and the Bug Analy
 When input is empty or usage context that could change direction is missing, perform `GUIDE_SYMPTOMS` first: emit the shared Usage Symptom Profile and ask unanswered high-information symptoms through one Usage Symptom Questions table, with at most five questions in the first set. Questions collect only user goal/scenario, operation sequence, expected/actual behavior, frequency/boundaries, and environment/impact/recovery. Allow `Unknown`, never mix these questions with Evidence Request, and do not repeat them. If symptoms could indicate multiple modules/root-cause paths, expected versus actual behavior is unclear, or inputs conflict, perform `CONFIRM_DIRECTION`: emit Current Understanding and Possible Directions. Do not trace deeply, confirm root cause, or invoke Developer before confirmation. Mark clear direction `NOT_REQUIRED` and continue.
 
 Analysis is read-only by default: preserve the original error, and after direction is `CONFIRMED` or `NOT_REQUIRED`, emit the shared Problem Identification grounded in the Usage Symptom Profile, then establish environment, revision, reproduction, and baseline. Use the `search → read → execute` evidence flow to trace context, form hypotheses, and run the smallest safe validation. Add `fault-analysis` for crash, dump, ELF/MAP, or runtime-log evidence. When critical evidence is missing, search the repository and finish safe preliminary analysis before asking once for evidence artifacts through the shared Evidence Request table, then pause root-cause confirmation. Never request the same evidence again, invoke Developer, or present the most likely hypothesis as confirmed while the causal chain is incomplete.
+
+If the input explicitly authorizes a fix, switch to `bug-resolution` and preserve explicit `Git Delivery` plus commit metadata throughout the repair loop. When no delivery choice is supplied, use `Git Delivery: none` in pre-delivery Task Briefs to prevent early writes. After all gates pass, create one `Commit Delivery Confirmation` in `DELIVERY` and propose `commit` as the recommended default pending confirmation. A recommendation is not authorization; `commit-and-push`/`auto` require an explicit choice. Jira ID is always user-supplied. Generate every other commit field from the project, root cause, actual diff, tests, and review evidence, show one complete preview, and ask only for confirmation or corrections. Ask for Project additionally only when it remains `auto` and cannot be resolved uniquely. Without confirmation return `BLOCKED`; never write Git or create a placeholder commit. After confirmation invoke `EmbeddedDeveloper` with a separate delivery Task Brief; `auto` enters `AUTO_DECIDE`.

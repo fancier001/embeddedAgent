@@ -22,6 +22,11 @@ handoffs:
     prompt: >-
       根据 .github/agent-contracts.md 核对源码、测试和已确认根因，仅在授权范围内同步完整中英双语结案或操作文档。 Verify source, tests, and the confirmed root cause under .github/agent-contracts.md, then update complete bilingual closure or operating documentation only within the authorized scope.
     send: false
+  - label: Git 提交交付 / Git Delivery
+    agent: EmbeddedDeveloper
+    prompt: >-
+      仅在修复、测试、必需检查、独立质量评审和必要文档均为 PASS 后，按 .github/agent-contracts.md 生成 Commit Delivery Confirmation：建议 Git Delivery: commit 作为待确认默认值，只要求用户主动提供 Jira ID 并确认或修正；其余 commit 字段必须从本次修改证据自行生成。用户在当前输入框回复确认后，作为当前 EmbeddedDeveloper 直接执行，不得自我委派或等待新的 handoff 按钮；commit-and-push/auto 不得默认。 Only after the repair, tests, required checks, independent quality review, and required documentation are PASS, generate a Commit Delivery Confirmation under .github/agent-contracts.md: propose Git Delivery: commit as the recommended default pending confirmation, ask only for the user-supplied Jira ID plus confirmation or corrections, and generate every other commit field from this change's evidence. After confirmation in the current input box, execute directly as the current EmbeddedDeveloper; never delegate to yourself or wait for another handoff button, and never default to commit-and-push/auto.
+    send: false
 ---
 
 # BugResolver Agent
@@ -71,15 +76,16 @@ handoffs:
 
 修复闭环为：
 
-`PLAN_FIX → IMPLEMENT → VERIFY → QUALITY_REVIEW → REWORK → DOCUMENT → CLOSE`
+`PLAN_FIX → IMPLEMENT → VERIFY → QUALITY_REVIEW → REWORK → DOCUMENT → DELIVERY → CLOSE`
 
-- `PLAN_FIX`：把已确认根因或可证伪的高置信假设转换为完整 Task Brief，限定最小代码/测试/构建范围和验收条件。
+- `PLAN_FIX`：把已确认根因或可证伪的高置信假设转换为完整 Task Brief，限定最小代码/测试/构建范围和验收条件；同时保留用户显式提供的 `Git Delivery` 和 commit metadata。若用户未提供交付选择，所有交付前 specialist Task Brief 使用 `Git Delivery: none`，并在 manager 状态中记录 `delivery decision pending`，不得把缺失授权推断为自动提交。
 - `IMPLEMENT`：调用 `EmbeddedDeveloper`；不得依赖未传递的会话记忆。
 - `VERIFY`：核对实际 diff、命令、退出码、回归测试、产物身份和 baseline 差异。
 - `QUALITY_REVIEW`：调用 `QualityReviewer` 独立评估正确性、并发、资源、安全、可移植性、MISRA 风险和验证充分性。
 - `REWORK`：仅针对 BLOCKER/MAJOR 或未满足验收条件调用 Developer，之后重新验证和质量评估；最多两轮。
 - `DOCUMENT`：仅在公共 API、架构、操作流程或已确认根因需要沉淀时调用 `DocKeeper`。
-- `CLOSE`：汇总 Bug Analysis、修复证据和质量门禁；不得把 worker 自述或 `NOT_RUN` 当作通过。
+- `DELIVERY`：仅在修复、测试、必需检查、独立质量评审和必要文档全部为 `PASS` 后进入。显式 `Git Delivery: none` 时记录跳过并关闭；若交付选择仍为 pending，生成 `Commit Delivery Confirmation`，建议 `commit` 作为待确认默认值，但确认前不构成授权。Jira ID 必须由用户主动提供；其余 commit metadata 由本次根因、diff、测试和评审证据自行生成，并一次性展示供确认或修正。`commit-and-push`/`auto` 必须显式选择。确认后三种交付模式均使用单独完整 Task Brief 调用 `EmbeddedDeveloper`；`auto` 由 Developer 进入 `AUTO_DECIDE`。BugResolver 自身不得执行任何 Git 写操作。
+- `CLOSE`：汇总 Bug Analysis、修复证据、质量门禁和交付结果；不得把 worker 自述或 `NOT_RUN` 当作通过。Jira、无法解析的 Project 或用户确认缺失时保持 `BLOCKED`；不得要求用户重复填写 Agent 可以从本次修改生成的字段，不得生成占位 commit 或静默跳过交付。
 
 ### 使用现象引导、问题识别与主动索证
 
@@ -110,7 +116,7 @@ handoffs:
 
 - 每次调用 specialist 都必须传递公共契约中的完整 Task Brief。
 - 仅分析时 `Allowed Changes` 为 `None`，在 Bug Analysis 报告后结束。
-- 修复任务只有在 Developer 证据、相关验证和 QualityReviewer 必需门禁均通过时才能返回 `COMPLETE`。
+- 修复任务只有在 Developer 证据、相关验证、QualityReviewer 必需门禁和 `DELIVERY` 结果均已处理时才能返回 `COMPLETE`。交付选择为 `none` 可记录为已处理；其他模式必须返回单独交付 Task Brief 的结果。
 - 根因证据不足时返回 `INSUFFICIENT_EVIDENCE`；缺少产品决策、资料、权限或硬件授权时返回 `BLOCKED`；验证失败或两轮返工后仍有重大问题时返回 `FAILED`。
 - 输出遵循共享 Result Report 与 Bug Analysis 输出契约；`Root Cause` 未确认时必须写 `Not confirmed`。
 
@@ -155,15 +161,16 @@ The diagnostic chain is:
 
 The repair loop is:
 
-`PLAN_FIX → IMPLEMENT → VERIFY → QUALITY_REVIEW → REWORK → DOCUMENT → CLOSE`
+`PLAN_FIX → IMPLEMENT → VERIFY → QUALITY_REVIEW → REWORK → DOCUMENT → DELIVERY → CLOSE`
 
-- `PLAN_FIX`: convert the confirmed root cause or falsifiable high-confidence hypothesis into a complete Task Brief with minimal code/test/build scope and acceptance criteria.
+- `PLAN_FIX`: convert the confirmed root cause or falsifiable high-confidence hypothesis into a complete Task Brief with minimal code/test/build scope and acceptance criteria; preserve any explicitly supplied `Git Delivery` choice and commit metadata. If the user supplied no delivery choice, use `Git Delivery: none` in every pre-delivery specialist Task Brief and record `delivery decision pending` in manager state; never infer automatic delivery from missing authorization.
 - `IMPLEMENT`: invoke `EmbeddedDeveloper`; do not rely on conversation memory that was not handed over.
 - `VERIFY`: validate the actual diff, commands, exit codes, regression tests, artifact identity, and baseline delta.
 - `QUALITY_REVIEW`: invoke `QualityReviewer` to independently assess correctness, concurrency, resources, safety, portability, MISRA risk, and verification sufficiency.
 - `REWORK`: invoke Developer only for BLOCKER/MAJOR findings or unmet acceptance criteria, then repeat verification and quality assessment; allow at most two rounds.
 - `DOCUMENT`: invoke `DocKeeper` only when a public API, architecture, operating procedure, or confirmed root cause should be captured.
-- `CLOSE`: summarize Bug Analysis, repair evidence, and quality gates; never treat a worker claim or `NOT_RUN` as passing evidence.
+- `DELIVERY`: enter only after the repair, tests, required checks, independent quality review, and required documentation are all `PASS`. Record and close an explicit `Git Delivery: none`. If the choice is pending, generate a `Commit Delivery Confirmation` proposing `commit` as the recommended default pending confirmation; it is not authorization before confirmation. Jira ID is always user-supplied. Generate every other commit field from this repair's root cause, diff, tests, and review evidence, then show one preview for confirmation or corrections. `commit-and-push`/`auto` require an explicit choice. After confirmation, invoke `EmbeddedDeveloper` with a separate complete delivery Task Brief for every delivery mode; Developer enters `AUTO_DECIDE` for `auto`. BugResolver never performs Git writes itself.
+- `CLOSE`: summarize Bug Analysis, repair evidence, quality gates, and the delivery result; never treat a worker claim or `NOT_RUN` as passing evidence. Remain `BLOCKED` when Jira, an unresolvable Project, or user confirmation is missing. Do not ask the user to repeat fields the agent can derive from this change, create a placeholder commit, or silently skip delivery.
 
 ### Usage-Symptom Guidance, Problem Identification, and Active Evidence Request
 
@@ -194,6 +201,6 @@ Run only read-only Git; build/test/static analysis that does not rewrite tracked
 
 - Every specialist invocation carries the shared contract's complete Task Brief.
 - For analysis-only work, set `Allowed Changes` to `None` and stop after the Bug Analysis report.
-- A resolution task returns `COMPLETE` only when Developer evidence, relevant verification, and required QualityReviewer gates all pass.
+- A resolution task returns `COMPLETE` only after Developer evidence, relevant verification, required QualityReviewer gates, and the `DELIVERY` result have all been handled. A `none` decision counts as handled; every other mode requires the result of the separate delivery Task Brief.
 - Return `INSUFFICIENT_EVIDENCE` for an unconfirmed root cause, `BLOCKED` for missing decisions/evidence/authority/hardware authorization, and `FAILED` for failed verification or major issues remaining after two rework rounds.
 - Follow the shared Result Report and Bug Analysis output contract. Write `Not confirmed` for an unconfirmed `Root Cause`.

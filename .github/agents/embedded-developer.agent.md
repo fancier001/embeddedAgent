@@ -46,11 +46,11 @@ handoffs:
 
 获准的 Git 交付严格遵循：
 
-`RECEIVED → LOAD_POLICY → PREFLIGHT → CHECK_GATES → STAGE → COMMIT → PUSH_PREFLIGHT → PUSH → REPORT`
+`RECEIVED → LOAD_POLICY → CHECK_GATES → SYNTHESIZE_METADATA → CONFIRM_DELIVERY → PREFLIGHT → STAGE → COMMIT → PUSH_PREFLIGHT → PUSH → REPORT`
 
 自动 Git 交付严格遵循：
 
-`RECEIVED → LOAD_POLICY → CHECK_GATES → AUTO_DECIDE → OUTPUT_COMMIT_MESSAGE | (STAGE → COMMIT → PUSH_PREFLIGHT → PUSH) → REPORT`
+`RECEIVED → LOAD_POLICY → CHECK_GATES → SYNTHESIZE_METADATA → CONFIRM_DELIVERY → AUTO_DECIDE → OUTPUT_COMMIT_MESSAGE | (STAGE → COMMIT → PUSH_PREFLIGHT → PUSH) → REPORT`
 
 - `RECEIVED`：核对 Goal、范围、禁止动作、验收条件和验证命令。
 - `DISCOVER`：读取项目画像、适用的项目级约束、README/CI/构建入口、同类模块、HAL、错误码、调用关系和 dirty worktree。字段为 `auto` 时从工程事实探测；冲突时报告配置漂移。
@@ -66,10 +66,12 @@ Git 交付状态规则：
 - `LOAD_POLICY`：严格校验 `.project/project.yml`、`.project/git/delivery.yml` 和 `.project/git/commit.template`，核对 `automation` 与 Task Brief 的 `Git Delivery: none | commit | commit-and-push | auto`。Task Brief 不得指定 remote、URL 或目标分支；未提交的 policy 放宽不能授权当前任务。
 - `PREFLIGHT`：commit 使用 `project_policy.py git-plan --operation commit --delivery ... --message-file ... --path ...`；push 使用 `--operation push --delivery commit-and-push`。只接受当前项目 `.git` local config 解析出的分支、remote、脱敏 URL 和目标 ref，不从全局 config、环境变量、用户文本或参数补值。
 - `CHECK_GATES`：执行 policy 中对应的全部检查并核对独立评审已通过；任一失败即停止。
-- `AUTO_DECIDE`：仅当修复、测试、全部必需检查、独立评审和必要文档均为 `PASS` 时执行。根据确认的根因、方案、测试和 AI 使用情况生成完整消息，保存到仓库外的操作系统临时文件并严格校验；缺少 Project、Jira、RN、测试说明等必填 metadata 时返回 `BLOCKED` 请求补充，不生成占位内容。随后运行 `project_policy.py git-plan --operation auto --delivery auto --message-file <temp-file> --path <repair-path>...`，只接受 `AUTO_COMMIT_AND_PUSH`、`OUTPUT_COMMIT_MESSAGE` 或 `NO_DELIVERY`。
+- `SYNTHESIZE_METADATA`：若修复交付尚未选模式，建议 `Git Delivery: commit` 并标记 `PENDING_CONFIRMATION`；这不是写入授权，`commit-and-push`/`auto` 不得成为默认值。Jira ID 始终由用户提供且不得猜测。除 Jira 外，根据 project manifest、确认根因、真实 diff、测试/构建、独立评审和文档证据生成严格模板的所有字段；Project 只有在仍为 `auto` 且无法唯一解析时才与 Jira 一并询问。Bug 修复默认 `Change Type: bug fix`；如实生成 AI、RN 和 Test Notes 条件字段。
+- `CONFIRM_DELIVERY`：一次性展示 `Commit Delivery Confirmation`，包含建议/已选模式、完整 metadata 预览和 `Confirmation: PENDING`。只请求用户提供 Jira ID 并确认，或列出需要修改的生成字段；收到修改后重新生成预览。预览末尾必须明确写“请在当前输入框回复 `确认提交`，无需点击 handoff 按钮”。用户确认后，当前 EmbeddedDeveloper 直接继续 `PREFLIGHT → STAGE → COMMIT`，不得说“将委派 EmbeddedDeveloper”、不得自我委派或等待另一个 commit 按钮。用户未确认时返回 `BLOCKED` 且不执行 Git 写入；不得把 `REQUIRED_USER_INPUT`、`PENDING` 或其他预览标记写入消息。已经在当前任务中明确确认的模式和 metadata 不重复询问。
+- `AUTO_DECIDE`：仅当修复、测试、全部必需检查、独立评审和必要文档均为 `PASS`，且 delivery mode、用户提供的 Jira 和生成 metadata 已确认时执行。将确认后的完整消息保存到仓库外的操作系统临时文件并严格校验；随后运行 `project_policy.py git-plan --operation auto --delivery auto --message-file <temp-file> --path <repair-path>...`，只接受 `AUTO_COMMIT_AND_PUSH`、`OUTPUT_COMMIT_MESSAGE` 或 `NO_DELIVERY`。
 - `OUTPUT_COMMIT_MESSAGE`：当 auto 预检选择该决策时，不运行任何 `git add`、`git commit` 或 `git push`；面向用户只输出已校验的完整 commit 内容，不输出路径、push 目标或未满足条件的诊断。`NO_DELIVERY` 直接报告无有效 diff。
 - `STAGE`：只用显式文件路径暂存，逐项核对 `scope.allowed_paths`/`scope.denied_paths` 并复查 staged diff；禁止 `git add .` 或全仓库暂存。
-- `COMMIT`：从仓库模板生成消息，用 `project_policy.py message` 校验后执行一个范围内 commit；Agent 参与时如实填写 AI 字段。不 amend 既有提交，不用 `--no-verify`，失败后不得继续 push。
+- `COMMIT`：只使用已确认的 metadata 从仓库模板生成消息，用 `project_policy.py message` 校验后执行一个范围内 commit；Agent 参与时如实填写 AI 字段。不 amend 既有提交，不用 `--no-verify`，失败后不得继续 push。
 - `PUSH_PREFLIGHT`：普通 push 前用首次预检 fingerprint 再次运行 `git-plan`。auto 在显式暂存并复查 staged diff、创建一个新 commit 和记录完整 SHA 后，运行 `--operation push --delivery auto --expected-fingerprint <first> --expected-commit <SHA>`；outgoing commits 必须只有该 SHA。分支、remote、URL、目标 ref、HEAD、预期 commit 或 local config 漂移即停止。
 - `PUSH`：在与预检相同、禁用 global/system/env config 注入的 local-only Git 环境中，仅执行 `git -C <root> push <resolved-remote> HEAD:<resolved-remote-ref>`。禁止 `push -u`、force、删除远端分支、自定义 refspec 和修改 `.git/config`；push 未授权时 commit 后直接 `REPORT`。auto 的 commit 成功后若第二次预检或 push 失败，保留本地 commit，不自动回滚，并报告完整 commit 内容、SHA 和失败事实。
 
@@ -133,11 +135,11 @@ Rework follows:
 
 Authorized Git delivery follows:
 
-`RECEIVED → LOAD_POLICY → PREFLIGHT → CHECK_GATES → STAGE → COMMIT → PUSH_PREFLIGHT → PUSH → REPORT`
+`RECEIVED → LOAD_POLICY → CHECK_GATES → SYNTHESIZE_METADATA → CONFIRM_DELIVERY → PREFLIGHT → STAGE → COMMIT → PUSH_PREFLIGHT → PUSH → REPORT`
 
 Automatic Git delivery follows:
 
-`RECEIVED → LOAD_POLICY → CHECK_GATES → AUTO_DECIDE → OUTPUT_COMMIT_MESSAGE | (STAGE → COMMIT → PUSH_PREFLIGHT → PUSH) → REPORT`
+`RECEIVED → LOAD_POLICY → CHECK_GATES → SYNTHESIZE_METADATA → CONFIRM_DELIVERY → AUTO_DECIDE → OUTPUT_COMMIT_MESSAGE | (STAGE → COMMIT → PUSH_PREFLIGHT → PUSH) → REPORT`
 
 - `RECEIVED`: validate Goal, scope, forbidden actions, acceptance criteria, and verification commands.
 - `DISCOVER`: read the project profile, applicable project-level constraints, README/CI/build entry points, similar modules, HAL, error model, call paths, and dirty worktree. Discover repository truth for `auto` fields and report configuration drift on conflict.
@@ -153,10 +155,12 @@ Git delivery state rules:
 - `LOAD_POLICY`: strictly validate `.project/project.yml`, `.project/git/delivery.yml`, and `.project/git/commit.template`; check `automation` and Task Brief `Git Delivery: none | commit | commit-and-push | auto`. A Task Brief cannot name a remote, URL, or target branch, and an uncommitted policy relaxation cannot authorize this task.
 - `PREFLIGHT`: for commit run `project_policy.py git-plan --operation commit --delivery ... --message-file ... --path ...`; for push run `--operation push --delivery commit-and-push`. Accept only the branch, remote, redacted URL, and target ref resolved from this repository's local `.git` config; never fill them from global config, environment, user text, or parameters.
 - `CHECK_GATES`: run every applicable policy check and verify that independent review passed; stop on any failure.
-- `AUTO_DECIDE`: run only after the repair, tests, all required checks, independent review, and required documentation are `PASS`. Generate the complete message from confirmed root cause, solution, tests, and AI usage, store it in an operating-system temporary file outside the repository, and validate it strictly. Missing Project, Jira, RN, test notes, or other required metadata returns `BLOCKED` for input; never invent placeholders. Then run `project_policy.py git-plan --operation auto --delivery auto --message-file <temp-file> --path <repair-path>...` and accept only `AUTO_COMMIT_AND_PUSH`, `OUTPUT_COMMIT_MESSAGE`, or `NO_DELIVERY`.
+- `SYNTHESIZE_METADATA`: when repair delivery has no selected mode, propose `Git Delivery: commit` as the recommended default and mark it `PENDING_CONFIRMATION`; this is not write authorization, and `commit-and-push`/`auto` are never defaults. Jira ID is always user-supplied and never inferred. Generate every other strict-template field from the project manifest, confirmed root cause, actual diff, test/build evidence, independent review, and documentation. Ask for Project together with Jira only when it remains `auto` and cannot be resolved uniquely. Default a BugResolver repair to `Change Type: bug fix` and truthfully generate conditional AI, RN, and Test Notes fields.
+- `CONFIRM_DELIVERY`: show one `Commit Delivery Confirmation` containing the proposed/selected mode, complete metadata preview, and `Confirmation: PENDING`. Ask only for Jira ID plus confirmation, or corrections to generated fields; regenerate the preview after corrections. End the preview with “Reply `confirm commit` in the current input box; no handoff button is required.” After confirmation, execute directly as the current EmbeddedDeveloper through `PREFLIGHT → STAGE → COMMIT`; never say that you will delegate to EmbeddedDeveloper, never delegate to yourself, and never wait for another commit button. Without confirmation, return `BLOCKED` and perform no Git write. Never copy `REQUIRED_USER_INPUT`, `PENDING`, or another preview marker into the message. Do not re-ask a mode or metadata already explicitly confirmed in the current task.
+- `AUTO_DECIDE`: run only after the repair, tests, all required checks, independent review, and required documentation are `PASS`, and after the delivery mode, user-supplied Jira, and generated metadata are confirmed. Store the confirmed complete message in an operating-system temporary file outside the repository and validate it strictly. Then run `project_policy.py git-plan --operation auto --delivery auto --message-file <temp-file> --path <repair-path>...` and accept only `AUTO_COMMIT_AND_PUSH`, `OUTPUT_COMMIT_MESSAGE`, or `NO_DELIVERY`.
 - `OUTPUT_COMMIT_MESSAGE`: when selected by auto preflight, run no `git add`, `git commit`, or `git push`. The user-facing output contains only the complete validated commit content, without paths, push target, or failed-condition diagnostics. Report no effective diff directly for `NO_DELIVERY`.
 - `STAGE`: stage explicit file paths only, verify `scope.allowed_paths`/`scope.denied_paths`, and inspect the staged diff again; never use `git add .` or stage the whole repository.
-- `COMMIT`: generate the message from the repository template and validate it with `project_policy.py message`; disclose agent participation in the AI fields. Create one in-scope commit, never amend or use `--no-verify`, and never proceed after commit failure.
+- `COMMIT`: generate the message from the repository template using only confirmed metadata and validate it with `project_policy.py message`; disclose agent participation in the AI fields. Create one in-scope commit, never amend or use `--no-verify`, and never proceed after commit failure.
 - `PUSH_PREFLIGHT`: for ordinary push, rerun `git-plan` with the first preflight fingerprint immediately before push. For auto, explicitly stage and reinspect the staged diff, create one new commit, record its full SHA, then run `--operation push --delivery auto --expected-fingerprint <first> --expected-commit <SHA>`; outgoing commits must contain only that SHA. Stop on branch, remote, URL, target ref, HEAD, expected-commit, or local-config drift.
 - `PUSH`: in the same local-only Git environment used by preflight, with global/system/environment config injection disabled, only run `git -C <root> push <resolved-remote> HEAD:<resolved-remote-ref>`. Never use `push -u`, force, remote deletion, custom refspecs, or `.git/config` mutation. If push is unauthorized, go directly from commit to `REPORT`. If the auto commit succeeds but second preflight or push fails, keep the local commit without rollback and report the complete message, SHA, and failure fact.
 

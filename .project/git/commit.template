@@ -1,3 +1,5 @@
+# Jira ID 必须由用户主动提供；Agent 不得猜测。 / Jira ID must be user-supplied; the agent never infers it.
+# 其余字段由本次修改、测试和评审证据生成，并在写 Git 前确认。 / Generate all other fields from change/test/review evidence and confirm them before Git writes.
 <Project><Function block>: <Summary>
 <Change Type>:new requirements/bug fix
 <Change Reason>:

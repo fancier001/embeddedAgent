@@ -67,10 +67,18 @@ INTAKE → PREFLIGHT → PLAN → IMPLEMENT → VERIFY → REVIEW
                                               │
                           最多两轮 REWORK ◀───┘
                                               │
-                         DOCUMENT（按需）→ CLOSE
+                DOCUMENT（按需）→ DELIVERY → CLOSE
 ```
 
-Bug 请求通过 `/analyze-bug`、`/analyze-log`、直接选择或 Orchestrator 的人工 handoff 进入 `BugResolver`，两个 manager 不自动嵌套。诊断路径为 `INTAKE → GUIDE_SYMPTOMS → CONFIRM_DIRECTION（按需）→ SCOPE → NORMALIZE_ERROR → IDENTIFY_PROBLEM → TRACE_CONTEXT → REPRODUCE_BASELINE → EVIDENCE_CHECK → AWAIT_EVIDENCE / HYPOTHESES → VALIDATE_CAUSE → DECIDE`；用户明确授权修复后，再进入 `PLAN_FIX → IMPLEMENT → VERIFY → QUALITY_REVIEW → REWORK → DOCUMENT → CLOSE`。
+Bug 请求通过 `/analyze-bug`、`/analyze-log`、直接选择或 Orchestrator 的人工 handoff 进入 `BugResolver`，两个 manager 不自动嵌套。诊断路径为 `INTAKE → GUIDE_SYMPTOMS → CONFIRM_DIRECTION（按需）→ SCOPE → NORMALIZE_ERROR → IDENTIFY_PROBLEM → TRACE_CONTEXT → REPRODUCE_BASELINE → EVIDENCE_CHECK → AWAIT_EVIDENCE / HYPOTHESES → VALIDATE_CAUSE → DECIDE`；用户明确授权修复后，再进入 `PLAN_FIX → IMPLEMENT → VERIFY → QUALITY_REVIEW → REWORK → DOCUMENT → DELIVERY → CLOSE`。
+
+BugResolver 会把显式 `Git Delivery` 和 commit metadata 保留到 `DELIVERY`。若修复请求未提供交付选择，交付前统一使用 `none` 防止提前写入；门禁全部通过后生成一次 `Commit Delivery Confirmation`，建议 `commit` 为待确认默认值。推荐值不构成授权，用户确认前不写 Git；`commit-and-push`/`auto` 必须明确选择，显式 `none` 记录跳过。
+
+Jira ID 是唯一始终要求用户主动提供的 commit 字段，Agent 不会从分支或路径猜测。Project 优先从 `.project/project.yml` 或已确认任务上下文解析；Function block、Summary、Change Type、原因、根因、方案、AI 使用、影响功能、适用项目、RN 和 Test Notes 均从本次根因、真实 diff、测试、评审和文档证据生成。Agent 一次性展示完整预览，用户只需回复 Jira ID 并确认，或指出要修改的字段；未确认时返回 `BLOCKED` 且 Git 状态不变。
+
+VS Code 的人工 handoff 不会自动返回上一 manager，因此 `BugResolver`、`QualityReviewer` 和 `DocKeeper` 都显式提供 `Git 提交交付 / Git Delivery` 按钮。质量评审 PASS 后可以直接进入交付；若先沉淀文档，DocKeeper 完成后仍可进入同一交付入口。按钮只负责切换到 `EmbeddedDeveloper`，Developer 仍会核对全部 PASS 证据、任务授权、严格 commit metadata 和项目 policy，条件不足时不会写 Git。
+
+进入 EmbeddedDeveloper 并看到 `Commit Delivery Confirmation` 后，最后一步不是另一个 handoff 按钮。用户在当前输入框回复 `确认提交，按 commit 模式执行` 即完成授权，当前 EmbeddedDeveloper 随即直接执行 preflight、显式暂存和 commit。底部仍显示的“独立评审 / 文档同步”是该 Agent 的固定后续 handoff，不是提交确认按钮；Developer 不得再声称要委派给自己。
 
 BugResolver 先用 `Usage Symptom Profile` 理解用户目标、实际操作、预期/实际、频率/边界、环境、影响和恢复；缺少会改变分析方向的现象时，通过一张 `Usage Symptom Questions` 表集中询问，首轮最多 5 个，允许回答 `Unknown`。只有可能指向不同模块/根因路径或输入矛盾时才要求方向确认；确认前不深入追踪或委派 Developer，场景清晰时直接继续。随后用引用该 Profile 的 `Problem Identification` 区分已观察问题、类别、疑似子系统、严重度和证据置信度。
 
@@ -142,7 +150,7 @@ Orchestrator 与 BugResolver frontmatter 中的 `agents` allowlist 可能依赖�
 - 分析或解决 Bug/日志问题：选择 `BugResolver`，可先提供已有的原始错误或日志；Agent 会引导补齐实际使用目标、步骤、预期/实际、频率/边界、环境和影响，方向清晰后识别问题，并在本地发现后集中请求仍缺少的最小证据。需要解决时明确是否授权修改。
 - 只做独立质量评估：选择 `QualityReviewer`，提供需求、真实 diff/files 和可用构建/测试/静态分析证据。
 - 只维护文档：选择 `DocKeeper`，提供已经确认的源码/API/测试或根因证据。
-- 自动 Git 交付：Task Brief 的 `Git Delivery` 只写 `none`、`commit`、`commit-and-push` 或 `auto`，并先在 `.project` policy 中启用对应 `automation`；remote、URL 和目标分支始终由当前项目 `.git` 解析。Orchestrator 只在门禁和独立评审后单独委派 `EmbeddedDeveloper` 交付。`auto` 会安全地在“自动 commit+push”和“仅输出完整 commit 内容”之间选择，不会降级为仅自动 commit。
+- 自动 Git 交付：Task Brief 的 `Git Delivery` 只写 `none`、`commit`、`commit-and-push` 或 `auto`，并先在 `.project` policy 中启用对应 `automation`；remote、URL 和目标分支始终由当前项目 `.git` 解析。当前 manager（Orchestrator 或 BugResolver）只在门禁和独立评审后单独委派 `EmbeddedDeveloper` 交付。`auto` 会安全地在“自动 commit+push”和“仅输出完整 commit 内容”之间选择，不会降级为仅自动 commit。
 
 ### 安全与权限
 
@@ -291,10 +299,18 @@ INTAKE → PREFLIGHT → PLAN → IMPLEMENT → VERIFY → REVIEW
                                               │
                        up to two REWORK rounds ◀───┘
                                               │
-                         DOCUMENT (as needed) → CLOSE
+                DOCUMENT (as needed) → DELIVERY → CLOSE
 ```
 
-Bug requests enter `BugResolver` through `/analyze-bug`, `/analyze-log`, direct selection, or Orchestrator's manual handoff; the two managers are never auto-nested. Its diagnostic path is `INTAKE → GUIDE_SYMPTOMS → CONFIRM_DIRECTION (when needed) → SCOPE → NORMALIZE_ERROR → IDENTIFY_PROBLEM → TRACE_CONTEXT → REPRODUCE_BASELINE → EVIDENCE_CHECK → AWAIT_EVIDENCE / HYPOTHESES → VALIDATE_CAUSE → DECIDE`. After the user explicitly authorizes a fix, it continues through `PLAN_FIX → IMPLEMENT → VERIFY → QUALITY_REVIEW → REWORK → DOCUMENT → CLOSE`.
+Bug requests enter `BugResolver` through `/analyze-bug`, `/analyze-log`, direct selection, or Orchestrator's manual handoff; the two managers are never auto-nested. Its diagnostic path is `INTAKE → GUIDE_SYMPTOMS → CONFIRM_DIRECTION (when needed) → SCOPE → NORMALIZE_ERROR → IDENTIFY_PROBLEM → TRACE_CONTEXT → REPRODUCE_BASELINE → EVIDENCE_CHECK → AWAIT_EVIDENCE / HYPOTHESES → VALIDATE_CAUSE → DECIDE`. After the user explicitly authorizes a fix, it continues through `PLAN_FIX → IMPLEMENT → VERIFY → QUALITY_REVIEW → REWORK → DOCUMENT → DELIVERY → CLOSE`.
+
+BugResolver preserves explicit `Git Delivery` and commit metadata through `DELIVERY`. If a repair request omitted the delivery choice, all pre-delivery work uses `none` to prevent early writes. After all gates pass it creates one `Commit Delivery Confirmation` and proposes `commit` as the recommended default pending confirmation. A recommendation is not authorization and Git remains unchanged before confirmation. `commit-and-push`/`auto` require an explicit choice; explicit `none` records a skip.
+
+Jira ID is the only commit field that is always user-supplied; the agent never guesses it from a branch or path. Project comes from `.project/project.yml` or confirmed task context when resolvable. Function block, Summary, Change Type, reason, root cause, solution, AI usage, affected function, applicable project, RN, and Test Notes are generated from the confirmed root cause, actual diff, tests, review, and documentation evidence. The agent shows one complete preview; the user need only reply with Jira ID plus confirmation, or name corrections. Without confirmation the result is `BLOCKED` and Git remains unchanged.
+
+A manual VS Code handoff does not automatically return to the previous manager, so `BugResolver`, `QualityReviewer`, and `DocKeeper` each expose a `Git 提交交付 / Git Delivery` button. Delivery can follow a PASS quality review directly, or follow DocKeeper when documentation runs first. The button only switches to `EmbeddedDeveloper`; Developer still verifies every PASS result, task authorization, strict commit metadata, and project policy, and performs no Git write when prerequisites are missing.
+
+After entering EmbeddedDeveloper and seeing `Commit Delivery Confirmation`, the final step is not another handoff button. Reply `confirm commit` in the current input box; the current EmbeddedDeveloper then runs preflight, explicit staging, and commit directly. The persistent Quality Review / Document Changes buttons are static follow-up handoffs for that agent, not commit confirmation actions. Developer never delegates to itself.
 
 BugResolver first uses Usage Symptom Profile to understand the user's goal, actual operations, expected/actual behavior, frequency/boundaries, environment, impact, and recovery. When direction-changing symptoms are missing, it asks them together through one Usage Symptom Questions table with at most five questions in the first set and permits `Unknown`. It asks for direction confirmation only when symptoms indicate different modules/root-cause paths or conflict; it does not trace deeply or delegate Developer before confirmation, and proceeds directly when the scenario is clear. It then emits Problem Identification grounded in that Profile to separate the observed problem, category, suspected subsystem, severity, and evidence confidence.
 
@@ -366,7 +382,7 @@ Direct mode:
 - Bug/log analysis or resolution: select `BugResolver` and provide any available original error or log. The agent guides you to complete the real goal, steps, expected/actual behavior, frequency/boundaries, environment, and impact; once direction is clear, it identifies the problem, discovers local context, and asks once for the remaining minimum evidence. State whether changes are authorized when resolution is required.
 - Independent quality assessment only: select `QualityReviewer` and provide requirements, the real diff/files, and available build/test/static-analysis evidence.
 - Documentation only: select `DocKeeper` and provide confirmed source/API/test or root-cause evidence.
-- Automatic Git delivery: set Task Brief `Git Delivery` to only `none`, `commit`, `commit-and-push`, or `auto` and enable matching `.project` `automation`. The remote, URL, and target branch always come from this project's `.git`. Orchestrator delegates a separate delivery task to `EmbeddedDeveloper` only after gates and independent review. `auto` safely chooses between automatic commit-plus-push and outputting only the complete commit content; it never degrades to automatic commit-only.
+- Automatic Git delivery: set Task Brief `Git Delivery` to only `none`, `commit`, `commit-and-push`, or `auto` and enable matching `.project` `automation`. The remote, URL, and target branch always come from this project's `.git`. The current manager (Orchestrator or BugResolver) delegates a separate delivery task to `EmbeddedDeveloper` only after gates and independent review. `auto` safely chooses between automatic commit-plus-push and outputting only the complete commit content; it never degrades to automatic commit-only.
 
 ### Safety and Permissions
 
