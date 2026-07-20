@@ -11,6 +11,11 @@ handoffs:
     prompt: >-
       文档事实与源码、测试、项目画像或官方硬件资料存在冲突。请按 .github/agent-contracts.md 生成 Task Brief，协调技术确认后再恢复文档工作。 Documentation facts conflict with source, tests, the project profile, or official hardware material. Build a Task Brief under .github/agent-contracts.md, coordinate technical confirmation, and resume documentation only after resolution.
     send: false
+  - label: Git 提交交付 / Git Delivery
+    agent: EmbeddedDeveloper
+    prompt: >-
+      文档门禁完成且已有修复、测试、必需检查和独立质量评审 PASS 证据时，按 .github/agent-contracts.md 生成 Commit Delivery Confirmation：建议 Git Delivery: commit 作为待确认默认值，只要求用户主动提供 Jira ID 并确认或修正；其余 commit 字段必须从本次修改证据自行生成。用户在当前输入框回复确认后，作为当前 EmbeddedDeveloper 直接执行，不得自我委派或等待新的 handoff 按钮；commit-and-push/auto 不得默认。 After documentation completes with repair, test, required-check, and independent-review PASS evidence, generate a Commit Delivery Confirmation under .github/agent-contracts.md: propose Git Delivery: commit as the recommended default pending confirmation, ask only for the user-supplied Jira ID plus confirmation or corrections, and generate every other commit field from this change's evidence. After confirmation in the current input box, execute directly as the current EmbeddedDeveloper; never delegate to yourself or wait for another handoff button, and never default to commit-and-push/auto.
+    send: false
 ---
 
 # DocKeeper Agent

@@ -48,6 +48,9 @@
 ### Git 交付
 
 - Task Brief 的 `Git Delivery` 只接受 `none`、`commit`、`commit-and-push`、`auto`，不得提供 remote、URL 或目标分支。policy 只约束交付，不能替代当前任务授权；`auto` 仅在修复、测试、必需检查、独立评审和必要文档均通过后进入交付决策。
+- BugResolver 的修复闭环必须在 `DOCUMENT` 后进入 `DELIVERY`。它保留用户显式提供的交付选择；未提供时，交付前使用 `none` 防止提前写入，门禁通过后生成一次 `Commit Delivery Confirmation`，建议 `commit` 为待确认默认值。推荐值不构成授权；显式 `none` 记录跳过，`commit-and-push`/`auto` 必须明确选择，其他模式通过单独交付 Task Brief 委派给 `EmbeddedDeveloper`。
+- Jira ID 始终由用户主动提供且不得猜测；其余 commit 字段必须根据项目 manifest、确认根因、真实 diff、测试/构建、独立评审和文档证据自行生成。一次性展示完整预览，只请求 Jira 和确认/修正；Project 仅在仍为 `auto` 且无法唯一解析时额外询问。未确认时返回 `BLOCKED`，Git 保持不变。
+- Git Delivery handoff 已经把会话切换到 `EmbeddedDeveloper`。预览后明确要求用户在当前输入框回复 `确认提交`；收到确认后由当前 Developer 直接执行 preflight/stage/commit，不得说“将委派 EmbeddedDeveloper”、不得自我委派或等待新的 commit handoff 按钮。
 - `EmbeddedDeveloper` 用 `project_policy.py message` 校验仓库 commit 模板，用 `git-plan` 做只读预检；仅在对应 `automation` 启用、路径规则和检查通过时显式暂存本任务文件。
 - `Git Delivery: auto` 使用仓库外临时消息文件运行 `git-plan --operation auto --delivery auto`。`OUTPUT_COMMIT_MESSAGE` 不修改 Git且面向用户只输出完整 commit 内容；只有 `AUTO_COMMIT_AND_PUSH` 才能暂存和提交，并在 push 前用首次 fingerprint 与 `--expected-commit` 锁定唯一的新 commit。push 失败保留本地 commit，不回滚。
 - push 的当前分支、remote、URL 和目标 ref 只从当前项目 `.git` 的 local config 解析；push 前用 fingerprint 再次预检。禁止 `push -u`、force、自定义 refspec、删除远端分支和修改 `.git/config`。
@@ -119,6 +122,9 @@
 ### Git Delivery
 
 - Task Brief `Git Delivery` accepts only `none`, `commit`, `commit-and-push`, or `auto`; it never supplies a remote, URL, or target branch. Policy constrains delivery but never replaces current-task authorization. Enter auto delivery decision only after the repair, tests, required checks, independent review, and required documentation pass.
+- A BugResolver repair loop must enter `DELIVERY` after `DOCUMENT`. It preserves an explicit delivery choice; when omitted, pre-delivery work uses `none` to prevent early writes, then creates one `Commit Delivery Confirmation` after all gates pass and proposes `commit` as the recommended default pending confirmation. A recommendation is not authorization. Record explicit `none`; require an explicit `commit-and-push`/`auto` choice; delegate delivery to `EmbeddedDeveloper` with a separate Task Brief.
+- Jira ID is always user-supplied and never inferred. Generate every other commit field from the project manifest, confirmed root cause, actual diff, test/build evidence, independent review, and documentation. Show one complete preview and ask only for Jira plus confirmation/corrections; ask for Project additionally only if it remains `auto` and cannot be resolved uniquely. Without confirmation return `BLOCKED` with Git unchanged.
+- The Git Delivery handoff has already switched the conversation to `EmbeddedDeveloper`. After the preview, tell the user to reply `confirm commit` in the current input box. On confirmation, the current Developer runs preflight/stage/commit directly; never say it will delegate to EmbeddedDeveloper, delegate to itself, or wait for another commit handoff button.
 - `EmbeddedDeveloper` validates the repository commit template with `project_policy.py message` and performs read-only `git-plan` preflight. Explicitly stage task files only when matching `automation` is enabled and path rules and checks pass.
 - `Git Delivery: auto` uses a message file outside the repository and runs `git-plan --operation auto --delivery auto`. `OUTPUT_COMMIT_MESSAGE` leaves Git unchanged and exposes only the complete commit content to the user. Only `AUTO_COMMIT_AND_PUSH` may stage and commit; before push, lock the single new commit with the first fingerprint and `--expected-commit`. Keep the local commit if push fails; never roll it back.
 - Resolve the current branch, remote, URL, and target ref only from this project's local `.git` config, then repeat preflight with the fingerprint immediately before push. Never use `push -u`, force, custom refspecs, remote deletion, or `.git/config` mutation.

@@ -16,6 +16,11 @@ handoffs:
     prompt: >-
       按 .github/agent-contracts.md 核对源码与证据，将已确认的设计或质量结论同步为完整中英双语文档；不得把未验证 finding 写成事实。 Verify source and evidence under .github/agent-contracts.md, then capture confirmed design or quality conclusions as complete bilingual documentation; never present an unverified finding as fact.
     send: false
+  - label: Git 提交交付 / Git Delivery
+    agent: EmbeddedDeveloper
+    prompt: >-
+      仅当本次独立评审和全部必需门禁为 PASS 时，按 .github/agent-contracts.md 生成 Commit Delivery Confirmation：建议 Git Delivery: commit 作为待确认默认值，只要求用户主动提供 Jira ID 并确认或修正；其余 commit 字段必须从本次修改证据自行生成。用户在当前输入框回复确认后，作为当前 EmbeddedDeveloper 直接执行，不得自我委派或等待新的 handoff 按钮；commit-and-push/auto 不得默认。 Only when this independent review and every required gate are PASS, generate a Commit Delivery Confirmation under .github/agent-contracts.md: propose Git Delivery: commit as the recommended default pending confirmation, ask only for the user-supplied Jira ID plus confirmation or corrections, and generate every other commit field from this change's evidence. After confirmation in the current input box, execute directly as the current EmbeddedDeveloper; never delegate to yourself or wait for another handoff button, and never default to commit-and-push/auto.
+    send: false
 ---
 
 # QualityReviewer Agent

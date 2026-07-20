@@ -209,10 +209,16 @@ class CustomizationValidatorTests(unittest.TestCase):
                 "`OUTPUT_COMMIT_MESSAGE`",
             ),
             "embedded-developer.agent.md": (
+                "`SYNTHESIZE_METADATA`",
+                "`CONFIRM_DELIVERY`",
                 "`AUTO_DECIDE`",
                 "`AUTO_COMMIT_AND_PUSH`",
                 "`OUTPUT_COMMIT_MESSAGE`",
                 "--expected-commit",
+                "recommended default",
+                "Jira ID is always user-supplied",
+                "execute directly as the current EmbeddedDeveloper",
+                "never delegate to yourself",
             ),
         }
         for name, markers in required.items():
@@ -236,6 +242,7 @@ class CustomizationValidatorTests(unittest.TestCase):
         agent = self.repo / ".github" / "agents" / "bug-resolver.agent.md"
         original = agent.read_text(encoding="utf-8")
         for marker in (
+            "DOCUMENT → DELIVERY → CLOSE",
             "GUIDE_SYMPTOMS",
             "CONFIRM_DIRECTION",
             "Usage Symptom Questions",
@@ -244,6 +251,12 @@ class CustomizationValidatorTests(unittest.TestCase):
             "IDENTIFY_PROBLEM",
             "EVIDENCE_CHECK",
             "AWAIT_EVIDENCE",
+            "`Git Delivery`",
+            "`AUTO_DECIDE`",
+            "Commit Delivery Confirmation",
+            "recommended default",
+            "Jira ID is always user-supplied",
+            "separate complete delivery Task Brief",
         ):
             with self.subTest(marker=marker):
                 agent.write_text(
@@ -253,6 +266,28 @@ class CustomizationValidatorTests(unittest.TestCase):
                 )
                 self.assertIn("AGENT_BODY_CONTRACT", self.codes())
         agent.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_bug_prompts_require_delivery_contract(self) -> None:
+        for name in ("analyze-bug.prompt.md", "analyze-log.prompt.md"):
+            prompt = self.repo / ".github" / "prompts" / name
+            original = prompt.read_text(encoding="utf-8")
+            for marker in (
+                "`Git Delivery`",
+                "`DELIVERY`",
+                "Commit Delivery Confirmation",
+                "recommended default",
+                "Jira ID is always user-supplied",
+                "`AUTO_DECIDE`",
+                "separate delivery Task Brief",
+            ):
+                with self.subTest(prompt=name, marker=marker):
+                    prompt.write_text(
+                        original.replace(marker, "REMOVED_DELIVERY_CONTRACT"),
+                        encoding="utf-8",
+                        newline="\n",
+                    )
+                    self.assertIn("PROMPT_BODY_CONTRACT", self.codes())
+            prompt.write_text(original, encoding="utf-8", newline="\n")
 
     def test_extra_markdown_in_agents_directory_is_rejected(self) -> None:
         shutil.copyfile(
@@ -276,6 +311,47 @@ class CustomizationValidatorTests(unittest.TestCase):
         self.assertIn("AGENT_TOOLS", codes)
         self.assertIn("AGENT_REFERENCE", codes)
         self.assertIn("HANDOFF_SEND", codes)
+
+    def test_git_delivery_handoff_is_required_after_review_and_documentation(self) -> None:
+        for name in (
+            "bug-resolver.agent.md",
+            "quality-reviewer.agent.md",
+            "doc-keeper.agent.md",
+        ):
+            agent = self.repo / ".github" / "agents" / name
+            original = agent.read_text(encoding="utf-8")
+            with self.subTest(agent=name):
+                agent.write_text(
+                    original.replace(
+                        "Git 提交交付 / Git Delivery",
+                        "REMOVED_GIT_DELIVERY_HANDOFF",
+                    ),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("HANDOFF_DELIVERY", self.codes())
+            agent.write_text(original, encoding="utf-8", newline="\n")
+
+            for marker in (
+                "recommended default",
+                "user-supplied Jira ID",
+                "generate every other commit field",
+                "current input box",
+                "execute directly as the current EmbeddedDeveloper",
+                "never delegate to yourself",
+            ):
+                with self.subTest(agent=name, prompt_marker=marker):
+                    agent.write_text(
+                        original.replace(
+                            marker,
+                            "REMOVED_DELIVERY_DEFAULT_CONTRACT",
+                            1,
+                        ),
+                        encoding="utf-8",
+                        newline="\n",
+                    )
+                    self.assertIn("HANDOFF_DELIVERY", self.codes())
+            agent.write_text(original, encoding="utf-8", newline="\n")
 
     def test_malformed_agent_yaml_is_rejected(self) -> None:
         shutil.copyfile(

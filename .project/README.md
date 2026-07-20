@@ -27,6 +27,10 @@ python .github/agent-kit/scripts/project_policy.py rules --root . \
 
 `.project/git/commit.template` 是仓库内权威模板，运行时不依赖外部磁盘。首行格式为 `<Project><Function block>: <Summary>`，正文严格使用模板中的英文键和顺序。允许连续填写多个 `<Jira ID>:` 行；测试步骤或理由写在对应字段之后的缩进行中。
 
+Bug 修复交付默认生成 `Commit Delivery Confirmation`：建议 `commit` 为待确认默认值，但不构成写入授权。Jira ID 始终由用户主动提供且不得推断；除无法解析的 Project 外，其余字段由 Agent 根据 manifest、根因、真实 diff、测试/构建、独立评审和文档证据生成。用户确认或修正完整预览后才可创建消息文件；`commit-and-push`/`auto` 必须显式选择。
+
+确认发生在已经切换到 `EmbeddedDeveloper` 的同一会话中。用户在当前输入框回复 `确认提交` 后，Developer 直接执行预检、显式暂存和 commit；无需新的 handoff 按钮，也不得再次委派 EmbeddedDeveloper。
+
 自动提交前必须先验证完整消息：
 
 ```sh
@@ -81,6 +85,10 @@ Repeat `--path` for multiple paths, or use `--all` for configuration audit. The 
 ### Commit Template
 
 `.project/git/commit.template` is the repository-owned canonical template and has no runtime dependency on an external drive. Its subject is `<Project><Function block>: <Summary>`, and its body uses the template's English keys in strict order. Consecutive `<Jira ID>:` rows are allowed; indented rows following a test field contain its steps or rationale.
+
+Bug-fix delivery creates a `Commit Delivery Confirmation` and proposes `commit` as the recommended default pending confirmation; it does not authorize a write. Jira ID is always user-supplied and never inferred. Except for a Project identity that cannot be resolved, the agent generates every other field from the manifest, root cause, actual diff, test/build evidence, independent review, and documentation. It creates the message file only after the user confirms or corrects the complete preview. `commit-and-push`/`auto` require an explicit choice.
+
+Confirmation occurs in the same conversation that has already switched to `EmbeddedDeveloper`. After the user replies `confirm commit` in the current input box, Developer runs preflight, explicit staging, and commit directly. No additional handoff button or delegation back to EmbeddedDeveloper is needed.
 
 Validate a completed message before automatic commit:
 

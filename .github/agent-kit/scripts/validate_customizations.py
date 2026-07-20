@@ -43,7 +43,12 @@ EXPECTED_AGENTS: Mapping[str, Mapping[str, Any]] = {
         "tools": ["agent", "read", "search", "execute"],
         "agents": ["EmbeddedDeveloper", "QualityReviewer", "DocKeeper"],
         "disable-model-invocation": False,
-        "handoffs": ["EmbeddedDeveloper", "QualityReviewer", "DocKeeper"],
+        "handoffs": [
+            "EmbeddedDeveloper",
+            "QualityReviewer",
+            "DocKeeper",
+            "EmbeddedDeveloper",
+        ],
     },
     "embedded-developer.agent.md": {
         "name": "EmbeddedDeveloper",
@@ -55,15 +60,28 @@ EXPECTED_AGENTS: Mapping[str, Mapping[str, Any]] = {
         "name": "QualityReviewer",
         "tools": ["read", "search", "execute"],
         "disable-model-invocation": False,
-        "handoffs": ["EmbeddedDeveloper", "DocKeeper"],
+        "handoffs": ["EmbeddedDeveloper", "DocKeeper", "EmbeddedDeveloper"],
     },
     "doc-keeper.agent.md": {
         "name": "DocKeeper",
         "tools": ["read", "search", "edit", "web"],
         "disable-model-invocation": False,
-        "handoffs": ["Orchestrator"],
+        "handoffs": ["Orchestrator", "EmbeddedDeveloper"],
     },
 }
+
+GIT_DELIVERY_HANDOFF_LABEL = "Git 提交交付 / Git Delivery"
+GIT_DELIVERY_HANDOFF_AGENTS = frozenset(
+    {"bug-resolver.agent.md", "quality-reviewer.agent.md", "doc-keeper.agent.md"}
+)
+GIT_DELIVERY_HANDOFF_PROMPT_MARKERS = (
+    "recommended default",
+    "user-supplied Jira ID",
+    "generate every other commit field",
+    "current input box",
+    "execute directly as the current EmbeddedDeveloper",
+    "never delegate to yourself",
+)
 
 EXPECTED_PROMPTS: Mapping[str, Mapping[str, str]] = {
     "new-driver.prompt.md": {
@@ -125,6 +143,7 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
     ),
     "bug-resolver.agent.md": frozenset(
         {
+            "DOCUMENT → DELIVERY → CLOSE",
             "GUIDE_SYMPTOMS",
             "CONFIRM_DIRECTION",
             "IDENTIFY_PROBLEM",
@@ -135,6 +154,13 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "Direction Confirmation",
             "## Problem Identification",
             "## Evidence Request",
+            "`Git Delivery`",
+            "`AUTO_DECIDE`",
+            "Commit Delivery Confirmation",
+            "recommended default",
+            "Jira ID is always user-supplied",
+            "separate delivery Task Brief",
+            "separate complete delivery Task Brief",
         }
     ),
     "embedded-developer.agent.md": frozenset(
@@ -143,13 +169,43 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "project_policy.py",
             "Git Delivery",
             "stage explicit file paths only",
+            "`SYNTHESIZE_METADATA`",
+            "`CONFIRM_DELIVERY`",
             "`AUTO_DECIDE`",
             "`AUTO_COMMIT_AND_PUSH`",
             "`OUTPUT_COMMIT_MESSAGE`",
             "--expected-commit",
+            "recommended default",
+            "Jira ID is always user-supplied",
+            "execute directly as the current EmbeddedDeveloper",
+            "never delegate to yourself",
         }
     ),
     "doc-keeper.agent.md": frozenset({".project/"}),
+}
+REQUIRED_PROMPT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
+    "analyze-bug.prompt.md": frozenset(
+        {
+            "`Git Delivery`",
+            "`DELIVERY`",
+            "Commit Delivery Confirmation",
+            "recommended default",
+            "Jira ID is always user-supplied",
+            "`AUTO_DECIDE`",
+            "separate delivery Task Brief",
+        }
+    ),
+    "analyze-log.prompt.md": frozenset(
+        {
+            "`Git Delivery`",
+            "`DELIVERY`",
+            "Commit Delivery Confirmation",
+            "recommended default",
+            "Jira ID is always user-supplied",
+            "`AUTO_DECIDE`",
+            "separate delivery Task Brief",
+        }
+    ),
 }
 REQUIRED_SKILL_BODY_MARKERS: Mapping[str, frozenset[str]] = {
     "firmware-log-analysis": frozenset(
@@ -868,6 +924,27 @@ class RepositoryValidator:
                     "HANDOFF_SET",
                     f"handoff agents must be exactly {spec['handoffs']!r}",
                 )
+            if filename in GIT_DELIVERY_HANDOFF_AGENTS:
+                delivery_handoffs = [
+                    handoff
+                    for handoff in handoffs
+                    if isinstance(handoff, dict)
+                    and handoff.get("label") == GIT_DELIVERY_HANDOFF_LABEL
+                ]
+                if (
+                    len(delivery_handoffs) != 1
+                    or delivery_handoffs[0].get("agent") != "EmbeddedDeveloper"
+                    or not isinstance(delivery_handoffs[0].get("prompt"), str)
+                    or any(
+                        marker not in delivery_handoffs[0]["prompt"]
+                        for marker in GIT_DELIVERY_HANDOFF_PROMPT_MARKERS
+                    )
+                ):
+                    self._add(
+                        path,
+                        "HANDOFF_DELIVERY",
+                        "must expose exactly one Git Delivery handoff to EmbeddedDeveloper",
+                    )
             for index, handoff in enumerate(handoffs):
                 location = f"handoffs[{index}]"
                 if not isinstance(handoff, dict):
@@ -986,6 +1063,14 @@ class RepositoryValidator:
                 self._add(path, "PROMPT_DESCRIPTION", "description must be a non-empty string")
             if not isinstance(data.get("argument-hint"), str) or not data.get("argument-hint", "").strip():
                 self._add(path, "PROMPT_ARGUMENT", "argument-hint must be a non-empty string")
+
+            for marker in sorted(REQUIRED_PROMPT_BODY_MARKERS.get(filename, frozenset())):
+                if marker not in body:
+                    self._add(
+                        path,
+                        "PROMPT_BODY_CONTRACT",
+                        f"prompt body must contain behavior marker {marker!r}",
+                    )
 
             if "skill" in spec:
                 skill_path = f"../skills/{spec['skill']}/SKILL.md"

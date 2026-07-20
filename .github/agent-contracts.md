@@ -258,7 +258,26 @@ Bug 分析规则：
 
 ### Git 交付契约
 
-- 只有 `EmbeddedDeveloper` 可执行常规 commit/push；必须在实现、验证和独立评审完成后使用单独的交付 Task Brief。`Orchestrator` 只编排和核对结果。
+- 只有 `EmbeddedDeveloper` 可执行常规 commit/push；必须在实现、验证和独立评审完成后使用单独的交付 Task Brief。当前工作流的 manager（`Orchestrator` 或 `BugResolver`）只编排和核对结果。
+- `BugResolver` 的修复闭环必须在 `DOCUMENT` 后进入 `DELIVERY`。`PLAN_FIX` 保留用户显式提供的 `Git Delivery` 和 commit metadata；未提供选择时，交付前 specialist Task Brief 使用 `none`，manager 另行记录 pending，并在全部门禁通过后的 `DELIVERY` 只询问一次。显式 `none` 记录跳过；`commit`、`commit-and-push` 或 `auto` 必须创建单独交付 Task Brief，其中 `auto` 进入 `AUTO_DECIDE`。
+- VS Code 人工 handoff 不会自动返回 manager；`BugResolver`、`QualityReviewer` 和 `DocKeeper` 必须各自提供一个 `Git 提交交付 / Git Delivery` handoff 到 `EmbeddedDeveloper`，确保独立评审 PASS 后以及可选文档完成后都有可见交付入口。该按钮不替代 PASS 证据、当前任务授权、metadata 或 policy 检查。
+- 修复交付未显式选择模式时，生成一份 `Commit Delivery Confirmation`：把 `commit` 作为推荐默认值但标记为 `PENDING_CONFIRMATION`。推荐值不是授权；用户确认前不得写 Git。`commit-and-push` 和 `auto` 永远不能由默认值触发，必须由用户明确选择；用户选择 `none` 时记录跳过。
+- Jira ID 是唯一始终要求用户主动提供的 commit 字段，允许一次提供多个并逐项校验 policy 的 Jira 正则。Agent 禁止从分支名、日志、路径或相似 issue 猜测 Jira ID。除 Jira 外，Agent 必须根据 `.project/project.yml`、确认根因、真实 diff、测试/构建结果、独立评审和文档证据自行生成全部字段；只有项目身份仍为 `auto` 且无法从已确认上下文唯一解析时，才可在同一次确认中额外询问 Project。
+- 自动生成规则固定为：Bug 修复的 `Change Type` 为 `bug fix`；Function block、Summary、Change Reason、Root Cause、Solution、Affected Function Name 和 Applicable Project 来自已确认工程事实；Agent 参与时 AI 为 `Y` 并按真实工作选择场景和详情；RN 默认 `N`/`N/A`，仅在可见发布说明确有需要时生成 `Y` 和描述；Test-Proposal 根据实际验证生成 `Y` 加步骤或 `N` 加理由；Stress-Test/HW-Test 默认 `N`，仅在变更风险和已确认测试计划要求时生成 `Y` 加步骤。
+- 在任何 Git 写入前一次性展示完整 metadata 预览、建议模式和 `Confirmation: PENDING`。用户只需提供 Jira ID，并回复确认或给出需要修改的字段；Agent 应按反馈重新生成预览。未得到确认时返回 `BLOCKED` 并保留 Git 状态，不得反复询问已经确认的字段，也不得把预览中的缺失标记写进 commit message。
+- Git Delivery handoff 切换到 `EmbeddedDeveloper` 后，确认与执行都在同一个 Agent 会话完成。预览必须明确提示用户在当前输入框回复 `确认提交`（或语义等价的明确确认），无需也不得等待新的 handoff 按钮。收到确认后，当前 `EmbeddedDeveloper` 直接继续 `PREFLIGHT → STAGE → COMMIT`（获准 push 时再继续 push），不得声称“将委派 EmbeddedDeveloper”、不得自我委派，也不得再次要求已经确认的内容。
+
+首次确认使用以下紧凑结构，不再输出整张待填问卷：
+
+```md
+## Commit Delivery Confirmation
+- Proposed Git Delivery: commit
+- Authorization: PENDING_CONFIRMATION
+- User Input Required: Jira ID
+- Generated Metadata: <除 Jira 外的完整模板字段和值>
+- Confirmation: PENDING
+- Reply With: <Jira ID> + confirm，或需要修改的字段
+```
 - 执行前读取 `.project/project.yml` 指向的 `.project/git/delivery.yml`。对应 `automation.commit`/`automation.push` 必须为 `true`，且 `Git Delivery` 必须授权当前操作；push 授权包含 commit，不反向隐含。
 - `Git Delivery: auto` 只在修复、测试、必需检查、独立评审和必要文档均为 `PASS` 后进入 `AUTO_DECIDE`。完整 commit 消息必须先由仓库模板生成并严格校验；缺少 Project、Jira、RN、测试说明或其他必填 metadata 时返回 `BLOCKED` 请求补充，禁止保留占位符。
 - `project_policy.py git-plan --operation auto --delivery auto` 只读返回 `AUTO_COMMIT_AND_PUSH`、`OUTPUT_COMMIT_MESSAGE` 或无有效 diff 时的 `NO_DELIVERY`。消息文件必须位于仓库外的操作系统临时目录，不能成为工作树变更。
@@ -535,7 +554,26 @@ Invoke DocKeeper only when a public API, architecture, hardware assumption, oper
 
 ### Git Delivery Contract
 
-- Only `EmbeddedDeveloper` performs routine commit/push operations, using a separate delivery Task Brief after implementation, verification, and independent review complete. `Orchestrator` only coordinates and checks the result.
+- Only `EmbeddedDeveloper` performs routine commit/push operations, using a separate delivery Task Brief after implementation, verification, and independent review complete. The current workflow manager (`Orchestrator` or `BugResolver`) only coordinates and checks the result.
+- A `BugResolver` repair loop must enter `DELIVERY` after `DOCUMENT`. `PLAN_FIX` preserves explicitly supplied `Git Delivery` and commit metadata. If no choice was supplied, pre-delivery specialist Task Briefs use `none`, the manager separately records a pending decision, and `DELIVERY` asks once only after all gates pass. Record and skip explicit `none`; create a separate delivery Task Brief for `commit`, `commit-and-push`, or `auto`, with `auto` entering `AUTO_DECIDE`.
+- A manual VS Code handoff does not automatically return to the manager. `BugResolver`, `QualityReviewer`, and `DocKeeper` must each expose one `Git 提交交付 / Git Delivery` handoff to `EmbeddedDeveloper`, keeping delivery visible after a PASS independent review and after optional documentation. The button does not replace PASS evidence, current-task authorization, metadata, or policy checks.
+- When repair delivery has no explicit mode, generate a `Commit Delivery Confirmation` with `commit` as the recommended default and mark it `PENDING_CONFIRMATION`. A recommendation is not authorization: perform no Git write until the user confirms it. Never default to `commit-and-push` or `auto`; each requires an explicit user choice. Record a `none` choice as skipped delivery.
+- Jira ID is the only commit field that is always user-supplied. Accept multiple IDs in one response and validate each against the policy Jira pattern. Never infer a Jira ID from a branch, log, path, or similar issue. Generate every other field from `.project/project.yml`, confirmed root cause, actual diff, test/build results, independent review, and documentation evidence. Ask for Project in the same confirmation only when project identity remains `auto` and cannot be resolved uniquely from confirmed context.
+- Default synthesis is deterministic: use `bug fix` for a BugResolver repair; derive Function block, Summary, Change Reason, Root Cause, Solution, Affected Function Name, and Applicable Project from confirmed engineering facts; set AI to `Y` when an agent participated and select truthful scenarios/details; default RN to `N`/`N/A` unless a visible release note is required; derive Test-Proposal as `Y` with actual steps or `N` with a reason; default Stress-Test/HW-Test to `N` unless change risk and a confirmed test plan require `Y` with steps.
+- Before any Git write, show one complete metadata preview, the proposed mode, and `Confirmation: PENDING`. The user need only supply Jira ID and either confirm or name corrections. Regenerate the preview from corrections. Without confirmation, return `BLOCKED` with Git unchanged. Do not ask again for confirmed fields or copy preview missing markers into the commit message.
+- After a Git Delivery handoff switches to `EmbeddedDeveloper`, confirmation and execution remain in that same agent conversation. The preview explicitly tells the user to reply `confirm commit` (or an equivalent unambiguous confirmation) in the current input box; no further handoff button is required or awaited. On confirmation, the current `EmbeddedDeveloper` proceeds directly through `PREFLIGHT → STAGE → COMMIT` and an authorized push. It never says it will delegate to EmbeddedDeveloper, never delegates to itself, and never re-asks confirmed content.
+
+Use this compact first confirmation instead of a full questionnaire:
+
+```md
+## Commit Delivery Confirmation
+- Proposed Git Delivery: commit
+- Authorization: PENDING_CONFIRMATION
+- User Input Required: Jira ID
+- Generated Metadata: <all template fields and values except Jira>
+- Confirmation: PENDING
+- Reply With: <Jira ID> + confirm, or fields to correct
+```
 - Before delivery, read `.project/git/delivery.yml` through `.project/project.yml`. The matching `automation.commit`/`automation.push` value must be `true`, and `Git Delivery` must authorize the operation; push authorization includes commit, not conversely.
 - Enter `AUTO_DECIDE` for `Git Delivery: auto` only after the repair, tests, required checks, independent review, and required documentation are all `PASS`. First generate the complete commit message from the repository template and validate it strictly. Missing Project, Jira, RN, test notes, or other required metadata returns `BLOCKED` for input; never leave placeholders.
 - Read-only `project_policy.py git-plan --operation auto --delivery auto` returns `AUTO_COMMIT_AND_PUSH`, `OUTPUT_COMMIT_MESSAGE`, or `NO_DELIVERY` when there is no effective diff. Store the message file in an operating-system temporary directory outside the repository so it cannot become a worktree change.
