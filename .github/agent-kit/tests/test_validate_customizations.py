@@ -218,7 +218,11 @@ class CustomizationValidatorTests(unittest.TestCase):
             "orchestrator.agent.md": (
                 "`AUTO_DECIDE`",
                 "`AUTO_COMMIT_AND_PUSH`",
+                "`CONFIRM_COMMIT_CONTENT`",
                 "`OUTPUT_COMMIT_MESSAGE`",
+                "--expected-content-fingerprint",
+                "content_confirmation.status: CONFIRMED",
+                "Commit Content Confirmation: PENDING",
                 "Task Change Baseline",
                 "Task Change Ledger",
                 "`DETECT_COMMIT_SCOPE`",
@@ -226,7 +230,9 @@ class CustomizationValidatorTests(unittest.TestCase):
                 "`ADJUST_CHANGESET`",
                 "Change Confirmation: PENDING",
                 "UI Route",
-                "AGENT_CONTINUE",
+                "NEXT_ACTION_BUTTON",
+                "Dispatch Target",
+                "Instruction",
                 "HANDOFF:独立评审 / Review",
                 "## Next Action",
             ),
@@ -235,7 +241,11 @@ class CustomizationValidatorTests(unittest.TestCase):
                 "`CONFIRM_DELIVERY`",
                 "`AUTO_DECIDE`",
                 "`AUTO_COMMIT_AND_PUSH`",
+                "`CONFIRM_COMMIT_CONTENT`",
                 "`OUTPUT_COMMIT_MESSAGE`",
+                "--expected-content-fingerprint",
+                "content_confirmation.status: CONFIRMED",
+                "Commit Content Confirmation: PENDING",
                 "--expected-commit",
                 "recommended default",
                 "Jira ID is always user-supplied",
@@ -251,7 +261,9 @@ class CustomizationValidatorTests(unittest.TestCase):
                 "Change Confirmation: PENDING",
                 "UI Route",
                 "CURRENT_INPUT",
-                "AGENT_CONTINUE",
+                "NEXT_ACTION_BUTTON",
+                "Dispatch Target",
+                "Instruction",
                 "HANDOFF:文档同步 / Document Changes",
                 "Documentation=`PASS`",
                 "## Next Action",
@@ -274,10 +286,16 @@ class CustomizationValidatorTests(unittest.TestCase):
         required = {
             "quality-reviewer.agent.md": (
                 "UI Route",
+                "NEXT_ACTION_BUTTON",
+                "Dispatch Target",
+                "Instruction",
                 "HANDOFF:修复问题 / Fix Issues",
             ),
             "doc-keeper.agent.md": (
                 "UI Route",
+                "NEXT_ACTION_BUTTON",
+                "Dispatch Target",
+                "Instruction",
                 "HANDOFF:返回编排 / Resolve Conflict",
             ),
         }
@@ -313,6 +331,9 @@ class CustomizationValidatorTests(unittest.TestCase):
             "AWAIT_EVIDENCE",
             "`Git Delivery`",
             "`AUTO_DECIDE`",
+            "`CONFIRM_COMMIT_CONTENT`",
+            "content_confirmation.status: CONFIRMED",
+            "Commit Content Confirmation: PENDING",
             "Commit Delivery Confirmation",
             "recommended default",
             "Jira ID is always user-supplied",
@@ -323,7 +344,9 @@ class CustomizationValidatorTests(unittest.TestCase):
             "`ADJUST_CHANGESET`",
             "Change Confirmation: PENDING",
             "UI Route",
-            "AGENT_CONTINUE",
+            "NEXT_ACTION_BUTTON",
+            "Dispatch Target",
+            "Instruction",
             "HANDOFF:Git 提交交付 / Git Delivery",
             "Action: START_NEW_ISSUE",
             "## Next Action",
@@ -348,6 +371,9 @@ class CustomizationValidatorTests(unittest.TestCase):
                 "recommended default",
                 "Jira ID is always user-supplied",
                 "`AUTO_DECIDE`",
+                "`CONFIRM_COMMIT_CONTENT`",
+                "content_confirmation.status: CONFIRMED",
+                "Commit Content Confirmation: PENDING",
                 "separate delivery Task Brief",
                 "`CONFIRM_PUSH`",
                 "`MANUAL_PUSH`",
@@ -357,7 +383,9 @@ class CustomizationValidatorTests(unittest.TestCase):
                 "Change Confirmation: PENDING",
                 "UI Route",
                 "CURRENT_INPUT",
-                "AGENT_CONTINUE",
+                "NEXT_ACTION_BUTTON",
+                "Dispatch Target",
+                "Instruction",
                 "Documentation",
                 "CLOSE → RESET → INTAKE",
                 "Next Action",
@@ -401,26 +429,31 @@ class CustomizationValidatorTests(unittest.TestCase):
                 ("实现变更 / Implement", "EmbeddedDeveloper"),
                 ("独立评审 / Review", "QualityReviewer"),
                 ("文档沉淀 / Document", "DocKeeper"),
+                ("执行下一步 / Next Action", "NextActionRouter"),
             ),
             "bug-resolver.agent.md": (
                 ("实施修复 / Implement Fix", "EmbeddedDeveloper"),
                 ("质量评估 / Quality Assessment", "QualityReviewer"),
                 ("记录结论 / Document Resolution", "DocKeeper"),
                 ("Git 提交交付 / Git Delivery", "EmbeddedDeveloper"),
+                ("执行下一步 / Next Action", "NextActionRouter"),
             ),
             "embedded-developer.agent.md": (
                 ("独立评审 / Quality Review", "QualityReviewer"),
                 ("文档同步 / Document Changes", "DocKeeper"),
                 ("问题已解决 / Close Issue", "BugResolver"),
+                ("执行下一步 / Next Action", "NextActionRouter"),
             ),
             "quality-reviewer.agent.md": (
                 ("修复问题 / Fix Issues", "EmbeddedDeveloper"),
                 ("沉淀质量结论 / Document Quality Findings", "DocKeeper"),
                 ("Git 提交交付 / Git Delivery", "EmbeddedDeveloper"),
+                ("执行下一步 / Next Action", "NextActionRouter"),
             ),
             "doc-keeper.agent.md": (
                 ("返回编排 / Resolve Conflict", "Orchestrator"),
                 ("Git 提交交付 / Git Delivery", "EmbeddedDeveloper"),
+                ("执行下一步 / Next Action", "NextActionRouter"),
             ),
         }
         for name, expected_handoffs in expected.items():
@@ -434,7 +467,10 @@ class CustomizationValidatorTests(unittest.TestCase):
                     expected_handoffs,
                     tuple((item["label"], item["agent"]) for item in handoffs),
                 )
-                self.assertTrue(all(item["send"] is False for item in handoffs))
+                self.assertTrue(all(item["send"] is False for item in handoffs[:-1]))
+                self.assertIs(handoffs[-1]["send"], True)
+                self.assertEqual("执行下一步 / Next Action", handoffs[-1]["label"])
+                self.assertEqual("NextActionRouter", handoffs[-1]["agent"])
                 self.assertTrue(
                     all(
                         set(item) == {"label", "agent", "prompt", "send"}
@@ -463,6 +499,127 @@ class CustomizationValidatorTests(unittest.TestCase):
         )
         self.assertIn("HANDOFF_FIELDS", self.codes())
         agent.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_next_action_handoff_is_appended_and_safe(self) -> None:
+        source_agents = {
+            "orchestrator.agent.md": "Orchestrator",
+            "bug-resolver.agent.md": "BugResolver",
+            "embedded-developer.agent.md": "EmbeddedDeveloper",
+            "quality-reviewer.agent.md": "QualityReviewer",
+            "doc-keeper.agent.md": "DocKeeper",
+        }
+        for name, source_agent in source_agents.items():
+            source = (self.repo / ".github" / "agents" / name).read_text(
+                encoding="utf-8"
+            )
+            frontmatter = yaml.safe_load(source.split("---\n", 2)[1])
+            handoff = frontmatter["handoffs"][-1]
+            with self.subTest(agent=name):
+                self.assertEqual("执行下一步 / Next Action", handoff["label"])
+                self.assertEqual("NextActionRouter", handoff["agent"])
+                self.assertIs(handoff["send"], True)
+                self.assertIn(f"Source Agent: {source_agent}", handoff["prompt"])
+                self.assertIn("supplies no missing input", handoff["prompt"])
+                self.assertIn(
+                    "confirms no commit, push, or external command",
+                    handoff["prompt"],
+                )
+
+        agent = self.repo / ".github" / "agents" / "orchestrator.agent.md"
+        original = agent.read_text(encoding="utf-8")
+        mutations = (
+            ("agent: NextActionRouter", "agent: EmbeddedDeveloper"),
+            ("    send: true", "    send: false"),
+            ("supplies no missing input", "supplies implicit input"),
+        )
+        for old, new in mutations:
+            with self.subTest(mutation=old):
+                agent.write_text(
+                    original.replace(old, new, 1),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("HANDOFF_NEXT_ACTION", self.codes())
+        agent.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_next_action_router_is_hidden_and_minimal(self) -> None:
+        router = self.repo / ".github" / "agents" / "next-action-router.agent.md"
+        original = router.read_text(encoding="utf-8")
+        frontmatter = yaml.safe_load(original.split("---\n", 2)[1])
+        self.assertEqual("NextActionRouter", frontmatter["name"])
+        self.assertIs(frontmatter["user-invocable"], False)
+        self.assertIs(frontmatter["disable-model-invocation"], True)
+        self.assertEqual(["agent", "read", "search"], frontmatter["tools"])
+        self.assertEqual(
+            [
+                "Orchestrator",
+                "BugResolver",
+                "EmbeddedDeveloper",
+                "QualityReviewer",
+                "DocKeeper",
+            ],
+            frontmatter["agents"],
+        )
+        expected_handoffs = (
+            ("返回编排 / Return to Orchestrator", "Orchestrator"),
+            ("返回问题解决 / Return to Bug Resolver", "BugResolver"),
+            ("返回实施 / Return to Embedded Developer", "EmbeddedDeveloper"),
+            ("返回评审 / Return to Quality Reviewer", "QualityReviewer"),
+            ("返回文档 / Return to Doc Keeper", "DocKeeper"),
+        )
+        handoffs = frontmatter["handoffs"]
+        self.assertEqual(
+            expected_handoffs,
+            tuple((item["label"], item["agent"]) for item in handoffs),
+        )
+        self.assertTrue(all(item["send"] is False for item in handoffs))
+        self.assertTrue(
+            all(
+                "Revalidate the latest unique Next Action" in item["prompt"]
+                and "supplies no missing input" in item["prompt"]
+                and "confirms no commit, push, or external command"
+                in item["prompt"]
+                for item in handoffs
+            )
+        )
+
+        mutations = (
+            ("user-invocable: false", "user-invocable: true", "AGENT_INVOCABLE"),
+            (
+                "tools: ['agent', 'read', 'search']",
+                "tools: ['agent', 'read', 'search', 'execute']",
+                "AGENT_TOOLS",
+            ),
+            (
+                "at most eight consecutive actions",
+                "without a transition limit",
+                "AGENT_BODY_CONTRACT",
+            ),
+            (
+                "返回编排 / Return to Orchestrator",
+                "REMOVED_ROUTER_FALLBACK",
+                "HANDOFF_BASELINE",
+            ),
+            (
+                "    send: false",
+                "    send: true",
+                "HANDOFF_ROUTER_FALLBACK",
+            ),
+            (
+                "supplies no missing input",
+                "supplies implicit input",
+                "HANDOFF_ROUTER_FALLBACK",
+            ),
+        )
+        for old, new, code in mutations:
+            with self.subTest(mutation=old):
+                router.write_text(
+                    original.replace(old, new, 1),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn(code, self.codes())
+        router.write_text(original, encoding="utf-8", newline="\n")
 
     def test_git_delivery_handoff_is_required_after_review_and_documentation(self) -> None:
         for name in (
@@ -525,10 +682,19 @@ class CustomizationValidatorTests(unittest.TestCase):
             "`MANUAL_PUSH`",
             "`START_NEW_ISSUE`",
             "- UI Route:",
+            "- Dispatch Target:",
+            "- Instruction:",
             "`PROVIDE_EVIDENCE`",
-            "HANDOFF:<exact current-agent button label>",
+            "NEXT_ACTION_BUTTON",
+            "HANDOFF:<exact current-agent base-button label>",
             "AGENT_CONTINUE",
             "NOT_RUN — Not required: <reason>",
+            "`CONFIRM_COMMIT_CONTENT`",
+            "--expected-content-fingerprint",
+            "content_confirmation.status: CONFIRMED",
+            "Commit Content Confirmation: PENDING",
+            "返回编排 / Return to Orchestrator",
+            "five static fallback handoffs",
         ):
             with self.subTest(marker=marker):
                 contract.write_text(

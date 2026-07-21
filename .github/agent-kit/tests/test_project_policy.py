@@ -19,6 +19,7 @@ sys.path.insert(0, str(AGENT_KIT_ROOT / "scripts"))
 
 from project_policy import (  # noqa: E402
     DECISION_AUTO_UPLOAD,
+    DECISION_CONFIRM_AUTO_CONTENT,
     DECISION_MESSAGE_ONLY,
     DECISION_NO_DELIVERY,
     GitReadError,
@@ -361,7 +362,21 @@ class GitPlanTests(unittest.TestCase):
         )
         return self.auto_message()
 
-    def auto_plan(self, message: Path) -> dict[str, object]:
+    def auto_plan(
+        self, message: Path, *, confirm_content: bool = True
+    ) -> dict[str, object]:
+        pending = dict(
+            git_plan(
+                self.repo,
+                operation="auto",
+                delivery="auto",
+                paths=["README.md"],
+                message_file=message,
+            )
+        )
+        if not confirm_content or pending.get("commit_content") is None:
+            return pending
+        fingerprint = pending["commit_content"]["fingerprint"]
         return dict(
             git_plan(
                 self.repo,
@@ -369,6 +384,7 @@ class GitPlanTests(unittest.TestCase):
                 delivery="auto",
                 paths=["README.md"],
                 message_file=message,
+                expected_content_fingerprint=fingerprint,
             )
         )
 
@@ -641,7 +657,57 @@ class GitPlanTests(unittest.TestCase):
         self.assertEqual("PASS", result["status"])
         self.assertEqual(DECISION_AUTO_UPLOAD, result["decision"])
         self.assertEqual([], result["decision_reasons"])
+        self.assertEqual("CONFIRMED", result["content_confirmation"]["status"])
         self.assertEqual(before, after)
+
+    def test_auto_plan_requires_confirmed_commit_content_and_rejects_drift(self) -> None:
+        message = self.prepare_auto_change()
+        before = self.snapshot()
+        pending = self.auto_plan(message, confirm_content=False)
+        self.assertEqual("PASS", pending["status"])
+        self.assertEqual(DECISION_CONFIRM_AUTO_CONTENT, pending["decision"])
+        self.assertEqual("PENDING", pending["content_confirmation"]["status"])
+        fingerprint = pending["commit_content"]["fingerprint"]
+        self.assertEqual(
+            fingerprint,
+            pending["content_confirmation"]["current_fingerprint"],
+        )
+        self.assertEqual(before, self.snapshot())
+
+        readme = self.repo / "README.md"
+        readme.write_text(
+            readme.read_text(encoding="utf-8") + "drift after preview\n",
+            encoding="utf-8",
+        )
+        stale = dict(
+            git_plan(
+                self.repo,
+                operation="auto",
+                delivery="auto",
+                paths=["README.md"],
+                message_file=message,
+                expected_content_fingerprint=fingerprint,
+            )
+        )
+        self.assertEqual(DECISION_CONFIRM_AUTO_CONTENT, stale["decision"])
+        self.assertEqual("STALE", stale["content_confirmation"]["status"])
+        self.assertNotEqual(
+            fingerprint,
+            stale["content_confirmation"]["current_fingerprint"],
+        )
+
+        confirmed = dict(
+            git_plan(
+                self.repo,
+                operation="auto",
+                delivery="auto",
+                paths=["README.md"],
+                message_file=message,
+                expected_content_fingerprint=stale["commit_content"]["fingerprint"],
+            )
+        )
+        self.assertEqual(DECISION_AUTO_UPLOAD, confirmed["decision"])
+        self.assertEqual("CONFIRMED", confirmed["content_confirmation"]["status"])
 
     def test_auto_plan_returns_no_delivery_without_changes(self) -> None:
         result = git_plan(self.repo, operation="auto", delivery="auto")

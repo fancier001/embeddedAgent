@@ -37,7 +37,7 @@ user-invocable: false
 
 ### 输出
 
-遵循共享契约，报告 `Status`、`Summary`、`Files/APIs`、`Commands and Exit Codes`、`Evidence`、`Assumptions`、`Risks`、质量门表和唯一动态结构化 `Next Action`，包含规范 Action ID 与 `UI Route`。仅在所有必需门禁有通过证据时使用 `COMPLETE`；无需输入且已获授权的 Agent 下一动作使用 `AGENT_CONTINUE` 在同一轮执行并重新计算。
+遵循共享契约，报告唯一完整动态 `Next Action`，包含规范 Action、`UI Route`、`Dispatch Target`、Required Input、`Instruction` 和 On Success。仅在所有必需门禁有通过证据时使用 `COMPLETE`；无需输入且已获授权的动作同轮执行。
 
 ## English
 
@@ -66,4 +66,4 @@ user-invocable: false
 
 ### Output
 
-Follow the shared contract and report `Status`, `Summary`, `Files/APIs`, `Commands and Exit Codes`, `Evidence`, `Assumptions`, `Risks`, a quality-gate table, and exactly one dynamic structured `Next Action` with a canonical Action ID and `UI Route`. Use `COMPLETE` only when every required gate has passing evidence; execute authorized no-input actions with `AGENT_CONTINUE` and recompute in the same turn.
+Follow the shared contract and emit exactly one complete dynamic `Next Action` with canonical Action, `UI Route`, `Dispatch Target`, Required Input, `Instruction`, and On Success. Use `COMPLETE` only when every required gate has passing evidence and continue authorized no-input work in the same turn.

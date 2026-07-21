@@ -50,7 +50,7 @@ Task Brief 规则：
 - 修改任务的 manager 必须在首次写入前安排记录 `Task Change Baseline`：具有 execute 能力时自行记录，否则要求首个可写 specialist 在编辑前记录并返回。后续评审、文档和交付 Task Brief 原样传递该基线及 Developer 返回的本任务修改账本；直接选择可写 specialist 时由该 specialist 在修改前记录。缺失且无法从证据可靠重建时，不得猜测 commit scope。
 - `Forbidden Actions` 必须继承本契约安全边界；Task Brief 不能授权超出用户意图的高风险动作。
 - `Verification Commands` 中的 flash/HIL 配置只描述能力，不构成执行授权。
-- `Git Delivery` 只接受 `none`、`commit`、`commit-and-push`、`auto`；不接受 remote、URL、目标分支或 refspec。`none` 时不得 commit 或 push；`auto` 是本轮自动 commit+push 的明确授权，但 policy 不能替代该授权。
+- `Git Delivery` 只接受 `none`、`commit`、`commit-and-push`、`auto`；不接受 remote、URL、目标分支或 refspec。`none` 时不得 commit 或 push；`auto` 只明确选择本轮“确认内容后自动 commit+push”的模式，不等于确认具体 Commit Content，policy 或模式选择都不能替代 fingerprint 确认。
 - 缺少会改变 API、硬件值、数据格式或安全策略的输入时，执行者必须返回 `BLOCKED`。
 
 ### 产品形态契约
@@ -121,8 +121,10 @@ Task Brief 规则：
 - Current State: <当前状态机状态>
 - Action: <规范动作 ID>
 - Owner: Agent | User
-- UI Route: CURRENT_INPUT | HANDOFF:<当前 Agent 的精确按钮标签> | AGENT_CONTINUE | EXTERNAL | NONE
+- UI Route: NEXT_ACTION_BUTTON | CURRENT_INPUT | EXTERNAL | NONE
+- Dispatch Target: HANDOFF:<当前 Agent 的精确基础按钮标签> | AGENT_CONTINUE | NONE
 - Required Input: <None，或用户需要提供的精确输入/确认/证据>
+- Instruction: <可直接执行或复制的精确指令；不需要时写 None>
 - On Success: <下一状态及随后执行的操作>
 ```
 
@@ -130,7 +132,11 @@ Task Brief 规则：
 
 每次面向用户的结果必须且只能包含一个 `## Next Action`。Agent 必须在生成报告时根据当前状态、门禁和缺失输入动态计算它，不得复制固定建议或列出互相竞争的下一步。按以下顺序选择第一个未处理项：安全/授权阻塞 → 缺失输入或证据 → 实现/返工 → 独立评审 → 必要文档 → Git Delivery → 问题闭环。`Action` 只能使用 `CONFIRM_DIRECTION`、`PROVIDE_EVIDENCE`、`IMPLEMENT_FIX`、`FIX_FINDINGS`、`QUALITY_REVIEW`、`DOCUMENT_CHANGES`、`GIT_DELIVERY`、`CONFIRM_COMMIT`、`ADJUST_CHANGESET`、`CONFIRM_PUSH`、`MANUAL_PUSH`、`CLOSE_ISSUE`、`START_NEW_ISSUE` 或 `NONE`。
 
-交互路由固定为：补充信息、证据、Jira、修改内容和 commit/push 确认使用 `CURRENT_INPUT`；角色切换使用 `HANDOFF:<当前 Agent frontmatter 中存在的精确按钮标签>`；需要 Agent 自己继续的动作使用 `AGENT_CONTINUE`；需要用户在 IDE 外执行的命令使用 `EXTERNAL`；真正终态使用 `NONE`。`HANDOFF` 的 `Required Input` 必须只要求点击该唯一按钮，不得同时要求输入确认；`CURRENT_INPUT` 不得同时引导点击按钮。若 `Owner: Agent`、`UI Route: AGENT_CONTINUE`、`Required Input: None` 且已有授权和证据，Agent 必须在同一轮执行并重新计算下一动作，不得把中间动作作为停顿结果返回。只有等待用户输入、人工 handoff、外部操作或终态时才暂停。
+五个业务 Agent 的底部按钮分为两类：原有基础按钮是始终可见、`send: false` 的静态人工角色入口；末尾的 `执行下一步 / Next Action` 是 `send: true` 的动态默认入口，固定切换到隐藏的 `NextActionRouter`。基础按钮不代表当前推荐动作；用户应优先遵循唯一 Next Action。提前点击与 `Dispatch Target` 不匹配的基础按钮时，目标 Agent 必须重新核对状态并返回 `BLOCKED`，不得编辑、commit 或 push。
+
+切换到 Router 后，底部必须继续显示五个固定顺序的静态备用返回按钮：`返回编排 / Return to Orchestrator`、`返回问题解决 / Return to Bug Resolver`、`返回实施 / Return to Embedded Developer`、`返回评审 / Return to Quality Reviewer`、`返回文档 / Return to Doc Keeper`。这些 Router fallback handoffs 全部使用 `send: false`，仅用于避免活动 Agent 切换后底部为空并允许人工恢复；它们不是动态 Next Action，也不补充输入或确认 commit、push、外部命令。用户手工发送后，目标 Agent 必须重新核对最新唯一 Next Action 和门禁，不匹配时返回 `BLOCKED`。
+
+交互路由固定为：角色切换使用 `UI Route: NEXT_ACTION_BUTTON` 和 `Dispatch Target: HANDOFF:<当前 Agent frontmatter 中存在的精确基础按钮标签>`；正常情况下需要 Agent 自己继续的动作必须在同一轮执行，不得暂停，Router 只用 `NEXT_ACTION_BUTTON + AGENT_CONTINUE` 恢复错误停顿；补充信息、证据、Jira、修改内容和 commit/push 确认使用 `CURRENT_INPUT + NONE`；需要用户在 IDE 外执行的命令使用 `EXTERNAL + NONE`；真正终态使用 `NONE + NONE`。`Instruction` 对 CURRENT_INPUT 必须给出可直接复制的回复模板，对 EXTERNAL 必须给出安全命令、工作目录、预期结果和回传证据；其他路由写 `None`。统一按钮点击只授权安全路由或明确的角色切换，不补充 Required Input，也不确认 Jira、修改内容、commit、push 或外部命令。
 
 典型映射为：方向确认使用 `CONFIRM_DIRECTION`；缺失证据使用 `PROVIDE_EVIDENCE`；实现或返工使用 `IMPLEMENT_FIX`/`FIX_FINDINGS`；独立评审、必要文档和人工 Git 交付分别使用 `QUALITY_REVIEW`、`DOCUMENT_CHANGES`、`GIT_DELIVERY` 并指向当前 Agent 对应的静态按钮；用户要求调整预览修改时使用 `ADJUST_CHANGESET`；等待 Jira、修改内容和 commit 的最终确认时使用 `CONFIRM_COMMIT`；等待普通 push 二次确认时使用 `CONFIRM_PUSH`；自动 push 失败使用 `MANUAL_PUSH`；符合闭环条件时使用 `CLOSE_ISSUE`；重置后使用 `START_NEW_ISSUE`；无后续动作时使用 `NONE`。
 
@@ -142,7 +148,9 @@ Task Brief 规则：
 - Action: CONFIRM_COMMIT
 - Owner: User
 - UI Route: CURRENT_INPUT
+- Dispatch Target: NONE
 - Required Input: Git Delivery: commit；Jira ID: QDC017-1111；确认修改并提交
+- Instruction: 在当前输入框回复 `Git Delivery: commit；Jira ID: QDC017-1111；确认修改并提交`
 - On Success: PREFLIGHT → STAGE → COMMIT → REPORT
 ```
 
@@ -153,8 +161,10 @@ Task Brief 规则：
 - Current State: QUALITY_REVIEW_PENDING
 - Action: QUALITY_REVIEW
 - Owner: User
-- UI Route: HANDOFF:独立评审 / Quality Review
-- Required Input: 点击底部“独立评审 / Quality Review”
+- UI Route: NEXT_ACTION_BUTTON
+- Dispatch Target: HANDOFF:独立评审 / Quality Review
+- Required Input: None
+- Instruction: None
 - On Success: QualityReviewer 独立评审当前 diff 和验证证据
 ```
 
@@ -306,11 +316,12 @@ Bug 分析规则：
 - 修复交付未显式选择模式时，生成一份 `Commit Delivery Confirmation`：把 `commit` 作为推荐默认值但标记为 `PENDING_CONFIRMATION`。推荐值不是授权；用户确认前不得写 Git。`commit-and-push` 和 `auto` 永远不能由默认值触发，必须由用户明确选择；用户选择 `none` 时记录跳过。
 - Jira ID 是唯一始终要求用户主动提供的 commit 字段，允许一次提供多个并逐项校验 policy 的 Jira 正则。Agent 禁止从分支名、日志、路径或相似 issue 猜测 Jira ID。除 Jira 外，Agent 必须根据 `.project/project.yml`、确认根因、真实 diff、测试/构建结果、独立评审和文档证据自行生成全部字段；只有项目身份仍为 `auto` 且无法从已确认上下文唯一解析时，才可在同一次确认中额外询问 Project。
 - 自动生成规则固定为：Bug 修复的 `Change Type` 为 `bug fix`；Function block、Summary、Change Reason、Root Cause、Solution、Affected Function Name 和 Applicable Project 来自已确认工程事实；AI 实质参与代码生成、检查、重构、测试或文档时为 `Y` 并按真实工作选择一个主要场景和详情，完全未参与时必须精确使用 `AI-Tool-Used: N`、`AI-Tool-Scenario: /`、`AI-Tool-Detail: /`；RN 默认 `N`/`N/A`，仅在可见发布说明确有需要时生成 `Y` 和描述；Test-Proposal 根据实际验证生成 `Y` 加步骤或 `N` 加理由；Stress-Test/HW-Test 默认 `N`，仅在变更风险和已确认测试计划要求时生成 `Y` 加步骤。
-- 所有 `commit`、`commit-and-push` 和 `auto` 路径在进入 `DETECT_COMMIT_SCOPE` 或 `CONFIRM_COMMIT` 前都必须处理 Documentation 门禁：公共 API、架构、公共行为/状态机、硬件假设、操作流程或已确认根因发生变化时为 `PASS` 并提供文档证据；不适用时为 `NOT_RUN — Not required: <reason>`。缺失、失败或理由不充分时不得继续交付；当前 Agent 有文档 handoff 时动态输出 `Action: DOCUMENT_CHANGES` 和对应的唯一 `HANDOFF:<精确按钮标签>`，否则返回 `BLOCKED` 并要求回到 manager 处理。该规则同样约束直接选择 `EmbeddedDeveloper` 的普通确认式 commit，不得只在 `auto` 中检查。
+- 所有 `commit`、`commit-and-push` 和 `auto` 路径在进入 `DETECT_COMMIT_SCOPE` 或 `CONFIRM_COMMIT` 前都必须处理 Documentation 门禁：公共 API、架构、公共行为/状态机、硬件假设、操作流程或已确认根因发生变化时为 `PASS` 并提供文档证据；不适用时为 `NOT_RUN — Not required: <reason>`。缺失、失败或理由不充分时不得继续交付；当前 Agent 有文档 handoff 时动态输出 `Action: DOCUMENT_CHANGES`、`UI Route: NEXT_ACTION_BUTTON` 和对应的 `Dispatch Target: HANDOFF:<精确基础按钮标签>`，否则返回 `BLOCKED` 并要求回到 manager 处理。该规则同样约束直接选择 `EmbeddedDeveloper` 的普通确认式 commit，不得只在 `auto` 中检查。
 - 修改任务开始时记录只读的初始 `git status`、staged/unstaged/untracked 路径和实际 diff，形成 `Task Change Baseline`，并维护本次 Agent 修改的文件/变更账本。该基线不自动把已有 dirty 内容归入本次任务。
 - 交付确认前执行 `DETECT_COMMIT_SCOPE`：commit scope 只来自本次任务实际产生且仍存在于当前 diff 的变更，不来自 YAML 路径白名单，也不得把无关的既有 dirty/staged 内容带入。记录 `git-plan` 返回的 `commit_content.paths`、逐文件 `entries`（state、增行、删行、binary）、`excluded_paths` 和内容 fingerprint。若同一文件在任务前已 dirty 且无法安全区分本次 hunks，返回 `BLOCKED` 请求用户先拆分或确认处理方式，禁止整文件误暂存。
 - 在任何 Git 写入前一次性展示精确 `Commit Content` 表（每个文件的包含状态、Git state、增删统计和真实变更摘要）、排除的 dirty 路径、完整 metadata 预览、建议模式、fingerprint 和 `Change Confirmation: PENDING`。用户可确认修改并提交，也可要求移除文件、缩小 hunk 或减少实现。收到调整要求时进入 `ADJUST_CHANGESET`，只调整本任务产生的修改，绝不回退任务前的用户修改；若缩减会破坏依赖、构建或验收一致性，返回 `BLOCKED` 说明原因和所需决策，不得提交不一致子集。调整后使旧确认和旧门禁证据失效，重新执行受影响的测试/检查、独立评审、`DETECT_COMMIT_SCOPE` 和预览。
 - 最终确认必须同时覆盖修改内容、commit metadata 和交付模式。用户只需提供 Jira ID 并回复 `确认修改并提交`（或语义等价的明确确认），或给出需要修改的字段/commit 内容；Agent 应按反馈重新检测并生成预览。未得到确认时返回 `BLOCKED` 并保留 Git 状态，不得反复询问已经确认的字段，也不得把预览中的缺失标记写进 commit message。确认后重新读取实际 diff；若内容或路径相对预览发生漂移，确认失效并返回 `DETECT_COMMIT_SCOPE → CONFIRM_DELIVERY`，不得提交变化后的内容。
+- `Git Delivery: auto` 必须在任何自动暂存或 commit 前单独满足 Commit Content 确认门禁：预览显示 `Commit Content Confirmation: PENDING`，唯一 `Next Action` 为 `CONFIRM_COMMIT + CURRENT_INPUT + NONE`，`Instruction` 给出包含 `确认自动提交内容`、当前完整 fingerprint、Jira ID 和 `Git Delivery: auto` 的可复制格式。选择 auto、automation 开关、`执行下一步 / Next Action` 点击或先前的模式授权都不构成内容确认。用户确认后，`AUTO_DECIDE` 必须把该 fingerprint 作为 `--expected-content-fingerprint` 传入只读预检；缺失或漂移返回 `CONFIRM_COMMIT_CONTENT` 并重新生成预览。只有 `content_confirmation.status: CONFIRMED` 且当前 fingerprint 匹配时才能进入 `STAGE → COMMIT`。
 - Git Delivery handoff 切换到 `EmbeddedDeveloper` 后，确认、调整与执行都在同一个 Agent 会话完成。预览必须明确提示用户在当前输入框回复 `确认修改并提交`，或回复 `调整修改: <要求>`，并输出 `Action: CONFIRM_COMMIT`；无需也不得等待新的 commit handoff 按钮。收到最终确认后，当前 `EmbeddedDeveloper` 直接继续 `PREFLIGHT → STAGE → COMMIT`，不得声称“将委派 EmbeddedDeveloper”、不得自我委派，也不得再次要求已经确认的内容。
 
 首次确认使用以下紧凑结构，不再输出整张待填问卷：
@@ -321,15 +332,16 @@ Bug 分析规则：
 - Authorization: PENDING_CONFIRMATION
 - User Input Required: Jira ID
 - Commit Content: <逐文件包含状态、Git state、增删统计、变更摘要、excluded paths 与 fingerprint>
+- Commit Content Confirmation: PENDING
 - Generated Metadata: <除 Jira 外的完整模板字段和值>
 - Change Confirmation: PENDING
-- Reply With: <Jira ID> + 确认修改并提交，或 `调整修改: <移除文件/缩小 hunk/减少实现>`
+- Reply With: 普通模式使用 `<Jira ID> + 确认修改并提交`；auto 使用 `Git Delivery: auto；Jira ID: <ID>；确认自动提交内容；fingerprint: <完整值>`；或 `调整修改: <移除文件/缩小 hunk/减少实现>`
 ```
 - `Git Delivery: commit-and-push` 在 commit 成功后必须暂停，不得立即 push。保存完整 commit SHA 和首次预检 fingerprint，输出 `Action: CONFIRM_PUSH`、`Owner: User`、`Required Input: 确认推送`，并展示由当前仓库 local config 解析的 branch、remote alias、脱敏 URL 和目标 ref。收到明确确认后，当前 `EmbeddedDeveloper` 直接执行 `PUSH_PREFLIGHT → PUSH`，不得重新询问 Jira、commit metadata 或 commit 授权。
-- `Git Delivery: auto` 保持自动语义；获得 commit 确认且 `AUTO_COMMIT_AND_PUSH` 决策成立后，commit 成功即直接执行 `PUSH_PREFLIGHT → PUSH`，不插入 `CONFIRM_PUSH`。
+- `Git Delivery: auto` 保持确认后的自动 push 语义，但自动 commit 前必须先确认 Commit Content；`CONFIRM_COMMIT_CONTENT` 表示尚未确认或内容已漂移，不得写 Git。只有携带匹配的 `--expected-content-fingerprint`、返回 `content_confirmation.status: CONFIRMED` 且 `AUTO_COMMIT_AND_PUSH` 决策成立后才能 commit；commit 成功即直接执行 `PUSH_PREFLIGHT → PUSH`，不插入 `CONFIRM_PUSH`。
 - 执行前读取 `.project/project.yml` 指向的 `.project/git/delivery.yml`。`automation.commit`/`automation.push` 只约束 `Git Delivery: auto`；用户确认后的 `commit` 和 `commit-and-push` 分别以 `CONFIRM_COMMIT`、`CONFIRM_PUSH` 授权，不得再因 automation 开关关闭而阻塞。push 授权包含 commit，不反向隐含。
 - `Git Delivery: auto` 只在修复、测试、必需检查、独立评审和必要文档均为 `PASS` 后进入 `AUTO_DECIDE`。完整 commit 消息必须先由仓库模板生成并严格校验；缺少 Project、Jira、RN、测试说明或其他必填 metadata 时返回 `BLOCKED` 请求补充，禁止保留占位符。
-- `project_policy.py git-plan --operation auto --delivery auto` 只读返回 `AUTO_COMMIT_AND_PUSH`、`OUTPUT_COMMIT_MESSAGE` 或无有效 diff 时的 `NO_DELIVERY`。消息文件必须位于仓库外的操作系统临时目录，不能成为工作树变更。
+- `project_policy.py git-plan --operation auto --delivery auto` 只读返回 `CONFIRM_COMMIT_CONTENT`、`AUTO_COMMIT_AND_PUSH`、`OUTPUT_COMMIT_MESSAGE` 或无有效 diff 时的 `NO_DELIVERY`。存在变更时返回 `commit_content` 和 `content_confirmation`；只有显式传入与当前内容相同的 `--expected-content-fingerprint` 才能把确认状态置为 `CONFIRMED`。消息文件必须位于仓库外的操作系统临时目录，不能成为工作树变更。
 - `OUTPUT_COMMIT_MESSAGE` 不得运行 `git add`、`git commit` 或 `git push`；面向用户的交付输出只包含已校验的完整 commit 内容，不附加路径、push 目标或未满足条件的诊断。`AUTO_COMMIT_AND_PUSH` 才允许继续写入，且不提供“仅自动 commit”的降级路径。
 - 若当前任务修改 Git policy，只能用任务开始时的已提交 policy 判断本轮交付；未提交的放宽配置从后续任务生效，不能自我授权同一任务的 commit/push。
 - 使用 `project_policy.py git-plan` 做只读预检；暂存前检查 `git status` 与真实 diff，只显式暂存 `DETECT_COMMIT_SCOPE` 确认的本任务文件。旧 policy 中的 `scope.allowed_paths` 仅为兼容字段且不参与授权或过滤；路径仍不得匹配 `scope.denied_paths`。禁止全仓库暂存。
@@ -402,7 +414,7 @@ Task Brief rules:
 - For modifying work, the manager arranges `Task Change Baseline` capture before the first write: capture it directly when execute capability exists, otherwise require the first writable specialist to record and return it before editing. Carry that baseline unchanged, together with the Developer's task-change ledger, into later review, documentation, and delivery Task Briefs. A directly selected writable specialist records it before editing. Never guess commit scope when the baseline is missing and cannot be reconstructed reliably from evidence.
 - `Forbidden Actions` inherits this contract's safety boundary. A Task Brief cannot authorize high-risk action beyond user intent.
 - A configured flash/HIL command in `Verification Commands` describes capability and is not execution authorization.
-- `Git Delivery` accepts only `none`, `commit`, `commit-and-push`, or `auto`; it never accepts a remote, URL, target branch, or refspec. Do not commit or push for `none`. `auto` is explicit authorization for automatic commit plus push in this run, but policy never replaces that authorization.
+- `Git Delivery` accepts only `none`, `commit`, `commit-and-push`, or `auto`; it never accepts a remote, URL, target branch, or refspec. Do not commit or push for `none`. `auto` selects the mode “automatically commit and push after content confirmation”; it does not confirm specific Commit Content, and neither policy nor mode selection replaces fingerprint confirmation.
 - If missing input would change an API, hardware value, data format, or safety policy, the worker must return `BLOCKED`.
 
 ### Product-Form Contract
@@ -473,8 +485,10 @@ Every agent final result uses this structure. Write `None` instead of removing a
 - Current State: <current state-machine state>
 - Action: <canonical action ID>
 - Owner: Agent | User
-- UI Route: CURRENT_INPUT | HANDOFF:<exact current-agent button label> | AGENT_CONTINUE | EXTERNAL | NONE
+- UI Route: NEXT_ACTION_BUTTON | CURRENT_INPUT | EXTERNAL | NONE
+- Dispatch Target: HANDOFF:<exact current-agent base-button label> | AGENT_CONTINUE | NONE
 - Required Input: <None, or the exact input/confirmation/evidence required from the user>
+- Instruction: <exact executable or copy-ready instruction; use None when unnecessary>
 - On Success: <next state and subsequent operation>
 ```
 
@@ -482,7 +496,11 @@ Include only task-relevant evidence, but do not omit gate rows. Use `NOT_RUN` wi
 
 Every user-facing result contains exactly one `## Next Action`. Generate it dynamically from the current state, gates, and missing input instead of copying a fixed recommendation or listing competing actions. Select the first unhandled item in this priority order: safety/authorization blocker → missing input or evidence → implementation/rework → independent review → required documentation → Git Delivery → issue closure. `Action` is exactly one of `CONFIRM_DIRECTION`, `PROVIDE_EVIDENCE`, `IMPLEMENT_FIX`, `FIX_FINDINGS`, `QUALITY_REVIEW`, `DOCUMENT_CHANGES`, `GIT_DELIVERY`, `CONFIRM_COMMIT`, `ADJUST_CHANGESET`, `CONFIRM_PUSH`, `MANUAL_PUSH`, `CLOSE_ISSUE`, `START_NEW_ISSUE`, or `NONE`.
 
-Route interactions deterministically: information, evidence, Jira, change-content, and commit/push confirmation use `CURRENT_INPUT`; role changes use `HANDOFF:<exact label present in the current agent frontmatter>`; an action the agent must continue uses `AGENT_CONTINUE`; a command the user must run outside the IDE uses `EXTERNAL`; and a true terminal state uses `NONE`. A `HANDOFF` Required Input names only that one button and never simultaneously requests typed confirmation; `CURRENT_INPUT` never also directs the user to click a button. When `Owner: Agent`, `UI Route: AGENT_CONTINUE`, `Required Input: None`, authorization exists, and evidence is sufficient, execute the action in the same turn and recompute the next action instead of returning that intermediate action as a pause. Pause only for user input, a manual handoff, an external action, or a terminal state.
+The five business agents expose two button classes: existing base buttons are always-visible static manual role entries with `send: false`; the final `执行下一步 / Next Action` button is the dynamic default entry with `send: true` and a fixed transition to the hidden `NextActionRouter`. Base buttons do not indicate the recommended current action. If a user clicks a base button that does not match `Dispatch Target`, the target agent revalidates state and returns `BLOCKED` without editing, committing, or pushing.
+
+After switching to the Router, the footer continues to expose five static fallback handoffs in this fixed order: `返回编排 / Return to Orchestrator`, `返回问题解决 / Return to Bug Resolver`, `返回实施 / Return to Embedded Developer`, `返回评审 / Return to Quality Reviewer`, and `返回文档 / Return to Doc Keeper`. All five use `send: false`; they prevent an empty footer and provide manual recovery only. They are not the dynamic Next Action and supply no input or commit, push, or external-command confirmation. After manual submission, the target agent revalidates the latest unique Next Action and all gates, returning `BLOCKED` on a mismatch.
+
+Route interactions deterministically: role changes use `UI Route: NEXT_ACTION_BUTTON` with `Dispatch Target: HANDOFF:<exact base-button label from the current agent frontmatter>`; an agent-owned action normally continues in the same turn, with `NEXT_ACTION_BUTTON + AGENT_CONTINUE` reserved for Router recovery from an erroneous pause; information, evidence, Jira, change-content, and commit/push confirmation use `CURRENT_INPUT + NONE`; a user-run command uses `EXTERNAL + NONE`; and a terminal state uses `NONE + NONE`. For CURRENT_INPUT, `Instruction` is a copy-ready reply template. For EXTERNAL, it contains the safe command, working directory, expected result, and evidence to return. Use `None` for other routes. Clicking the unified button authorizes only safe routing or an explicit role transition; it supplies no Required Input and confirms no Jira, change content, commit, push, or external command.
 
 Canonical mappings are: `CONFIRM_DIRECTION` for direction confirmation; `PROVIDE_EVIDENCE` for missing evidence; `IMPLEMENT_FIX`/`FIX_FINDINGS` for implementation or rework; `QUALITY_REVIEW`, `DOCUMENT_CHANGES`, and `GIT_DELIVERY` for their current-agent static handoffs; `ADJUST_CHANGESET` when the user asks to reduce, remove, or rework previewed changes; `CONFIRM_COMMIT` for final Jira/change-content/commit confirmation; `CONFIRM_PUSH` for ordinary-push confirmation; `MANUAL_PUSH` after failed automatic push; `CLOSE_ISSUE` when closure is eligible; `START_NEW_ISSUE` after reset; and `NONE` when no action remains.
 
@@ -494,7 +512,9 @@ For commit confirmation, emit:
 - Action: CONFIRM_COMMIT
 - Owner: User
 - UI Route: CURRENT_INPUT
+- Dispatch Target: NONE
 - Required Input: Git Delivery: commit; Jira ID: QDC017-1111; confirm changes and commit
+- Instruction: Reply in the current input with `Git Delivery: commit; Jira ID: QDC017-1111; confirm changes and commit`
 - On Success: PREFLIGHT → STAGE → COMMIT → REPORT
 ```
 
@@ -505,8 +525,10 @@ For a manual independent review, emit:
 - Current State: QUALITY_REVIEW_PENDING
 - Action: QUALITY_REVIEW
 - Owner: User
-- UI Route: HANDOFF:独立评审 / Quality Review
-- Required Input: Click the “独立评审 / Quality Review” base button
+- UI Route: NEXT_ACTION_BUTTON
+- Dispatch Target: HANDOFF:独立评审 / Quality Review
+- Required Input: None
+- Instruction: None
 - On Success: QualityReviewer independently reviews the current diff and verification evidence
 ```
 
@@ -658,11 +680,12 @@ Invoke DocKeeper only when a public API, architecture, hardware assumption, oper
 - When repair delivery has no explicit mode, generate a `Commit Delivery Confirmation` with `commit` as the recommended default and mark it `PENDING_CONFIRMATION`. A recommendation is not authorization: perform no Git write until the user confirms it. Never default to `commit-and-push` or `auto`; each requires an explicit user choice. Record a `none` choice as skipped delivery.
 - Jira ID is the only commit field that is always user-supplied. Accept multiple IDs in one response and validate each against the policy Jira pattern. Never infer a Jira ID from a branch, log, path, or similar issue. Generate every other field from `.project/project.yml`, confirmed root cause, actual diff, test/build results, independent review, and documentation evidence. Ask for Project in the same confirmation only when project identity remains `auto` and cannot be resolved uniquely from confirmed context.
 - Default synthesis is deterministic: use `bug fix` for a BugResolver repair; derive Function block, Summary, Change Reason, Root Cause, Solution, Affected Function Name, and Applicable Project from confirmed engineering facts; use AI=`Y` with one truthful primary scenario and detail when AI materially participated in generation, inspection, refactoring, tests, or documentation, and use exactly `AI-Tool-Used: N`, `AI-Tool-Scenario: /`, and `AI-Tool-Detail: /` only when AI did not participate at all; default RN to `N`/`N/A` unless a visible release note is required; derive Test-Proposal as `Y` with actual steps or `N` with a reason; default Stress-Test/HW-Test to `N` unless change risk and a confirmed test plan require `Y` with steps.
-- Every `commit`, `commit-and-push`, and `auto` path handles the Documentation gate before `DETECT_COMMIT_SCOPE` or `CONFIRM_COMMIT`: use `PASS` with documentation evidence when a public API, architecture, public behavior/state machine, hardware assumption, operating procedure, or confirmed root cause changed; otherwise record `NOT_RUN — Not required: <reason>`. Missing, failed, or unjustified documentation status blocks delivery. When the current agent has a documentation handoff, dynamically emit `Action: DOCUMENT_CHANGES` with the sole matching `HANDOFF:<exact button label>`; otherwise return `BLOCKED` and require manager handling. This also applies to a direct ordinary confirmed commit through `EmbeddedDeveloper`, not only to `auto`.
+- Every `commit`, `commit-and-push`, and `auto` path handles the Documentation gate before `DETECT_COMMIT_SCOPE` or `CONFIRM_COMMIT`: use `PASS` with documentation evidence when a public API, architecture, public behavior/state machine, hardware assumption, operating procedure, or confirmed root cause changed; otherwise record `NOT_RUN — Not required: <reason>`. Missing, failed, or unjustified documentation status blocks delivery. When the current agent has a documentation handoff, dynamically emit `Action: DOCUMENT_CHANGES`, `UI Route: NEXT_ACTION_BUTTON`, and the matching `Dispatch Target: HANDOFF:<exact base-button label>`; otherwise return `BLOCKED` and require manager handling. This also applies to a direct ordinary confirmed commit through `EmbeddedDeveloper`, not only to `auto`.
 - At the start of a modifying task, record a read-only initial `git status`, staged/unstaged/untracked paths, and actual diff as the `Task Change Baseline`, and maintain a ledger of files/changes made by the agent in this task. The baseline never absorbs pre-existing dirty content into the task automatically.
 - Before delivery confirmation, run `DETECT_COMMIT_SCOPE`: commit scope comes from the current task's actual diff only, never from a YAML path allowlist, and excludes unrelated pre-existing dirty/staged content. Record the `commit_content.paths`, per-file `entries` (state, added lines, deleted lines, binary), `excluded_paths`, and content fingerprint returned by `git-plan`. If a file was already dirty before the task and task hunks cannot be separated safely, return `BLOCKED` and ask the user to split it or confirm a handling method; never stage the entire file accidentally.
 - Before any Git write, show an exact `Commit Content` table with inclusion, Git state, added/deleted counts, and a truthful summary for every file, plus excluded dirty paths, one complete metadata preview, the proposed mode, fingerprint, and `Change Confirmation: PENDING`. The user may confirm the changes and commit, or ask to remove a file, narrow hunks, or reduce the implementation. An adjustment enters `ADJUST_CHANGESET`, changes only work created by the current task, and never reverts pre-task user work. If reducing the change would break dependency, build, or acceptance consistency, return `BLOCKED` with the reason and required decision instead of committing an inconsistent subset. Any adjustment invalidates prior confirmation and affected gate evidence; rerun affected tests/checks, independent review, `DETECT_COMMIT_SCOPE`, and the preview.
 - Final confirmation covers the change content, commit metadata, and delivery mode together. The user need only supply Jira ID and reply `confirm changes and commit` (or an equivalent unambiguous confirmation), or name corrections to fields/commit content. Redetect and regenerate the preview after corrections. Without confirmation, return `BLOCKED` with Git unchanged. Do not ask again for confirmed fields or copy preview missing markers into the commit message. After confirmation, reread the actual diff; if content or paths drifted from the preview, invalidate confirmation and return to `DETECT_COMMIT_SCOPE → CONFIRM_DELIVERY` instead of committing changed content.
+- `Git Delivery: auto` has a separate Commit Content gate before any automatic staging or commit. The preview shows `Commit Content Confirmation: PENDING`; its sole Next Action is `CONFIRM_COMMIT + CURRENT_INPUT + NONE`, with a copy-ready `Instruction` containing `confirm automatic commit content`, the full current fingerprint, Jira ID, and `Git Delivery: auto`. Selecting auto, enabling automation, clicking `执行下一步 / Next Action`, or prior mode authorization is not content confirmation. After user confirmation, `AUTO_DECIDE` passes that fingerprint as `--expected-content-fingerprint`; absence or drift returns `CONFIRM_COMMIT_CONTENT` and regenerates the preview. Only `content_confirmation.status: CONFIRMED` with a matching current fingerprint may enter `STAGE → COMMIT`.
 - After a Git Delivery handoff switches to `EmbeddedDeveloper`, confirmation, adjustment, and execution remain in that same agent conversation. The preview explicitly tells the user to reply `confirm changes and commit` or `adjust changes: <request>` in the current input box and emits `Action: CONFIRM_COMMIT`; no further commit handoff button is required or awaited. On final confirmation, the current `EmbeddedDeveloper` proceeds directly through `PREFLIGHT → STAGE → COMMIT`. It never says it will delegate to EmbeddedDeveloper, never delegates to itself, and never re-asks confirmed content.
 
 Use this compact first confirmation instead of a full questionnaire:
@@ -673,15 +696,16 @@ Use this compact first confirmation instead of a full questionnaire:
 - Authorization: PENDING_CONFIRMATION
 - User Input Required: Jira ID
 - Commit Content: <per-file inclusion, Git state, added/deleted counts, summary, excluded paths, and fingerprint>
+- Commit Content Confirmation: PENDING
 - Generated Metadata: <all template fields and values except Jira>
 - Change Confirmation: PENDING
-- Reply With: <Jira ID> + confirm changes and commit, or `adjust changes: <remove file/narrow hunk/reduce implementation>`
+- Reply With: use `<Jira ID> + confirm changes and commit` for ordinary modes; for auto use `Git Delivery: auto; Jira ID: <ID>; confirm automatic commit content; fingerprint: <full value>`; or use `adjust changes: <remove file/narrow hunk/reduce implementation>`
 ```
 - For `Git Delivery: commit-and-push`, stop after a successful commit and do not push immediately. Preserve the full commit SHA and first-preflight fingerprint, then emit `Action: CONFIRM_PUSH`, `Owner: User`, and `Required Input: confirm push`, showing the branch, remote alias, redacted URL, and target ref resolved from repository-local config. After explicit confirmation, the current `EmbeddedDeveloper` directly executes `PUSH_PREFLIGHT → PUSH` without re-asking for Jira, commit metadata, or commit authorization.
-- `Git Delivery: auto` retains automatic semantics. Once commit confirmation exists and `AUTO_COMMIT_AND_PUSH` is selected, a successful commit proceeds directly to `PUSH_PREFLIGHT → PUSH` without `CONFIRM_PUSH`.
+- `Git Delivery: auto` retains automatic push semantics after confirmation, but Commit Content must be confirmed before automatic commit. `CONFIRM_COMMIT_CONTENT` means confirmation is missing or stale and authorizes no Git write. Commit is allowed only when the preflight receives a matching `--expected-content-fingerprint`, returns `content_confirmation.status: CONFIRMED`, and selects `AUTO_COMMIT_AND_PUSH`; a successful commit then proceeds directly to `PUSH_PREFLIGHT → PUSH` without `CONFIRM_PUSH`.
 - Before delivery, read `.project/git/delivery.yml` through `.project/project.yml`. `automation.commit`/`automation.push` gate only `Git Delivery: auto`; user-confirmed `commit` and `commit-and-push` are authorized through `CONFIRM_COMMIT` and `CONFIRM_PUSH` respectively and must not be blocked because an automation switch is off. Push authorization includes commit, not conversely.
 - Enter `AUTO_DECIDE` for `Git Delivery: auto` only after the repair, tests, required checks, independent review, and required documentation are all `PASS`. First generate the complete commit message from the repository template and validate it strictly. Missing Project, Jira, RN, test notes, or other required metadata returns `BLOCKED` for input; never leave placeholders.
-- Read-only `project_policy.py git-plan --operation auto --delivery auto` returns `AUTO_COMMIT_AND_PUSH`, `OUTPUT_COMMIT_MESSAGE`, or `NO_DELIVERY` when there is no effective diff. Store the message file in an operating-system temporary directory outside the repository so it cannot become a worktree change.
+- Read-only `project_policy.py git-plan --operation auto --delivery auto` returns `CONFIRM_COMMIT_CONTENT`, `AUTO_COMMIT_AND_PUSH`, `OUTPUT_COMMIT_MESSAGE`, or `NO_DELIVERY` when there is no effective diff. With changes, it returns `commit_content` and `content_confirmation`; only an explicit `--expected-content-fingerprint` matching current content yields `CONFIRMED`. Store the message file in an operating-system temporary directory outside the repository so it cannot become a worktree change.
 - `OUTPUT_COMMIT_MESSAGE` runs no `git add`, `git commit`, or `git push`. Its user-facing delivery output contains only the complete validated commit content, without paths, push target, or failed-condition diagnostics. Only `AUTO_COMMIT_AND_PUSH` permits writes, and there is no automatic commit-only fallback.
 - If the current task changes Git policy, evaluate delivery against the committed policy present at task start. An uncommitted relaxation takes effect only for a later task and cannot self-authorize commit/push in the same task.
 - Use `project_policy.py git-plan` for read-only preflight. Inspect `git status` and the actual diff and explicitly stage only task files confirmed by `DETECT_COMMIT_SCOPE`. A legacy `scope.allowed_paths` field is compatibility-only and never authorizes or filters commit content; paths still must not match `scope.denied_paths`. Never stage repository-wide.

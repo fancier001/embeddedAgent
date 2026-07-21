@@ -35,38 +35,46 @@ EXPECTED_AGENTS: Mapping[str, Mapping[str, Any]] = {
         "name": "Orchestrator",
         "tools": ["agent", "read", "search"],
         "agents": ["EmbeddedDeveloper", "QualityReviewer", "DocKeeper"],
-        "handoffs": ["BugResolver", "EmbeddedDeveloper", "QualityReviewer", "DocKeeper"],
+        "handoffs": ["BugResolver", "EmbeddedDeveloper", "QualityReviewer", "DocKeeper", "NextActionRouter"],
+        "user-invocable": True,
         "disable-model-invocation": True,
     },
     "bug-resolver.agent.md": {
         "name": "BugResolver",
         "tools": ["agent", "read", "search", "execute"],
         "agents": ["EmbeddedDeveloper", "QualityReviewer", "DocKeeper"],
+        "handoffs": ["EmbeddedDeveloper", "QualityReviewer", "DocKeeper", "EmbeddedDeveloper", "NextActionRouter"],
+        "user-invocable": True,
         "disable-model-invocation": False,
-        "handoffs": [
-            "EmbeddedDeveloper",
-            "QualityReviewer",
-            "DocKeeper",
-            "EmbeddedDeveloper",
-        ],
     },
     "embedded-developer.agent.md": {
         "name": "EmbeddedDeveloper",
         "tools": ["edit", "read", "search", "execute"],
+        "handoffs": ["QualityReviewer", "DocKeeper", "BugResolver", "NextActionRouter"],
+        "user-invocable": True,
         "disable-model-invocation": False,
-        "handoffs": ["QualityReviewer", "DocKeeper", "BugResolver"],
     },
     "quality-reviewer.agent.md": {
         "name": "QualityReviewer",
         "tools": ["read", "search", "execute"],
+        "handoffs": ["EmbeddedDeveloper", "DocKeeper", "EmbeddedDeveloper", "NextActionRouter"],
+        "user-invocable": True,
         "disable-model-invocation": False,
-        "handoffs": ["EmbeddedDeveloper", "DocKeeper", "EmbeddedDeveloper"],
     },
     "doc-keeper.agent.md": {
         "name": "DocKeeper",
         "tools": ["read", "search", "edit", "web"],
+        "handoffs": ["Orchestrator", "EmbeddedDeveloper", "NextActionRouter"],
+        "user-invocable": True,
         "disable-model-invocation": False,
-        "handoffs": ["Orchestrator", "EmbeddedDeveloper"],
+    },
+    "next-action-router.agent.md": {
+        "name": "NextActionRouter",
+        "tools": ["agent", "read", "search"],
+        "agents": ["Orchestrator", "BugResolver", "EmbeddedDeveloper", "QualityReviewer", "DocKeeper"],
+        "handoffs": ["Orchestrator", "BugResolver", "EmbeddedDeveloper", "QualityReviewer", "DocKeeper"],
+        "user-invocable": False,
+        "disable-model-invocation": True,
     },
 }
 EXPECTED_HANDOFFS: Mapping[str, tuple[tuple[str, str], ...]] = {
@@ -75,26 +83,38 @@ EXPECTED_HANDOFFS: Mapping[str, tuple[tuple[str, str], ...]] = {
         ("实现变更 / Implement", "EmbeddedDeveloper"),
         ("独立评审 / Review", "QualityReviewer"),
         ("文档沉淀 / Document", "DocKeeper"),
+        ("执行下一步 / Next Action", "NextActionRouter"),
     ),
     "bug-resolver.agent.md": (
         ("实施修复 / Implement Fix", "EmbeddedDeveloper"),
         ("质量评估 / Quality Assessment", "QualityReviewer"),
         ("记录结论 / Document Resolution", "DocKeeper"),
         ("Git 提交交付 / Git Delivery", "EmbeddedDeveloper"),
+        ("执行下一步 / Next Action", "NextActionRouter"),
     ),
     "embedded-developer.agent.md": (
         ("独立评审 / Quality Review", "QualityReviewer"),
         ("文档同步 / Document Changes", "DocKeeper"),
         ("问题已解决 / Close Issue", "BugResolver"),
+        ("执行下一步 / Next Action", "NextActionRouter"),
     ),
     "quality-reviewer.agent.md": (
         ("修复问题 / Fix Issues", "EmbeddedDeveloper"),
         ("沉淀质量结论 / Document Quality Findings", "DocKeeper"),
         ("Git 提交交付 / Git Delivery", "EmbeddedDeveloper"),
+        ("执行下一步 / Next Action", "NextActionRouter"),
     ),
     "doc-keeper.agent.md": (
         ("返回编排 / Resolve Conflict", "Orchestrator"),
         ("Git 提交交付 / Git Delivery", "EmbeddedDeveloper"),
+        ("执行下一步 / Next Action", "NextActionRouter"),
+    ),
+    "next-action-router.agent.md": (
+        ("返回编排 / Return to Orchestrator", "Orchestrator"),
+        ("返回问题解决 / Return to Bug Resolver", "BugResolver"),
+        ("返回实施 / Return to Embedded Developer", "EmbeddedDeveloper"),
+        ("返回评审 / Return to Quality Reviewer", "QualityReviewer"),
+        ("返回文档 / Return to Doc Keeper", "DocKeeper"),
     ),
 }
 NEXT_ACTION_IDS = (
@@ -114,11 +134,49 @@ NEXT_ACTION_IDS = (
     "NONE",
 )
 NEXT_ACTION_ROUTES = (
+    "NEXT_ACTION_BUTTON",
     "CURRENT_INPUT",
-    "HANDOFF:<exact current-agent button label>",
-    "AGENT_CONTINUE",
     "EXTERNAL",
     "NONE",
+)
+NEXT_ACTION_DISPATCH_TARGETS = (
+    "HANDOFF:<exact current-agent base-button label>",
+    "AGENT_CONTINUE",
+    "NONE",
+)
+
+BUSINESS_AGENT_FILES = frozenset(
+    {
+        "orchestrator.agent.md",
+        "bug-resolver.agent.md",
+        "embedded-developer.agent.md",
+        "quality-reviewer.agent.md",
+        "doc-keeper.agent.md",
+    }
+)
+NEXT_ACTION_HANDOFF_LABEL = "执行下一步 / Next Action"
+NEXT_ACTION_HANDOFF_AGENT = "NextActionRouter"
+NEXT_ACTION_SOURCE_AGENTS = {
+    "orchestrator.agent.md": "Orchestrator",
+    "bug-resolver.agent.md": "BugResolver",
+    "embedded-developer.agent.md": "EmbeddedDeveloper",
+    "quality-reviewer.agent.md": "QualityReviewer",
+    "doc-keeper.agent.md": "DocKeeper",
+}
+NEXT_ACTION_HANDOFF_PROMPT_MARKERS = (
+    "Source Agent:",
+    "latest unique structured Next Action",
+    "safe routing or role transition only",
+    "supplies no missing input",
+    "confirms no commit, push, or external command",
+)
+ROUTER_AGENT_FILE = "next-action-router.agent.md"
+ROUTER_FALLBACK_PROMPT_MARKERS = (
+    "Manually return from NextActionRouter",
+    "Revalidate the latest unique Next Action",
+    "otherwise return BLOCKED",
+    "supplies no missing input",
+    "confirms no commit, push, or external command",
 )
 
 GIT_DELIVERY_HANDOFF_LABEL = "Git 提交交付 / Git Delivery"
@@ -207,7 +265,11 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "`Git Delivery`",
             "`AUTO_DECIDE`",
             "`AUTO_COMMIT_AND_PUSH`",
+            "`CONFIRM_COMMIT_CONTENT`",
             "`OUTPUT_COMMIT_MESSAGE`",
+            "--expected-content-fingerprint",
+            "content_confirmation.status: CONFIRMED",
+            "Commit Content Confirmation: PENDING",
             "Task Change Baseline",
             "Task Change Ledger",
             "`DETECT_COMMIT_SCOPE`",
@@ -215,7 +277,9 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "`ADJUST_CHANGESET`",
             "Change Confirmation: PENDING",
             "UI Route",
-            "AGENT_CONTINUE",
+            "NEXT_ACTION_BUTTON",
+            "Dispatch Target",
+            "Instruction",
             "HANDOFF:独立评审 / Review",
             "## Next Action",
         }
@@ -235,6 +299,9 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "## Evidence Request",
             "`Git Delivery`",
             "`AUTO_DECIDE`",
+            "`CONFIRM_COMMIT_CONTENT`",
+            "content_confirmation.status: CONFIRMED",
+            "Commit Content Confirmation: PENDING",
             "Commit Delivery Confirmation",
             "recommended default",
             "Jira ID is always user-supplied",
@@ -246,7 +313,9 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "`ADJUST_CHANGESET`",
             "Change Confirmation: PENDING",
             "UI Route",
-            "AGENT_CONTINUE",
+            "NEXT_ACTION_BUTTON",
+            "Dispatch Target",
+            "Instruction",
             "HANDOFF:Git 提交交付 / Git Delivery",
             "Action: START_NEW_ISSUE",
             "## Next Action",
@@ -262,7 +331,11 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "`CONFIRM_DELIVERY`",
             "`AUTO_DECIDE`",
             "`AUTO_COMMIT_AND_PUSH`",
+            "`CONFIRM_COMMIT_CONTENT`",
             "`OUTPUT_COMMIT_MESSAGE`",
+            "--expected-content-fingerprint",
+            "content_confirmation.status: CONFIRMED",
+            "Commit Content Confirmation: PENDING",
             "--expected-commit",
             "recommended default",
             "Jira ID is always user-supplied",
@@ -279,7 +352,9 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "Change Confirmation: PENDING",
             "UI Route",
             "CURRENT_INPUT",
-            "AGENT_CONTINUE",
+            "NEXT_ACTION_BUTTON",
+            "Dispatch Target",
+            "Instruction",
             "HANDOFF:文档同步 / Document Changes",
             "Documentation=`PASS`",
             "commit scope comes from the current task's actual diff",
@@ -291,7 +366,9 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "## Next Action",
             "UI Route",
             "CURRENT_INPUT",
-            "AGENT_CONTINUE",
+            "NEXT_ACTION_BUTTON",
+            "Dispatch Target",
+            "Instruction",
             "HANDOFF:修复问题 / Fix Issues",
         }
     ),
@@ -301,8 +378,24 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "## Next Action",
             "UI Route",
             "CURRENT_INPUT",
-            "AGENT_CONTINUE",
+            "NEXT_ACTION_BUTTON",
+            "Dispatch Target",
+            "Instruction",
             "HANDOFF:返回编排 / Resolve Conflict",
+        }
+    ),
+    "next-action-router.agent.md": frozenset(
+        {
+            "Source Agent",
+            "latest unique complete `## Next Action`",
+            "NEXT_ACTION_BUTTON",
+            "Dispatch Target",
+            "CURRENT_INPUT",
+            "EXTERNAL",
+            "at most eight consecutive actions",
+            "never confirms Jira",
+            "no edit or command-execution capability",
+            "five static `send: false` return handoffs",
         }
     ),
 }
@@ -315,6 +408,9 @@ REQUIRED_PROMPT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "recommended default",
             "Jira ID is always user-supplied",
             "`AUTO_DECIDE`",
+            "`CONFIRM_COMMIT_CONTENT`",
+            "content_confirmation.status: CONFIRMED",
+            "Commit Content Confirmation: PENDING",
             "separate delivery Task Brief",
             "`CONFIRM_PUSH`",
             "`MANUAL_PUSH`",
@@ -324,7 +420,9 @@ REQUIRED_PROMPT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "Change Confirmation: PENDING",
             "UI Route",
             "CURRENT_INPUT",
-            "AGENT_CONTINUE",
+            "NEXT_ACTION_BUTTON",
+            "Dispatch Target",
+            "Instruction",
             "Documentation",
             "CLOSE → RESET → INTAKE",
             "Next Action",
@@ -338,6 +436,9 @@ REQUIRED_PROMPT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "recommended default",
             "Jira ID is always user-supplied",
             "`AUTO_DECIDE`",
+            "`CONFIRM_COMMIT_CONTENT`",
+            "content_confirmation.status: CONFIRMED",
+            "Commit Content Confirmation: PENDING",
             "separate delivery Task Brief",
             "`CONFIRM_PUSH`",
             "`MANUAL_PUSH`",
@@ -347,7 +448,9 @@ REQUIRED_PROMPT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "Change Confirmation: PENDING",
             "UI Route",
             "CURRENT_INPUT",
-            "AGENT_CONTINUE",
+            "NEXT_ACTION_BUTTON",
+            "Dispatch Target",
+            "Instruction",
             "Documentation",
             "CLOSE → RESET → INTAKE",
             "Next Action",
@@ -383,8 +486,11 @@ REQUIRED_SHARED_CONTRACT_MARKERS = frozenset(
     {
         "## Next Action",
         "- UI Route:",
+        "- Dispatch Target:",
+        "- Instruction:",
+        "NEXT_ACTION_BUTTON",
         "CURRENT_INPUT",
-        "HANDOFF:<exact current-agent button label>",
+        "HANDOFF:<exact current-agent base-button label>",
         "AGENT_CONTINUE",
         "EXTERNAL",
         "`ADJUST_CHANGESET`",
@@ -395,6 +501,12 @@ REQUIRED_SHARED_CONTRACT_MARKERS = frozenset(
         "`MANUAL_PUSH`",
         "`START_NEW_ISSUE`",
         "NOT_RUN — Not required: <reason>",
+        "`CONFIRM_COMMIT_CONTENT`",
+        "--expected-content-fingerprint",
+        "content_confirmation.status: CONFIRMED",
+        "Commit Content Confirmation: PENDING",
+        "返回编排 / Return to Orchestrator",
+        "five static fallback handoffs",
     }
 )
 
@@ -1007,6 +1119,13 @@ class RepositoryValidator:
                     "SHARED_CONTRACT_ROUTE",
                     f"shared contract must define UI route {route!r}",
                 )
+        for target in NEXT_ACTION_DISPATCH_TARGETS:
+            if target not in text:
+                self._add(
+                    path,
+                    "SHARED_CONTRACT_DISPATCH",
+                    f"shared contract must define dispatch target {target!r}",
+                )
 
     def _frontmatter(self, path: Path) -> tuple[dict[str, Any] | None, str]:
         text = self._read_text(path)
@@ -1079,13 +1198,17 @@ class RepositoryValidator:
                 self._add(path, "AGENT_TOOLS", f"tools must be exactly {spec['tools']!r}")
             if data.get("target") != "vscode":
                 self._add(path, "AGENT_TARGET", "target must be 'vscode'")
-            if data.get("user-invocable") is not True:
-                self._add(path, "AGENT_INVOCABLE", "user-invocable must be true")
+            if data.get("user-invocable") is not spec["user-invocable"]:
+                self._add(
+                    path,
+                    "AGENT_INVOCABLE",
+                    f"user-invocable must be {spec['user-invocable']!r}",
+                )
             if data.get("disable-model-invocation") is not spec["disable-model-invocation"]:
                 self._add(
                     path,
                     "AGENT_MODEL_INVOCATION",
-                    "disable-model-invocation does not match the five-agent policy",
+                    "disable-model-invocation does not match the six-agent policy",
                 )
 
             if "agents" in spec:
@@ -1136,6 +1259,50 @@ class RepositoryValidator:
                     "HANDOFF_BASELINE",
                     "handoff labels, order, and targets must remain exactly the base set",
                 )
+            if filename in BUSINESS_AGENT_FILES:
+                next_handoffs = [
+                    handoff
+                    for handoff in handoffs
+                    if isinstance(handoff, dict)
+                    and handoff.get("label") == NEXT_ACTION_HANDOFF_LABEL
+                ]
+                expected_source = NEXT_ACTION_SOURCE_AGENTS[filename]
+                if (
+                    len(next_handoffs) != 1
+                    or handoffs[-1] is not next_handoffs[0]
+                    or next_handoffs[0].get("agent") != NEXT_ACTION_HANDOFF_AGENT
+                    or next_handoffs[0].get("send") is not True
+                    or not isinstance(next_handoffs[0].get("prompt"), str)
+                    or f"Source Agent: {expected_source}" not in next_handoffs[0]["prompt"]
+                    or any(
+                        marker not in next_handoffs[0]["prompt"]
+                        for marker in NEXT_ACTION_HANDOFF_PROMPT_MARKERS
+                    )
+                ):
+                    self._add(
+                        path,
+                        "HANDOFF_NEXT_ACTION",
+                        "must append exactly one safe send:true Next Action handoff to NextActionRouter",
+                    )
+            if filename == ROUTER_AGENT_FILE:
+                if (
+                    len(handoffs) != 5
+                    or any(
+                        not isinstance(handoff, dict)
+                        or handoff.get("send") is not False
+                        or not isinstance(handoff.get("prompt"), str)
+                        or any(
+                            marker not in handoff["prompt"]
+                            for marker in ROUTER_FALLBACK_PROMPT_MARKERS
+                        )
+                        for handoff in handoffs
+                    )
+                ):
+                    self._add(
+                        path,
+                        "HANDOFF_ROUTER_FALLBACK",
+                        "Router must expose exactly five safe send:false fallback handoffs",
+                    )
             if filename in GIT_DELIVERY_HANDOFF_AGENTS:
                 delivery_handoffs = [
                     handoff
@@ -1204,8 +1371,19 @@ class RepositoryValidator:
                         "AGENT_REFERENCE",
                         f"{location} references unknown agent {handoff.get('agent')!r}",
                     )
-                if handoff.get("send") is not False:
-                    self._add(path, "HANDOFF_SEND", f"{location}.send must be false")
+                is_next_action = (
+                    filename in BUSINESS_AGENT_FILES
+                    and index == len(handoffs) - 1
+                    and handoff.get("label") == NEXT_ACTION_HANDOFF_LABEL
+                    and handoff.get("agent") == NEXT_ACTION_HANDOFF_AGENT
+                )
+                expected_send = True if is_next_action else False
+                if handoff.get("send") is not expected_send:
+                    self._add(
+                        path,
+                        "HANDOFF_SEND",
+                        f"{location}.send must be {expected_send!r}",
+                    )
 
     def _validate_skills(self) -> None:
         skills_dir = self.root / ".github" / "skills"

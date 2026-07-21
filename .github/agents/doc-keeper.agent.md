@@ -18,6 +18,11 @@ handoffs:
       先使用 Task Change Baseline、Task Change Ledger 和当前真实 diff 执行 DETECT_COMMIT_SCOPE，在预览中逐文件列出状态、增删统计、摘要、排除路径和 fingerprint，并标记 Change Confirmation: PENDING；用户要求删减时进入 ADJUST_CHANGESET，重新验证、独立评审和确认。不得按 YAML allowed_paths 选择文件，无法排除既有 dirty 内容时返回 BLOCKED。 First use Task Change Baseline, Task Change Ledger, and the current actual diff for DETECT_COMMIT_SCOPE, then list exact Commit Content per file with state, added/deleted counts, summary, excluded paths, fingerprint, and Change Confirmation: PENDING. A reduction request enters ADJUST_CHANGESET and repeats verification, independent review, and confirmation. Never select files through YAML allowed_paths, and return BLOCKED when pre-existing dirty content cannot be excluded safely.
       commit-and-push 在 commit 后生成 CONFIRM_PUSH 并等待确认；auto 保持自动，push 失败时生成 MANUAL_PUSH。 For commit-and-push, emit CONFIRM_PUSH after commit and wait for confirmation; keep auto automatic and emit MANUAL_PUSH if push fails.
     send: false
+  - label: 执行下一步 / Next Action
+    agent: NextActionRouter
+    prompt: >-
+      Source Agent: DocKeeper. 只处理当前会话中最新且唯一的结构化 Next Action，并严格遵守 .github/agent-contracts.md。此次点击只授权安全路由或角色切换，不提供缺失输入，也不确认 commit、push 或外部命令。 Execute only the latest unique structured Next Action in the current conversation under .github/agent-contracts.md. This click authorizes safe routing or role transition only; it supplies no missing input and confirms no commit, push, or external command.
+    send: true
 ---
 
 # DocKeeper Agent
@@ -106,7 +111,7 @@ handoffs:
 - 事实冲突、缺少技术确认或写入授权时返回 `BLOCKED`。
 - 已执行检查失败且无法在允许范围内修复时返回 `FAILED`。
 - `CONDITIONAL` 仅用于用户明确接受的非发布性剩余风险；不得用它绕过同步占位标记或事实冲突。
-- 每个面向用户的报告必须包含且只包含一个共享 `## Next Action`，根据事实核对、文档门禁和共享优先级动态生成规范 `Action` 与 `UI Route`。补证使用 `CURRENT_INPUT`；冲突处理和交付只使用当前 frontmatter 的精确路由 `HANDOFF:返回编排 / Resolve Conflict` 或 `HANDOFF:Git 提交交付 / Git Delivery`；终态使用 `NONE`。无需输入且已获授权的 Agent 动作使用 `AGENT_CONTINUE` 在同一轮执行并重新计算。
+- 每个面向用户的报告必须包含且只包含一个共享 `## Next Action`，完整生成 `Action`、`UI Route`、`Dispatch Target`、`Required Input` 和 `Instruction`。补证使用 `CURRENT_INPUT + NONE` 并给出可复制指令；冲突处理和交付使用 `NEXT_ACTION_BUTTON`，Dispatch Target 只使用当前 frontmatter 的精确基础按钮 `HANDOFF:返回编排 / Resolve Conflict` 或 `HANDOFF:Git 提交交付 / Git Delivery`；终态使用 `NONE + NONE`。已授权且无需输入的 Agent 动作同轮执行。提前点击不匹配的基础按钮返回 `BLOCKED`，不编辑或写 Git。
 
 ## English
 
@@ -188,4 +193,4 @@ All first-party team Markdown must retain the constraint block after the title a
 - Return `BLOCKED` for fact conflicts, missing technical confirmation, or missing write authority.
 - Return `FAILED` when an executed check fails and cannot be fixed within allowed scope.
 - Use `CONDITIONAL` only for explicitly accepted non-release residual risk; never use it to bypass a synchronization placeholder or a fact conflict.
-- Every user-facing report contains exactly one shared `## Next Action`, dynamically deriving its canonical `Action` and `UI Route` from fact checking, documentation gates, and the shared priority. Missing evidence uses `CURRENT_INPUT`; conflict handling and delivery use only the exact current-frontmatter routes `HANDOFF:返回编排 / Resolve Conflict` or `HANDOFF:Git 提交交付 / Git Delivery`; a terminal state uses `NONE`. Execute any authorized no-input agent action with `AGENT_CONTINUE` and recompute in the same turn.
+- Every user-facing report contains exactly one shared `## Next Action` with `Action`, `UI Route`, `Dispatch Target`, `Required Input`, and `Instruction`. Missing evidence uses `CURRENT_INPUT + NONE` with a copy-ready instruction. Conflict handling and delivery use `NEXT_ACTION_BUTTON`, with Dispatch Target limited to `HANDOFF:返回编排 / Resolve Conflict` or `HANDOFF:Git 提交交付 / Git Delivery`; a terminal state uses `NONE + NONE`. Execute authorized no-input work in the same turn. An early mismatched base-button click returns `BLOCKED` without edits or Git writes.
