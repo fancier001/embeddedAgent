@@ -82,6 +82,20 @@ class ProjectRuleTests(unittest.TestCase):
             with self.assertRaises(PolicyInputError):
                 resolve_rules(repo, ["source/example.c"])
 
+    def test_commit_template_requires_canonical_no_ai_defaults(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = Path(temporary) / "repository"
+            shutil.copytree(PROJECT_ROOT / ".project", repo / ".project")
+            template = repo / ".project" / "git" / "commit.template"
+            template.write_text(
+                template.read_text(encoding="utf-8").replace(
+                    "<AI-Tool-Scenario>: /", "<AI-Tool-Scenario>: N/A"
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaises(PolicyInputError):
+                resolve_rules(repo, ["README.md"])
+
     def test_git_target_override_is_rejected_anywhere_in_policy(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             repo = Path(temporary) / "repository"
@@ -94,6 +108,19 @@ class ProjectRuleTests(unittest.TestCase):
             )
             with self.assertRaises(PolicyInputError):
                 resolve_rules(repo, ["README.md"])
+
+    def test_legacy_allowed_paths_do_not_restrict_product_code(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = Path(temporary) / "repository"
+            shutil.copytree(PROJECT_ROOT / ".project", repo / ".project")
+            policy_path = repo / ".project" / "git" / "delivery.yml"
+            policy_data = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
+            policy_data["scope"]["allowed_paths"] = ["docs/**"]
+            policy_path.write_text(
+                yaml.safe_dump(policy_data, sort_keys=False), encoding="utf-8"
+            )
+            result = resolve_rules(repo, ["source/product.c"])
+            self.assertEqual("PASS", result["status"])
 
 
 class CommitMessageTests(unittest.TestCase):
@@ -193,11 +220,11 @@ class CommitMessageTests(unittest.TestCase):
 
     def test_no_ai_no_rn_and_test_rationale_pass(self) -> None:
         text = self.valid_text
-        text = text.replace("<AI-Tool-Used>:Y", "<AI-Tool-Used>:N")
-        text = text.replace("<AI-Tool-Scenario>:Code Inspection", "<AI-Tool-Scenario>:N/A")
+        text = text.replace("<AI-Tool-Used>:Y", "<AI-Tool-Used>: N")
+        text = text.replace("<AI-Tool-Scenario>:Code Inspection", "<AI-Tool-Scenario>: /")
         text = text.replace(
             "<AI-Tool-Detail>:Used Codex to inspect the existing logic and verify the change",
-            "<AI-Tool-Detail>:N/A",
+            "<AI-Tool-Detail>: /",
         )
         text = text.replace("<RN>:Y", "<RN>:N")
         text = text.replace(
@@ -210,6 +237,41 @@ class CommitMessageTests(unittest.TestCase):
             "<Test-Proposal>:N No dedicated test is needed for this documentation-only change.",
         )
         self.assertEqual("PASS", self.validate(text)["status"])
+
+    def test_no_ai_rejects_na_empty_and_usage_content(self) -> None:
+        canonical = self.valid_text
+        canonical = canonical.replace("<AI-Tool-Used>:Y", "<AI-Tool-Used>:N")
+        canonical = canonical.replace(
+            "<AI-Tool-Scenario>:Code Inspection", "<AI-Tool-Scenario>:/"
+        )
+        canonical = canonical.replace(
+            "<AI-Tool-Detail>:Used Codex to inspect the existing logic and verify the change",
+            "<AI-Tool-Detail>:/",
+        )
+        mutations = {
+            "na": canonical.replace("<AI-Tool-Scenario>:/", "<AI-Tool-Scenario>:N/A").replace(
+                "<AI-Tool-Detail>:/", "<AI-Tool-Detail>:N/A"
+            ),
+            "empty": canonical.replace("<AI-Tool-Detail>:/", "<AI-Tool-Detail>:"),
+            "scenario": canonical.replace(
+                "<AI-Tool-Scenario>:/", "<AI-Tool-Scenario>:Code Inspection"
+            ),
+            "detail": canonical.replace(
+                "<AI-Tool-Detail>:/", "<AI-Tool-Detail>:AI inspected the change"
+            ),
+        }
+        for name, message in mutations.items():
+            with self.subTest(name=name):
+                codes = {item["code"] for item in self.validate(message)["errors"]}
+                self.assertIn("AI_CONDITION", codes)
+
+    def test_ai_used_rejects_slash_detail(self) -> None:
+        text = self.valid_text.replace(
+            "<AI-Tool-Detail>:Used Codex to inspect the existing logic and verify the change",
+            "<AI-Tool-Detail>:/",
+        )
+        codes = {item["code"] for item in self.validate(text)["errors"]}
+        self.assertIn("AI_DETAIL", codes)
 
     def test_unfilled_repository_template_is_rejected_as_a_message(self) -> None:
         template = (self.repo / ".project" / "git" / "commit.template").read_text(
@@ -377,6 +439,199 @@ class GitPlanTests(unittest.TestCase):
         self.assertEqual("PASS", result["status"], result["reasons"])
         self.assertEqual(["README.md"], result["outgoing_paths"])
         self.assertEqual(before, after)
+
+    def test_confirmed_commit_ignores_auto_switches_and_allows_product_code(self) -> None:
+        policy_path = self.repo / ".project" / "git" / "delivery.yml"
+        policy = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
+        policy["automation"] = {"commit": False, "push": False}
+        policy["scope"]["allowed_paths"] = ["docs/**"]
+        policy_path.write_text(yaml.safe_dump(policy, sort_keys=False), encoding="utf-8")
+        self.git(self.repo, "add", ".project/git/delivery.yml")
+        self.git(self.repo, "commit", "-m", "disable automatic delivery")
+
+        product = (
+            self.repo
+            / "imx-yocto"
+            / "sources"
+            / "meta-itk"
+            / "recipes-ikotek"
+            / "ikversion"
+            / "ikversion_1.0.0.bb"
+        )
+        product.parent.mkdir(parents=True)
+        product.write_text("SRC_URI += product-project-version\n", encoding="utf-8")
+        message = self.auto_message()
+        result = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="commit",
+            paths=[product.relative_to(self.repo).as_posix()],
+            message_file=message,
+        )
+        self.assertEqual("PASS", result["status"], result["reasons"])
+        self.assertEqual(
+            [product.relative_to(self.repo).as_posix()],
+            result["commit_content"]["paths"],
+        )
+        self.assertEqual([], result["commit_content"]["excluded_paths"])
+
+    def test_confirmed_commit_reports_and_excludes_unrelated_dirty_paths(self) -> None:
+        product = self.repo / "source" / "task_change.c"
+        product.parent.mkdir()
+        product.write_text("int task_change(void) { return 1; }\n", encoding="utf-8")
+        unrelated = self.repo / "notes" / "unrelated.txt"
+        unrelated.parent.mkdir()
+        unrelated.write_text("pre-existing user work\n", encoding="utf-8")
+
+        result = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="commit",
+            paths=[product.relative_to(self.repo).as_posix()],
+            message_file=self.auto_message(),
+        )
+        self.assertEqual("PASS", result["status"], result["reasons"])
+        self.assertEqual(["source/task_change.c"], result["commit_content"]["paths"])
+        self.assertIn(
+            "notes/unrelated.txt", result["commit_content"]["excluded_paths"]
+        )
+        self.assertEqual(
+            [
+                {
+                    "path": "source/task_change.c",
+                    "states": ["untracked"],
+                    "added": 1,
+                    "deleted": 0,
+                    "binary": False,
+                }
+            ],
+            result["commit_content"]["entries"],
+        )
+        fingerprint = result["commit_content"]["fingerprint"]
+        self.assertRegex(fingerprint, r"^[0-9a-f]{64}$")
+
+        unrelated.write_text("changed unrelated user work\n", encoding="utf-8")
+        unchanged_scope = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="commit",
+            paths=[product.relative_to(self.repo).as_posix()],
+            message_file=self.auto_message(),
+        )
+        self.assertEqual(
+            fingerprint, unchanged_scope["commit_content"]["fingerprint"]
+        )
+
+        product.write_text("int task_change(void) { return 2; }\n", encoding="utf-8")
+        changed_scope = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="commit",
+            paths=[product.relative_to(self.repo).as_posix()],
+            message_file=self.auto_message(),
+        )
+        self.assertNotEqual(
+            fingerprint, changed_scope["commit_content"]["fingerprint"]
+        )
+
+        readme = self.repo / "README.md"
+        readme.write_text(
+            readme.read_text(encoding="utf-8") + "tracked change\n",
+            encoding="utf-8",
+        )
+        tracked_scope = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="commit",
+            paths=["README.md"],
+            message_file=self.auto_message(),
+        )
+        self.assertEqual(
+            {
+                "path": "README.md",
+                "states": ["unstaged"],
+                "added": 1,
+                "deleted": 0,
+                "binary": False,
+            },
+            tracked_scope["commit_content"]["entries"][0],
+        )
+
+        binary = self.repo / "source" / "capture.bin"
+        binary.write_bytes(b"\x00\x01\x02")
+        binary_scope = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="commit",
+            paths=["source/capture.bin"],
+            message_file=self.auto_message(),
+        )
+        self.assertEqual(
+            {
+                "path": "source/capture.bin",
+                "states": ["untracked"],
+                "added": None,
+                "deleted": None,
+                "binary": True,
+            },
+            binary_scope["commit_content"]["entries"][0],
+        )
+
+    def test_confirmed_push_ignores_auto_switches(self) -> None:
+        self.git(self.repo, "push", "origin", "HEAD:refs/heads/feature/test")
+        policy_path = self.repo / ".project" / "git" / "delivery.yml"
+        policy = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
+        policy["automation"] = {"commit": False, "push": False}
+        policy_path.write_text(yaml.safe_dump(policy, sort_keys=False), encoding="utf-8")
+        self.git(self.repo, "add", ".project/git/delivery.yml")
+        self.git(self.repo, "commit", "-m", "disable automatic delivery")
+        self.git(self.repo, "push", "origin", "HEAD:refs/heads/feature/test")
+        (self.repo / "README.md").write_text("confirmed push\n", encoding="utf-8")
+        self.git(self.repo, "add", "README.md")
+        self.git(self.repo, "commit", "-m", "confirmed outgoing change")
+
+        result = git_plan(
+            self.repo, operation="push", delivery="commit-and-push"
+        )
+        self.assertEqual("PASS", result["status"], result["reasons"])
+
+    def test_denied_build_output_stays_blocked_for_confirmed_commit(self) -> None:
+        artifact = self.repo / "module" / "build" / "firmware.elf"
+        artifact.parent.mkdir(parents=True)
+        artifact.write_text("not a real elf\n", encoding="utf-8")
+        result = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="commit",
+            paths=[artifact.relative_to(self.repo).as_posix()],
+            message_file=self.auto_message(),
+        )
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertTrue(any("path is denied" in reason for reason in result["reasons"]))
+
+    def test_confirmed_commit_cannot_use_uncommitted_delivery_controls(self) -> None:
+        policy_path = self.repo / ".project" / "git" / "delivery.yml"
+        policy = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
+        policy["automation"] = {"commit": False, "push": False}
+        policy_path.write_text(yaml.safe_dump(policy, sort_keys=False), encoding="utf-8")
+        product = self.repo / "source" / "product.c"
+        product.parent.mkdir()
+        product.write_text("int product(void) { return 0; }\n", encoding="utf-8")
+
+        result = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="commit",
+            paths=[product.relative_to(self.repo).as_posix()],
+            message_file=self.auto_message(),
+        )
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertTrue(
+            any(
+                "uncommitted delivery controls" in reason
+                for reason in result["reasons"]
+            )
+        )
 
     def test_auto_plan_selects_upload_and_is_read_only(self) -> None:
         message = self.prepare_auto_change()

@@ -20,6 +20,8 @@ handoffs:
     agent: EmbeddedDeveloper
     prompt: >-
       仅当本次独立评审和全部必需门禁为 PASS 时，按 .github/agent-contracts.md 生成 Commit Delivery Confirmation：建议 Git Delivery: commit 作为待确认默认值，只要求用户主动提供 Jira ID 并确认或修正；其余 commit 字段必须从本次修改证据自行生成。用户在当前输入框回复确认后，作为当前 EmbeddedDeveloper 直接执行，不得自我委派或等待新的 handoff 按钮；commit-and-push/auto 不得默认。 Only when this independent review and every required gate are PASS, generate a Commit Delivery Confirmation under .github/agent-contracts.md: propose Git Delivery: commit as the recommended default pending confirmation, ask only for the user-supplied Jira ID plus confirmation or corrections, and generate every other commit field from this change's evidence. After confirmation in the current input box, execute directly as the current EmbeddedDeveloper; never delegate to yourself or wait for another handoff button, and never default to commit-and-push/auto.
+      先使用 Task Change Baseline、Task Change Ledger 和当前真实 diff 执行 DETECT_COMMIT_SCOPE，在预览中逐文件列出状态、增删统计、摘要、排除路径和 fingerprint，并标记 Change Confirmation: PENDING；用户要求删减时进入 ADJUST_CHANGESET，重新验证、独立评审和确认。不得按 YAML allowed_paths 选择文件，无法排除既有 dirty 内容时返回 BLOCKED。 First use Task Change Baseline, Task Change Ledger, and the current actual diff for DETECT_COMMIT_SCOPE, then list exact Commit Content per file with state, added/deleted counts, summary, excluded paths, fingerprint, and Change Confirmation: PENDING. A reduction request enters ADJUST_CHANGESET and repeats verification, independent review, and confirmation. Never select files through YAML allowed_paths, and return BLOCKED when pre-existing dirty content cannot be excluded safely.
+      commit-and-push 在 commit 后生成 CONFIRM_PUSH 并等待确认；auto 保持自动，push 失败时生成 MANUAL_PUSH。 For commit-and-push, emit CONFIRM_PUSH after commit and wait for confirmation; keep auto automatic and emit MANUAL_PUSH if push fails.
     send: false
 ---
 
@@ -105,6 +107,7 @@ handoffs:
 - 有 BLOCKER/MAJOR、必需门禁失败或验收条件失败时返回 `FAILED`。
 - 只有所有必需质量门禁通过时返回 `COMPLETE`；`CONDITIONAL` 需要用户明确接受列出的剩余风险。
 - 报告必须遵循共享 Result Report 和 Review Finding 契约，不输出 Bug Analysis 或 Root Cause 结论。
+- 每个面向用户的报告必须包含且只包含一个共享 `## Next Action`，根据真实评审状态和共享优先级动态生成规范 `Action` 与 `UI Route`。补证使用 `CURRENT_INPUT`；角色切换只使用当前 frontmatter 的精确路由：`HANDOFF:修复问题 / Fix Issues`、`HANDOFF:沉淀质量结论 / Document Quality Findings` 或 `HANDOFF:Git 提交交付 / Git Delivery`；终态使用 `NONE`。无需输入且已获授权的 Agent 动作使用 `AGENT_CONTINUE` 在同一轮执行并重新计算。
 
 ## English
 
@@ -182,3 +185,4 @@ Run only read-only Git and build/test diagnostics or static analysis that does n
 - Return `FAILED` when BLOCKER/MAJOR findings, required gate failures, or failed acceptance criteria remain.
 - Return `COMPLETE` only when every required quality gate passes; `CONDITIONAL` requires explicit user acceptance of listed residual risks.
 - Follow the shared Result Report and Review Finding contract. Do not emit Bug Analysis or Root Cause conclusions.
+- Every user-facing report contains exactly one shared `## Next Action`, dynamically deriving its canonical `Action` and `UI Route` from the real review state and shared priority. Missing evidence uses `CURRENT_INPUT`; role transitions use only the exact current-frontmatter routes `HANDOFF:修复问题 / Fix Issues`, `HANDOFF:沉淀质量结论 / Document Quality Findings`, or `HANDOFF:Git 提交交付 / Git Delivery`; a terminal state uses `NONE`. Execute any authorized no-input agent action with `AGENT_CONTINUE` and recompute in the same turn.

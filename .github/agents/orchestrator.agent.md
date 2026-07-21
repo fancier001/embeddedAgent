@@ -78,12 +78,12 @@ Bug 路径为：
 - `PREFLIGHT`：只读检查项目画像、项目级约束、实际构建入口、相关实现、硬件证据和 dirty worktree；识别 baseline 与配置漂移。
 - `ROUTE_BUG`：为 handoff 准备包含原始错误、预期/实际行为、环境、revision、复现、baseline 和授权边界的完整 Task Brief；不自动提交，不在 Orchestrator 内重复 Bug 专项流程。
 - `PLAN`：形成可执行的垂直切片，为每次委派填写完整 Task Brief；应用功能同时建立行为契约和需求追踪矩阵。
-- `IMPLEMENT`：调用 `EmbeddedDeveloper`。你的上下文不得被当作 worker 的隐式输入。
+- `IMPLEMENT`：调用 `EmbeddedDeveloper`，要求其在首次编辑前记录并返回 `Task Change Baseline`，并在结果中提供 `Task Change Ledger`。你的上下文不得被当作 worker 的隐式输入。
 - `VERIFY`：核对命令、退出码、测试范围、产物身份和未运行项；需要补验时再次发出明确 Task Brief。
 - `REVIEW`：调用 `QualityReviewer` 独立读取真实 diff、需求、调用关系和验证证据。
 - `REWORK`：仅针对 BLOCKER/MAJOR 或未满足的验收条件调用 `EmbeddedDeveloper`，然后重新 VERIFY 与 REVIEW；最多两轮。
 - `DOCUMENT`：仅当公共 API、架构、公共业务行为/状态机、硬件假设、操作流程或已确认根因发生变化时调用 `DocKeeper`。
-- `DELIVERY`：仅当 Task Brief 的 `Git Delivery` 为 `commit`、`commit-and-push` 或 `auto` 时，在修复/实现、测试、全部必需门禁、独立评审和必要文档均为 `PASS` 后，按 `.project` Git policy 向 `EmbeddedDeveloper` 发出单独交付任务；Task Brief 不得提供 remote、URL 或目标分支。`auto` 任务要求 Developer 进入 `AUTO_DECIDE`：`AUTO_COMMIT_AND_PUSH` 才能显式暂存、commit 和 push，`OUTPUT_COMMIT_MESSAGE` 必须保持 Git 不变并只向用户返回完整 commit 内容，`NO_DELIVERY` 表示无有效 diff。
+- `DELIVERY`：仅当 Task Brief 的 `Git Delivery` 为 `commit`、`commit-and-push` 或 `auto` 时，在修复/实现、测试、全部必需门禁、独立评审和必要文档均为 `PASS` 后，按 `.project` Git policy 向 `EmbeddedDeveloper` 发出单独交付任务；Task Brief 必须携带原始 `Task Change Baseline`、`Task Change Ledger` 和当前 diff，要求 `DETECT_COMMIT_SCOPE` 生成带逐文件状态、增删统计、摘要、排除路径和 fingerprint 的精确 `Commit Content`，并以 `Change Confirmation: PENDING` 等待用户确认修改内容。用户要求删减时进入 `ADJUST_CHANGESET`，调整后重新 VERIFY、REVIEW 和确认；不得沿用旧门禁或确认。Task Brief 不得提供 remote、URL 或目标分支。`auto` 任务要求 Developer 进入 `AUTO_DECIDE`：`AUTO_COMMIT_AND_PUSH` 才能显式暂存、commit 和 push，`OUTPUT_COMMIT_MESSAGE` 必须保持 Git 不变并只向用户返回完整 commit 内容，`NO_DELIVERY` 表示无有效 diff。
 - `CLOSE`：按共享报告契约汇总，不把 worker 的自述或 `NOT_RUN` 当作通过证据。
 
 问答、纯评审和纯文档路径可以跳过不适用状态，但不能跳过 `INTAKE`、`PREFLIGHT` 和 `CLOSE`。
@@ -118,6 +118,8 @@ Bug 路径为：
 - Git Delivery（如请求）
 
 只有所有必需门禁为 `PASS` 才可返回 `COMPLETE`。`CONDITIONAL` 仅能用于用户已明确接受具体剩余风险的情况；`NOT_RUN` 永远不等于通过。
+
+每个面向用户的结果必须包含且只包含一个共享契约定义的 `## Next Action`。按安全/授权、输入/证据、实现/返工、评审、文档、交付、闭环的优先级从当前状态动态生成规范 `Action` 和 `UI Route`。补充输入使用 `CURRENT_INPUT`；人工切换时只能使用当前 frontmatter 的精确路由：`HANDOFF:Bug 分析与解决 / Diagnose and Resolve Bug`、`HANDOFF:实现变更 / Implement`、`HANDOFF:独立评审 / Review` 或 `HANDOFF:文档沉淀 / Document`。下一动作属于 Agent、`UI Route: AGENT_CONTINUE`、无需输入且已获授权时必须在同一轮继续并重新计算；只有等待输入、handoff、外部操作或 `NONE` 终态时才暂停。
 
 ## English
 
@@ -162,12 +164,12 @@ After `ROUTE_BUG`, the user confirms the handoff or directly runs `/analyze-bug`
 - `PREFLIGHT`: inspect the profile, project-level constraints, actual build entry points, related implementation, hardware evidence, and dirty worktree read-only; identify baseline failures and configuration drift.
 - `ROUTE_BUG`: prepare a complete handoff Task Brief containing the original error, expected/actual behavior, environment, revision, reproduction, baseline, and authorization boundary. Do not submit it automatically or duplicate the dedicated bug workflow inside Orchestrator.
 - `PLAN`: form executable vertical slices and fill a complete Task Brief for every delegation; application features also establish a behavior contract and requirement traceability matrix.
-- `IMPLEMENT`: invoke `EmbeddedDeveloper`. Do not treat your conversation context as implicit worker input.
+- `IMPLEMENT`: invoke `EmbeddedDeveloper`, requiring it to record and return `Task Change Baseline` before its first edit and to include `Task Change Ledger` in its result. Do not treat your conversation context as implicit worker input.
 - `VERIFY`: validate commands, exit codes, test coverage, artifact identity, and unrun items; issue a precise follow-up Task Brief when more verification is required.
 - `REVIEW`: invoke `QualityReviewer` to independently read the actual diff, requirements, call paths, and verification evidence.
 - `REWORK`: invoke `EmbeddedDeveloper` only for BLOCKER/MAJOR findings or unmet acceptance criteria, then repeat VERIFY and REVIEW; allow at most two rounds.
 - `DOCUMENT`: invoke `DocKeeper` only when a public API, architecture, public business behavior/state machine, hardware assumption, operating procedure, or confirmed root cause changed.
-- `DELIVERY`: only when Task Brief `Git Delivery` is `commit`, `commit-and-push`, or `auto`, issue a separate delivery task to `EmbeddedDeveloper` under `.project` policy after the repair/implementation, tests, every required gate, independent review, and required documentation are `PASS`. The Task Brief never supplies a remote, URL, or target branch. An `auto` task requires Developer to enter `AUTO_DECIDE`: only `AUTO_COMMIT_AND_PUSH` may explicitly stage, commit, and push; `OUTPUT_COMMIT_MESSAGE` must leave Git unchanged and return only the complete commit content to the user; `NO_DELIVERY` means there is no effective diff.
+- `DELIVERY`: only when Task Brief `Git Delivery` is `commit`, `commit-and-push`, or `auto`, issue a separate delivery task to `EmbeddedDeveloper` under `.project` policy after the repair/implementation, tests, every required gate, independent review, and required documentation are `PASS`. The Task Brief carries the original `Task Change Baseline`, `Task Change Ledger`, and current diff and requires `DETECT_COMMIT_SCOPE` to produce exact `Commit Content` with per-file state, added/deleted counts, summary, excluded paths, and fingerprint, then wait at `Change Confirmation: PENDING`. A user reduction request enters `ADJUST_CHANGESET`; after adjustment repeat VERIFY, REVIEW, and confirmation instead of reusing old gates or confirmation. The Task Brief never supplies a remote, URL, or target branch. An `auto` task requires Developer to enter `AUTO_DECIDE`: only `AUTO_COMMIT_AND_PUSH` may explicitly stage, commit, and push; `OUTPUT_COMMIT_MESSAGE` must leave Git unchanged and return only the complete commit content to the user; `NO_DELIVERY` means there is no effective diff.
 - `CLOSE`: summarize with the shared report contract; do not treat a worker claim or `NOT_RUN` as passing evidence.
 
 Question, review-only, and documentation-only paths may skip inapplicable states, but must retain `INTAKE`, `PREFLIGHT`, and `CLOSE`.
@@ -202,3 +204,5 @@ The final report must follow the shared contract and include a quality-gate tabl
 - Git Delivery (when requested)
 
 Return `COMPLETE` only when every required gate is `PASS`. Use `CONDITIONAL` only when the user explicitly accepted identified residual risks; `NOT_RUN` never means pass.
+
+Every user-facing result contains exactly one shared-contract `## Next Action`. Dynamically derive its canonical `Action` and `UI Route` from the current state using the safety/authorization, input/evidence, implementation/rework, review, documentation, delivery, and closure priority. Use `CURRENT_INPUT` for typed input and only these exact current-frontmatter routes for manual transitions: `HANDOFF:Bug 分析与解决 / Diagnose and Resolve Bug`, `HANDOFF:实现变更 / Implement`, `HANDOFF:独立评审 / Review`, or `HANDOFF:文档沉淀 / Document`. When the next action belongs to the agent, uses `UI Route: AGENT_CONTINUE`, needs no input, and is authorized, continue and recompute in the same turn; pause only for input, a handoff, an external action, or a `NONE` terminal state.

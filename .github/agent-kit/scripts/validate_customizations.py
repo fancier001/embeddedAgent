@@ -54,7 +54,7 @@ EXPECTED_AGENTS: Mapping[str, Mapping[str, Any]] = {
         "name": "EmbeddedDeveloper",
         "tools": ["edit", "read", "search", "execute"],
         "disable-model-invocation": False,
-        "handoffs": ["QualityReviewer", "DocKeeper"],
+        "handoffs": ["QualityReviewer", "DocKeeper", "BugResolver"],
     },
     "quality-reviewer.agent.md": {
         "name": "QualityReviewer",
@@ -69,8 +69,60 @@ EXPECTED_AGENTS: Mapping[str, Mapping[str, Any]] = {
         "handoffs": ["Orchestrator", "EmbeddedDeveloper"],
     },
 }
+EXPECTED_HANDOFFS: Mapping[str, tuple[tuple[str, str], ...]] = {
+    "orchestrator.agent.md": (
+        ("Bug 分析与解决 / Diagnose and Resolve Bug", "BugResolver"),
+        ("实现变更 / Implement", "EmbeddedDeveloper"),
+        ("独立评审 / Review", "QualityReviewer"),
+        ("文档沉淀 / Document", "DocKeeper"),
+    ),
+    "bug-resolver.agent.md": (
+        ("实施修复 / Implement Fix", "EmbeddedDeveloper"),
+        ("质量评估 / Quality Assessment", "QualityReviewer"),
+        ("记录结论 / Document Resolution", "DocKeeper"),
+        ("Git 提交交付 / Git Delivery", "EmbeddedDeveloper"),
+    ),
+    "embedded-developer.agent.md": (
+        ("独立评审 / Quality Review", "QualityReviewer"),
+        ("文档同步 / Document Changes", "DocKeeper"),
+        ("问题已解决 / Close Issue", "BugResolver"),
+    ),
+    "quality-reviewer.agent.md": (
+        ("修复问题 / Fix Issues", "EmbeddedDeveloper"),
+        ("沉淀质量结论 / Document Quality Findings", "DocKeeper"),
+        ("Git 提交交付 / Git Delivery", "EmbeddedDeveloper"),
+    ),
+    "doc-keeper.agent.md": (
+        ("返回编排 / Resolve Conflict", "Orchestrator"),
+        ("Git 提交交付 / Git Delivery", "EmbeddedDeveloper"),
+    ),
+}
+NEXT_ACTION_IDS = (
+    "CONFIRM_DIRECTION",
+    "PROVIDE_EVIDENCE",
+    "IMPLEMENT_FIX",
+    "FIX_FINDINGS",
+    "QUALITY_REVIEW",
+    "DOCUMENT_CHANGES",
+    "GIT_DELIVERY",
+    "CONFIRM_COMMIT",
+    "ADJUST_CHANGESET",
+    "CONFIRM_PUSH",
+    "MANUAL_PUSH",
+    "CLOSE_ISSUE",
+    "START_NEW_ISSUE",
+    "NONE",
+)
+NEXT_ACTION_ROUTES = (
+    "CURRENT_INPUT",
+    "HANDOFF:<exact current-agent button label>",
+    "AGENT_CONTINUE",
+    "EXTERNAL",
+    "NONE",
+)
 
 GIT_DELIVERY_HANDOFF_LABEL = "Git 提交交付 / Git Delivery"
+CLOSE_ISSUE_HANDOFF_LABEL = "问题已解决 / Close Issue"
 GIT_DELIVERY_HANDOFF_AGENTS = frozenset(
     {"bug-resolver.agent.md", "quality-reviewer.agent.md", "doc-keeper.agent.md"}
 )
@@ -81,6 +133,23 @@ GIT_DELIVERY_HANDOFF_PROMPT_MARKERS = (
     "current input box",
     "execute directly as the current EmbeddedDeveloper",
     "never delegate to yourself",
+    "Task Change Baseline",
+    "Task Change Ledger",
+    "DETECT_COMMIT_SCOPE",
+    "Commit Content",
+    "ADJUST_CHANGESET",
+    "Change Confirmation: PENDING",
+    "CONFIRM_PUSH",
+    "MANUAL_PUSH",
+)
+CLOSE_ISSUE_HANDOFF_PROMPT_MARKERS = (
+    "Recheck",
+    "repair",
+    "selected Git delivery",
+    "clear issue-level state",
+    "fresh issue INTAKE",
+    "otherwise return BLOCKED",
+    "Next Action",
 )
 
 EXPECTED_PROMPTS: Mapping[str, Mapping[str, str]] = {
@@ -139,11 +208,21 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "`AUTO_DECIDE`",
             "`AUTO_COMMIT_AND_PUSH`",
             "`OUTPUT_COMMIT_MESSAGE`",
+            "Task Change Baseline",
+            "Task Change Ledger",
+            "`DETECT_COMMIT_SCOPE`",
+            "Commit Content",
+            "`ADJUST_CHANGESET`",
+            "Change Confirmation: PENDING",
+            "UI Route",
+            "AGENT_CONTINUE",
+            "HANDOFF:独立评审 / Review",
+            "## Next Action",
         }
     ),
     "bug-resolver.agent.md": frozenset(
         {
-            "DOCUMENT → DELIVERY → CLOSE",
+            "CLOSE → RESET → INTAKE",
             "GUIDE_SYMPTOMS",
             "CONFIRM_DIRECTION",
             "IDENTIFY_PROBLEM",
@@ -161,6 +240,16 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "Jira ID is always user-supplied",
             "separate delivery Task Brief",
             "separate complete delivery Task Brief",
+            "Task Change Baseline",
+            "`DETECT_COMMIT_SCOPE`",
+            "Commit Content",
+            "`ADJUST_CHANGESET`",
+            "Change Confirmation: PENDING",
+            "UI Route",
+            "AGENT_CONTINUE",
+            "HANDOFF:Git 提交交付 / Git Delivery",
+            "Action: START_NEW_ISSUE",
+            "## Next Action",
         }
     ),
     "embedded-developer.agent.md": frozenset(
@@ -168,7 +257,7 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             ".project/project.yml",
             "project_policy.py",
             "Git Delivery",
-            "stage explicit file paths only",
+            "stage only explicit files/changes",
             "`SYNTHESIZE_METADATA`",
             "`CONFIRM_DELIVERY`",
             "`AUTO_DECIDE`",
@@ -179,9 +268,43 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "Jira ID is always user-supplied",
             "execute directly as the current EmbeddedDeveloper",
             "never delegate to yourself",
+            "`CONFIRM_PUSH`",
+            "Action: MANUAL_PUSH",
+            "`automation.commit`/`automation.push` gate only `auto`",
+            "Task Change Baseline",
+            "Task Change Ledger",
+            "`DETECT_COMMIT_SCOPE`",
+            "Commit Content",
+            "`ADJUST_CHANGESET`",
+            "Change Confirmation: PENDING",
+            "UI Route",
+            "CURRENT_INPUT",
+            "AGENT_CONTINUE",
+            "HANDOFF:文档同步 / Document Changes",
+            "Documentation=`PASS`",
+            "commit scope comes from the current task's actual diff",
+            "## Next Action",
         }
     ),
-    "doc-keeper.agent.md": frozenset({".project/"}),
+    "quality-reviewer.agent.md": frozenset(
+        {
+            "## Next Action",
+            "UI Route",
+            "CURRENT_INPUT",
+            "AGENT_CONTINUE",
+            "HANDOFF:修复问题 / Fix Issues",
+        }
+    ),
+    "doc-keeper.agent.md": frozenset(
+        {
+            ".project/",
+            "## Next Action",
+            "UI Route",
+            "CURRENT_INPUT",
+            "AGENT_CONTINUE",
+            "HANDOFF:返回编排 / Resolve Conflict",
+        }
+    ),
 }
 REQUIRED_PROMPT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
     "analyze-bug.prompt.md": frozenset(
@@ -193,6 +316,18 @@ REQUIRED_PROMPT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "Jira ID is always user-supplied",
             "`AUTO_DECIDE`",
             "separate delivery Task Brief",
+            "`CONFIRM_PUSH`",
+            "`MANUAL_PUSH`",
+            "`DETECT_COMMIT_SCOPE`",
+            "Commit Content",
+            "`ADJUST_CHANGESET`",
+            "Change Confirmation: PENDING",
+            "UI Route",
+            "CURRENT_INPUT",
+            "AGENT_CONTINUE",
+            "Documentation",
+            "CLOSE → RESET → INTAKE",
+            "Next Action",
         }
     ),
     "analyze-log.prompt.md": frozenset(
@@ -204,6 +339,18 @@ REQUIRED_PROMPT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "Jira ID is always user-supplied",
             "`AUTO_DECIDE`",
             "separate delivery Task Brief",
+            "`CONFIRM_PUSH`",
+            "`MANUAL_PUSH`",
+            "`DETECT_COMMIT_SCOPE`",
+            "Commit Content",
+            "`ADJUST_CHANGESET`",
+            "Change Confirmation: PENDING",
+            "UI Route",
+            "CURRENT_INPUT",
+            "AGENT_CONTINUE",
+            "Documentation",
+            "CLOSE → RESET → INTAKE",
+            "Next Action",
         }
     ),
 }
@@ -231,6 +378,24 @@ REQUIRED_PRODUCT_FILES = (
     ".github/instructions/c-code.instructions.md",
     ".github/instructions/markdown-bilingual.instructions.md",
     ".github/agent-kit/scripts/project_policy.py",
+)
+REQUIRED_SHARED_CONTRACT_MARKERS = frozenset(
+    {
+        "## Next Action",
+        "- UI Route:",
+        "CURRENT_INPUT",
+        "HANDOFF:<exact current-agent button label>",
+        "AGENT_CONTINUE",
+        "EXTERNAL",
+        "`ADJUST_CHANGESET`",
+        "Change Confirmation: PENDING",
+        "confirm changes and commit",
+        "per-file `entries`",
+        "`CONFIRM_PUSH`",
+        "`MANUAL_PUSH`",
+        "`START_NEW_ISSUE`",
+        "NOT_RUN — Not required: <reason>",
+    }
 )
 
 AGENT_FRONTMATTER_FIELDS = frozenset(
@@ -551,7 +716,7 @@ GIT_DELIVERY_POLICY_SCHEMA: Mapping[str, Any] = {
         "scope": {
             "type": "object",
             "additionalProperties": False,
-            "required": ["allowed_paths", "denied_paths"],
+            "required": ["denied_paths"],
             "properties": {
                 "allowed_paths": NON_EMPTY_PATH_GLOB_LIST,
                 "denied_paths": NON_EMPTY_PATH_GLOB_LIST,
@@ -633,6 +798,11 @@ COMMIT_TEMPLATE_FIELD_ORDER = (
     "Test-Proposal",
     "Stress-Test",
     "HW-Test",
+)
+COMMIT_TEMPLATE_AI_DEFAULTS = (
+    "<AI-Tool-Used>: N",
+    "<AI-Tool-Scenario>: /",
+    "<AI-Tool-Detail>: /",
 )
 
 TEXT_EXTENSIONS = {
@@ -739,6 +909,7 @@ class RepositoryValidator:
 
         self._validate_text_hygiene()
         self._validate_required_files()
+        self._validate_shared_contract()
         self._validate_agents()
         self._validate_skills()
         self._validate_prompts()
@@ -806,6 +977,36 @@ class RepositoryValidator:
             path = self.root / relative
             if not path.is_file():
                 self._add(path, "REQUIRED_FILE", "required product file is missing")
+
+    def _validate_shared_contract(self) -> None:
+        path = self.root / ".github" / "agent-contracts.md"
+        if not path.is_file():
+            return
+        text = self._read_text(path)
+        if text is None:
+            return
+        for marker in sorted(REQUIRED_SHARED_CONTRACT_MARKERS):
+            if marker not in text:
+                self._add(
+                    path,
+                    "SHARED_CONTRACT",
+                    f"shared contract must contain behavior marker {marker!r}",
+                )
+        for action in NEXT_ACTION_IDS:
+            marker = f"`{action}`"
+            if marker not in text:
+                self._add(
+                    path,
+                    "SHARED_CONTRACT_ACTION",
+                    f"shared contract must define canonical action {action!r}",
+                )
+        for route in NEXT_ACTION_ROUTES:
+            if route not in text:
+                self._add(
+                    path,
+                    "SHARED_CONTRACT_ROUTE",
+                    f"shared contract must define UI route {route!r}",
+                )
 
     def _frontmatter(self, path: Path) -> tuple[dict[str, Any] | None, str]:
         text = self._read_text(path)
@@ -924,6 +1125,17 @@ class RepositoryValidator:
                     "HANDOFF_SET",
                     f"handoff agents must be exactly {spec['handoffs']!r}",
                 )
+            actual_handoffs = tuple(
+                (handoff.get("label"), handoff.get("agent"))
+                for handoff in handoffs
+                if isinstance(handoff, dict)
+            )
+            if actual_handoffs != EXPECTED_HANDOFFS[filename]:
+                self._add(
+                    path,
+                    "HANDOFF_BASELINE",
+                    "handoff labels, order, and targets must remain exactly the base set",
+                )
             if filename in GIT_DELIVERY_HANDOFF_AGENTS:
                 delivery_handoffs = [
                     handoff
@@ -945,6 +1157,27 @@ class RepositoryValidator:
                         "HANDOFF_DELIVERY",
                         "must expose exactly one Git Delivery handoff to EmbeddedDeveloper",
                     )
+            if filename == "embedded-developer.agent.md":
+                close_handoffs = [
+                    handoff
+                    for handoff in handoffs
+                    if isinstance(handoff, dict)
+                    and handoff.get("label") == CLOSE_ISSUE_HANDOFF_LABEL
+                ]
+                if (
+                    len(close_handoffs) != 1
+                    or close_handoffs[0].get("agent") != "BugResolver"
+                    or not isinstance(close_handoffs[0].get("prompt"), str)
+                    or any(
+                        marker not in close_handoffs[0]["prompt"]
+                        for marker in CLOSE_ISSUE_HANDOFF_PROMPT_MARKERS
+                    )
+                ):
+                    self._add(
+                        path,
+                        "HANDOFF_CLOSE_ISSUE",
+                        "must expose exactly one Close Issue handoff to BugResolver",
+                    )
             for index, handoff in enumerate(handoffs):
                 location = f"handoffs[{index}]"
                 if not isinstance(handoff, dict):
@@ -957,6 +1190,13 @@ class RepositoryValidator:
                         path,
                         "HANDOFF_REQUIRED",
                         f"{location} missing: {', '.join(sorted(missing))}",
+                    )
+                extra = set(handoff) - required_handoff
+                if extra:
+                    self._add(
+                        path,
+                        "HANDOFF_FIELDS",
+                        f"{location} has unsupported fields: {', '.join(sorted(extra))}",
                     )
                 if handoff.get("agent") not in KNOWN_AGENT_NAMES:
                     self._add(
@@ -1252,6 +1492,12 @@ class RepositoryValidator:
                 path,
                 "COMMIT_TEMPLATE_ORDER",
                 "template fields are missing, unknown, or out of order",
+            )
+        elif tuple(lines[6:9]) != COMMIT_TEMPLATE_AI_DEFAULTS:
+            self._add(
+                path,
+                "COMMIT_TEMPLATE_AI_DEFAULT",
+                "AI defaults must be N, /, / with one space after each colon",
             )
 
     def _validate_project_directory(self) -> None:
