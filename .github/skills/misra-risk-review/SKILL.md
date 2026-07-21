@@ -34,7 +34,7 @@ user-invocable: false
 
 ### 输出
 
-按 `BLOCKER`、`MAJOR`、`MINOR` 分组；无发现时明确写“未发现问题”，但同时列出范围和未覆盖项。报告 `Status`、`Scope`、`Configuration`、`Findings`、`Commands and Exit Codes`、`Coverage Gaps`、`Assumptions` 和唯一动态结构化 `Next Action`，包含规范 Action ID 与 `UI Route`。
+按 `BLOCKER`、`MAJOR`、`MINOR` 分组；无发现时明确写“未发现问题”，但同时列出范围和未覆盖项。报告唯一完整动态 `Next Action`，包含规范 Action、`UI Route`、`Dispatch Target`、Required Input、`Instruction` 和 On Success。
 
 ## English
 
@@ -60,4 +60,4 @@ For SARIF 2.1.0 reports, use [`scripts/normalize_sarif.py`](scripts/normalize_sa
 
 ### Output
 
-Group findings under `BLOCKER`, `MAJOR`, and `MINOR`. When none are found, say so explicitly while listing the reviewed scope and coverage gaps. Report `Status`, `Scope`, `Configuration`, `Findings`, `Commands and Exit Codes`, `Coverage Gaps`, `Assumptions`, and exactly one dynamic structured `Next Action` with a canonical Action ID and `UI Route`.
+Group findings under `BLOCKER`, `MAJOR`, and `MINOR`. When none are found, say so explicitly while listing scope and gaps. Emit exactly one complete dynamic `Next Action` with canonical Action, `UI Route`, `Dispatch Target`, Required Input, `Instruction`, and On Success.

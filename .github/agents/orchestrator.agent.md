@@ -27,6 +27,11 @@ handoffs:
     prompt: >-
       根据当前会话和 .github/agent-contracts.md 生成完整 Task Brief，仅在允许范围内把已验证事实同步为完整中英双语文档。 Build a complete Task Brief from the current conversation and .github/agent-contracts.md, then synchronize verified facts into complete bilingual documentation within the allowed write scope.
     send: false
+  - label: 执行下一步 / Next Action
+    agent: NextActionRouter
+    prompt: >-
+      Source Agent: Orchestrator. 只处理当前会话中最新且唯一的结构化 Next Action，并严格遵守 .github/agent-contracts.md。此次点击只授权安全路由或角色切换，不提供缺失输入，也不确认 commit、push 或外部命令。 Execute only the latest unique structured Next Action in the current conversation under .github/agent-contracts.md. This click authorizes safe routing or role transition only; it supplies no missing input and confirms no commit, push, or external command.
+    send: true
 ---
 
 # Orchestrator Agent
@@ -83,7 +88,7 @@ Bug 路径为：
 - `REVIEW`：调用 `QualityReviewer` 独立读取真实 diff、需求、调用关系和验证证据。
 - `REWORK`：仅针对 BLOCKER/MAJOR 或未满足的验收条件调用 `EmbeddedDeveloper`，然后重新 VERIFY 与 REVIEW；最多两轮。
 - `DOCUMENT`：仅当公共 API、架构、公共业务行为/状态机、硬件假设、操作流程或已确认根因发生变化时调用 `DocKeeper`。
-- `DELIVERY`：仅当 Task Brief 的 `Git Delivery` 为 `commit`、`commit-and-push` 或 `auto` 时，在修复/实现、测试、全部必需门禁、独立评审和必要文档均为 `PASS` 后，按 `.project` Git policy 向 `EmbeddedDeveloper` 发出单独交付任务；Task Brief 必须携带原始 `Task Change Baseline`、`Task Change Ledger` 和当前 diff，要求 `DETECT_COMMIT_SCOPE` 生成带逐文件状态、增删统计、摘要、排除路径和 fingerprint 的精确 `Commit Content`，并以 `Change Confirmation: PENDING` 等待用户确认修改内容。用户要求删减时进入 `ADJUST_CHANGESET`，调整后重新 VERIFY、REVIEW 和确认；不得沿用旧门禁或确认。Task Brief 不得提供 remote、URL 或目标分支。`auto` 任务要求 Developer 进入 `AUTO_DECIDE`：`AUTO_COMMIT_AND_PUSH` 才能显式暂存、commit 和 push，`OUTPUT_COMMIT_MESSAGE` 必须保持 Git 不变并只向用户返回完整 commit 内容，`NO_DELIVERY` 表示无有效 diff。
+- `DELIVERY`：仅当 Task Brief 的 `Git Delivery` 为 `commit`、`commit-and-push` 或 `auto` 时，在修复/实现、测试、全部必需门禁、独立评审和必要文档均为 `PASS` 后，按 `.project` Git policy 向 `EmbeddedDeveloper` 发出单独交付任务；Task Brief 必须携带原始 `Task Change Baseline`、`Task Change Ledger` 和当前 diff，要求 `DETECT_COMMIT_SCOPE` 生成精确 `Commit Content` 和 fingerprint，并以 `Change Confirmation: PENDING` 等待确认。用户要求删减时进入 `ADJUST_CHANGESET` 并重新验证。`auto` 还必须显示 `Commit Content Confirmation: PENDING`；选择模式不是确认，Developer 只有携带用户确认的 `--expected-content-fingerprint` 并获得 `content_confirmation.status: CONFIRMED` 后才可接受 `AUTO_COMMIT_AND_PUSH`。`CONFIRM_COMMIT_CONTENT` 表示缺失或漂移，必须重新预览且保持 Git 不变；`OUTPUT_COMMIT_MESSAGE` 也不写 Git，`NO_DELIVERY` 表示无有效 diff。
 - `CLOSE`：按共享报告契约汇总，不把 worker 的自述或 `NOT_RUN` 当作通过证据。
 
 问答、纯评审和纯文档路径可以跳过不适用状态，但不能跳过 `INTAKE`、`PREFLIGHT` 和 `CLOSE`。
@@ -119,7 +124,7 @@ Bug 路径为：
 
 只有所有必需门禁为 `PASS` 才可返回 `COMPLETE`。`CONDITIONAL` 仅能用于用户已明确接受具体剩余风险的情况；`NOT_RUN` 永远不等于通过。
 
-每个面向用户的结果必须包含且只包含一个共享契约定义的 `## Next Action`。按安全/授权、输入/证据、实现/返工、评审、文档、交付、闭环的优先级从当前状态动态生成规范 `Action` 和 `UI Route`。补充输入使用 `CURRENT_INPUT`；人工切换时只能使用当前 frontmatter 的精确路由：`HANDOFF:Bug 分析与解决 / Diagnose and Resolve Bug`、`HANDOFF:实现变更 / Implement`、`HANDOFF:独立评审 / Review` 或 `HANDOFF:文档沉淀 / Document`。下一动作属于 Agent、`UI Route: AGENT_CONTINUE`、无需输入且已获授权时必须在同一轮继续并重新计算；只有等待输入、handoff、外部操作或 `NONE` 终态时才暂停。
+每个面向用户的结果必须包含且只包含一个共享契约定义的 `## Next Action`，完整生成 `Action`、`UI Route`、`Dispatch Target`、`Required Input` 和 `Instruction`。补充输入使用 `CURRENT_INPUT + NONE` 并给出可复制指令；角色切换使用 `NEXT_ACTION_BUTTON`，Dispatch Target 只能是当前 frontmatter 的精确基础按钮：`HANDOFF:Bug 分析与解决 / Diagnose and Resolve Bug`、`HANDOFF:实现变更 / Implement`、`HANDOFF:独立评审 / Review` 或 `HANDOFF:文档沉淀 / Document`。已授权且无需输入的 Agent 动作必须同轮继续；基础按钮只是 `send: false` 人工备用入口，末尾的统一按钮是 `send: true` 动态默认入口。提前点击不匹配的基础按钮时重新核对并返回 `BLOCKED`，不委派执行。
 
 ## English
 
@@ -169,7 +174,8 @@ After `ROUTE_BUG`, the user confirms the handoff or directly runs `/analyze-bug`
 - `REVIEW`: invoke `QualityReviewer` to independently read the actual diff, requirements, call paths, and verification evidence.
 - `REWORK`: invoke `EmbeddedDeveloper` only for BLOCKER/MAJOR findings or unmet acceptance criteria, then repeat VERIFY and REVIEW; allow at most two rounds.
 - `DOCUMENT`: invoke `DocKeeper` only when a public API, architecture, public business behavior/state machine, hardware assumption, operating procedure, or confirmed root cause changed.
-- `DELIVERY`: only when Task Brief `Git Delivery` is `commit`, `commit-and-push`, or `auto`, issue a separate delivery task to `EmbeddedDeveloper` under `.project` policy after the repair/implementation, tests, every required gate, independent review, and required documentation are `PASS`. The Task Brief carries the original `Task Change Baseline`, `Task Change Ledger`, and current diff and requires `DETECT_COMMIT_SCOPE` to produce exact `Commit Content` with per-file state, added/deleted counts, summary, excluded paths, and fingerprint, then wait at `Change Confirmation: PENDING`. A user reduction request enters `ADJUST_CHANGESET`; after adjustment repeat VERIFY, REVIEW, and confirmation instead of reusing old gates or confirmation. The Task Brief never supplies a remote, URL, or target branch. An `auto` task requires Developer to enter `AUTO_DECIDE`: only `AUTO_COMMIT_AND_PUSH` may explicitly stage, commit, and push; `OUTPUT_COMMIT_MESSAGE` must leave Git unchanged and return only the complete commit content to the user; `NO_DELIVERY` means there is no effective diff.
+- `DELIVERY`: after all gates pass, issue a separate delivery task carrying the original baseline, ledger, and current diff. Require exact Commit Content and fingerprint at `Change Confirmation: PENDING`; adjustments re-run verification. Auto additionally shows `Commit Content Confirmation: PENDING`: mode selection is not confirmation, and Developer may accept `AUTO_COMMIT_AND_PUSH` only after passing the user-confirmed `--expected-content-fingerprint` and receiving `content_confirmation.status: CONFIRMED`. `CONFIRM_COMMIT_CONTENT` means missing or stale confirmation and regenerates the preview with Git unchanged. `OUTPUT_COMMIT_MESSAGE` also writes no Git; `NO_DELIVERY` means no effective diff.
+- The auto path enters `AUTO_DECIDE` only after explicit Commit Content confirmation; it never treats delivery selection as confirmation.
 - `CLOSE`: summarize with the shared report contract; do not treat a worker claim or `NOT_RUN` as passing evidence.
 
 Question, review-only, and documentation-only paths may skip inapplicable states, but must retain `INTAKE`, `PREFLIGHT`, and `CLOSE`.
@@ -205,4 +211,4 @@ The final report must follow the shared contract and include a quality-gate tabl
 
 Return `COMPLETE` only when every required gate is `PASS`. Use `CONDITIONAL` only when the user explicitly accepted identified residual risks; `NOT_RUN` never means pass.
 
-Every user-facing result contains exactly one shared-contract `## Next Action`. Dynamically derive its canonical `Action` and `UI Route` from the current state using the safety/authorization, input/evidence, implementation/rework, review, documentation, delivery, and closure priority. Use `CURRENT_INPUT` for typed input and only these exact current-frontmatter routes for manual transitions: `HANDOFF:Bug 分析与解决 / Diagnose and Resolve Bug`, `HANDOFF:实现变更 / Implement`, `HANDOFF:独立评审 / Review`, or `HANDOFF:文档沉淀 / Document`. When the next action belongs to the agent, uses `UI Route: AGENT_CONTINUE`, needs no input, and is authorized, continue and recompute in the same turn; pause only for input, a handoff, an external action, or a `NONE` terminal state.
+Every user-facing result contains exactly one shared-contract `## Next Action`, including `Action`, `UI Route`, `Dispatch Target`, `Required Input`, and `Instruction`. Typed input uses `CURRENT_INPUT + NONE` with a copy-ready instruction. Role transitions use `NEXT_ACTION_BUTTON`, with Dispatch Target restricted to `HANDOFF:Bug 分析与解决 / Diagnose and Resolve Bug`, `HANDOFF:实现变更 / Implement`, `HANDOFF:独立评审 / Review`, or `HANDOFF:文档沉淀 / Document`. Continue authorized no-input agent work in the same turn. Base buttons remain `send: false` manual fallbacks; the final unified button is the `send: true` dynamic default. Revalidate and return `BLOCKED` without delegation when an early base-button click does not match the current target.

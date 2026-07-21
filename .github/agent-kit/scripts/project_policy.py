@@ -33,6 +33,7 @@ EXIT_INPUT = 2
 EXIT_BLOCKED = 3
 EXIT_EXTERNAL = 4
 DECISION_AUTO_UPLOAD = "AUTO_COMMIT_AND_PUSH"
+DECISION_CONFIRM_AUTO_CONTENT = "CONFIRM_COMMIT_CONTENT"
 DECISION_MESSAGE_ONLY = "OUTPUT_COMMIT_MESSAGE"
 DECISION_NO_DELIVERY = "NO_DELIVERY"
 FORBIDDEN_PUSH_KEYS = frozenset(
@@ -1160,6 +1161,7 @@ def git_plan(
     delivery: str,
     paths: Sequence[str] = (),
     message_file: Path | str | None = None,
+    expected_content_fingerprint: str | None = None,
     expected_fingerprint: str | None = None,
     expected_commit: str | None = None,
 ) -> Mapping[str, Any]:
@@ -1239,6 +1241,12 @@ def git_plan(
         normalized_paths = [_repository_path(path) for path in paths]
         if not normalized_paths:
             raise PolicyInputError("auto operation requires at least one --path when changes exist")
+        if expected_content_fingerprint is not None and not re.fullmatch(
+            r"[0-9a-fA-F]{64}", expected_content_fingerprint
+        ):
+            raise PolicyInputError(
+                "--expected-content-fingerprint must be a 64-character hexadecimal digest"
+            )
         message_result = validate_message(root_path, message_file)
         if message_result["status"] != "PASS":
             return _json_result(
@@ -1260,6 +1268,14 @@ def git_plan(
                 push_target=None,
                 checks={"commit": [], "push": []},
             )
+        commit_content = _commit_content(root_path, normalized_paths, changes)
+        current_content_fingerprint = str(commit_content["fingerprint"])
+        if expected_content_fingerprint is None:
+            content_confirmation_status = "PENDING"
+        elif expected_content_fingerprint.lower() != current_content_fingerprint:
+            content_confirmation_status = "STALE"
+        else:
+            content_confirmation_status = "CONFIRMED"
 
         decision_reasons = list(reasons)
         if automation.get("commit") is not True:
@@ -1287,11 +1303,12 @@ def git_plan(
             root_path, repository, policy
         )
         decision_reasons.extend(push_reasons)
-        decision = (
-            DECISION_AUTO_UPLOAD
-            if not decision_reasons
-            else DECISION_MESSAGE_ONLY
-        )
+        if decision_reasons:
+            decision = DECISION_MESSAGE_ONLY
+        elif content_confirmation_status != "CONFIRMED":
+            decision = DECISION_CONFIRM_AUTO_CONTENT
+        else:
+            decision = DECISION_AUTO_UPLOAD
         return _json_result(
             "PASS",
             operation=operation,
@@ -1308,6 +1325,13 @@ def git_plan(
             paths=normalized_paths,
             changes=changes,
             message=message_result,
+            commit_content=commit_content,
+            content_confirmation={
+                "required": True,
+                "status": content_confirmation_status,
+                "expected_fingerprint": expected_content_fingerprint,
+                "current_fingerprint": current_content_fingerprint,
+            },
             push_target=push_target,
             checks={
                 "commit": policy.get("commit", {}).get("checks", []),
@@ -1439,6 +1463,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     plan.add_argument("--path", action="append", dest="paths", default=[])
     plan.add_argument("--message-file", type=Path)
+    plan.add_argument("--expected-content-fingerprint")
     plan.add_argument("--expected-fingerprint")
     plan.add_argument("--expected-commit")
     return parser
@@ -1458,6 +1483,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 delivery=args.delivery,
                 paths=args.paths,
                 message_file=args.message_file,
+                expected_content_fingerprint=args.expected_content_fingerprint,
                 expected_fingerprint=args.expected_fingerprint,
                 expected_commit=args.expected_commit,
             )
