@@ -57,6 +57,11 @@ POST_JIRA_FIELDS = (
     "HW-Test",
 )
 TEMPLATE_FIELD_ORDER = (*PRE_JIRA_FIELDS, "Jira ID", *POST_JIRA_FIELDS)
+TEMPLATE_AI_DEFAULTS = (
+    "<AI-Tool-Used>: N",
+    "<AI-Tool-Scenario>: /",
+    "<AI-Tool-Detail>: /",
+)
 
 
 class PolicyInputError(ValueError):
@@ -301,6 +306,10 @@ def _validate_template(path: Path) -> None:
         names.append(match.group(1))
     if names != list(TEMPLATE_FIELD_ORDER):
         raise PolicyInputError("commit template fields are missing, unknown, or out of order")
+    if tuple(lines[6:9]) != TEMPLATE_AI_DEFAULTS:
+        raise PolicyInputError(
+            "commit template AI defaults must be N, /, / with one space after each colon"
+        )
 
 
 def _validate_policy(policy: Mapping[str, Any], project_dir: Path) -> None:
@@ -339,10 +348,12 @@ def _validate_policy(policy: Mapping[str, Any], project_dir: Path) -> None:
     scope = _mapping_keys(
         policy.get("scope"),
         label="scope",
-        required={"allowed_paths", "denied_paths"},
+        required={"denied_paths"},
         allowed={"allowed_paths", "denied_paths"},
     )
     for key in ("allowed_paths", "denied_paths"):
+        if key not in scope:
+            continue
         patterns = _string_list(scope.get(key), label=f"scope.{key}")
         for pattern in patterns:
             _repository_path(pattern)
@@ -717,14 +728,14 @@ def validate_message(root: Path | str, message_path: Path | str) -> Mapping[str,
         errors.append({"code": "AI_USED", "line": ai_used.line, "message": "AI-Tool-Used must be Y or N"})
     elif ai_used and ai_scenario and ai_detail:
         if ai_used.value == "N":
-            if ai_scenario.detail_text != "N/A" or ai_detail.detail_text != "N/A":
-                errors.append({"code": "AI_CONDITION", "line": ai_used.line, "message": "AI-Tool-Used=N requires Scenario and Detail to be N/A"})
+            if ai_scenario.detail_text != "/" or ai_detail.detail_text != "/":
+                errors.append({"code": "AI_CONDITION", "line": ai_used.line, "message": "AI-Tool-Used=N requires Scenario and Detail to be /"})
         else:
             allowed_scenarios = commit_policy.get("ai_scenarios", [])
             selected = ai_scenario.value.strip()
             if selected not in allowed_scenarios:
                 errors.append({"code": "AI_SCENARIO", "line": ai_scenario.line, "message": f"invalid AI scenario: {selected!r}"})
-            if not ai_detail.detail_text or ai_detail.detail_text == "N/A":
+            if not ai_detail.detail_text or ai_detail.detail_text in ("N/A", "/"):
                 errors.append({"code": "AI_DETAIL", "line": ai_detail.line, "message": "AI-Tool-Used=Y requires usage detail"})
 
     rn = singleton.get("RN")
@@ -943,15 +954,147 @@ def _changed_paths(root: Path) -> dict[str, list[str]]:
 
 def _path_policy_reasons(paths: Sequence[str], policy: Mapping[str, Any]) -> list[str]:
     scope = policy.get("scope", {})
-    allowed = scope.get("allowed_paths", []) if isinstance(scope, dict) else []
     denied = scope.get("denied_paths", []) if isinstance(scope, dict) else []
     reasons: list[str] = []
     for path in paths:
-        if not any(_matches(path, pattern) for pattern in allowed):
-            reasons.append(f"path is not allowed: {path}")
         if any(_matches(path, pattern) for pattern in denied):
             reasons.append(f"path is denied: {path}")
     return reasons
+
+
+def _path_change_statistics(
+    root: Path, path: str, states: Sequence[str]
+) -> dict[str, Any]:
+    """Summarize the current worktree version of one path relative to HEAD."""
+    candidate = root.joinpath(*path.split("/"))
+    if "untracked" in states:
+        if candidate.is_file() and not candidate.is_symlink():
+            added = 0
+            has_data = False
+            last_byte = b""
+            with candidate.open("rb") as stream:
+                while chunk := stream.read(1024 * 1024):
+                    if b"\0" in chunk:
+                        return {"added": None, "deleted": None, "binary": True}
+                    has_data = True
+                    added += chunk.count(b"\n")
+                    last_byte = chunk[-1:]
+            if has_data and last_byte != b"\n":
+                added += 1
+            return {
+                "added": added,
+                "deleted": 0,
+                "binary": False,
+            }
+        if candidate.is_symlink():
+            return {"added": 1, "deleted": 0, "binary": False}
+    result = _git(
+        root,
+        "diff",
+        "--numstat",
+        "HEAD",
+        "--",
+        path,
+        allowed_codes=(0, 128),
+    )
+    if result.returncode == 128:
+        if candidate.is_file() and not candidate.is_symlink():
+            data = candidate.read_bytes()
+            if b"\0" in data:
+                return {"added": None, "deleted": None, "binary": True}
+            return {
+                "added": len(data.decode("utf-8", errors="replace").splitlines()),
+                "deleted": 0,
+                "binary": False,
+            }
+        if candidate.is_symlink():
+            return {"added": 1, "deleted": 0, "binary": False}
+        return {"added": 0, "deleted": 0, "binary": False}
+
+    added = 0
+    deleted = 0
+    binary = False
+    for line in result.stdout.splitlines():
+        columns = line.split("\t", 2)
+        if len(columns) < 2:
+            continue
+        if columns[0] == "-" or columns[1] == "-":
+            binary = True
+            continue
+        try:
+            added += int(columns[0])
+            deleted += int(columns[1])
+        except ValueError:
+            continue
+    if binary:
+        return {"added": None, "deleted": None, "binary": True}
+    return {"added": added, "deleted": deleted, "binary": False}
+
+
+def _commit_content(
+    root: Path, paths: Sequence[str], changes: Mapping[str, Sequence[str]]
+) -> dict[str, Any]:
+    selected = set(paths)
+    all_changes = {
+        path
+        for state in ("staged", "unstaged", "untracked")
+        for path in changes.get(state, [])
+    }
+    digest = hashlib.sha256()
+    ordered = sorted(selected)
+    entries: list[dict[str, Any]] = []
+    for path in ordered:
+        states = [
+            state
+            for state in ("staged", "unstaged", "untracked")
+            if path in changes.get(state, [])
+        ]
+        entries.append(
+            {
+                "path": path,
+                "states": states,
+                **_path_change_statistics(root, path, states),
+            }
+        )
+        digest.update(path.encode("utf-8"))
+        digest.update(b"\0")
+        candidate = root.joinpath(*path.split("/"))
+        if candidate.is_symlink():
+            digest.update(b"SYMLINK\0")
+            digest.update(os.readlink(candidate).encode("utf-8", errors="surrogateescape"))
+        elif candidate.is_file():
+            digest.update(b"FILE\0")
+            digest.update(str(candidate.stat().st_mode & 0o111).encode("ascii"))
+            digest.update(b"\0")
+            with candidate.open("rb") as stream:
+                while chunk := stream.read(1024 * 1024):
+                    digest.update(chunk)
+        elif candidate.is_dir():
+            digest.update(b"DIRECTORY\0")
+            nested_head = _git(
+                candidate,
+                "rev-parse",
+                "--verify",
+                "HEAD",
+                allowed_codes=(0, 128),
+            )
+            digest.update(
+                nested_head.stdout.strip().encode("ascii", errors="replace")
+                if nested_head.returncode == 0
+                else b"NO_NESTED_HEAD"
+            )
+        else:
+            digest.update(b"MISSING")
+        digest.update(b"\0")
+    return {
+        "paths": sorted(selected),
+        "staged": sorted(selected & set(changes.get("staged", []))),
+        "unstaged": sorted(selected & set(changes.get("unstaged", []))),
+        "untracked": sorted(selected & set(changes.get("untracked", []))),
+        "entries": entries,
+        "excluded_paths": sorted(all_changes - selected),
+        "fingerprint": digest.hexdigest(),
+    }
 
 
 def _branch_policy_reasons(
@@ -1050,9 +1193,7 @@ def git_plan(
         *changes["staged"],
         *changes["untracked"],
     }
-    if changed_control_paths and any(
-        automation.get(key) is True for key in ("commit", "push")
-    ):
+    if changed_control_paths:
         reasons.append(
             "uncommitted delivery controls cannot authorize this task: "
             + ", ".join(sorted(changed_control_paths))
@@ -1062,6 +1203,7 @@ def git_plan(
     push_target: Mapping[str, Any] | None = None
     outgoing_commits: list[str] = []
     outgoing_paths: list[str] = []
+    commit_content: Mapping[str, Any] | None = None
 
     if operation == "auto":
         if delivery != "auto":
@@ -1174,10 +1316,11 @@ def git_plan(
         )
 
     if operation == "commit":
-        if automation.get("commit") is not True:
-            reasons.append("automatic commit is disabled")
-        if delivery == "auto" and automation.get("push") is not True:
-            reasons.append("automatic push is disabled for auto delivery")
+        if delivery == "auto":
+            if automation.get("commit") is not True:
+                reasons.append("automatic commit is disabled for auto delivery")
+            if automation.get("push") is not True:
+                reasons.append("automatic push is disabled for auto delivery")
         if message_file is None:
             raise PolicyInputError("commit operation requires --message-file")
         message_result = validate_message(root_path, message_file)
@@ -1194,12 +1337,13 @@ def git_plan(
         outside_staged = sorted(set(changes["staged"]) - set(normalized_paths))
         if outside_staged:
             reasons.append("staged paths are outside delivery scope: " + ", ".join(outside_staged))
+        commit_content = _commit_content(root_path, normalized_paths, changes)
         checks = policy.get("commit", {}).get("checks", [])
     elif operation == "push":
         if delivery not in ("commit-and-push", "auto"):
             reasons.append("Git Delivery does not authorize push")
-        if automation.get("push") is not True:
-            reasons.append("automatic push is disabled")
+        if delivery == "auto" and automation.get("push") is not True:
+            reasons.append("automatic push is disabled for auto delivery")
         push_target = resolve_push_target(root_path)
         reasons.extend(
             _branch_policy_reasons(
@@ -1268,6 +1412,7 @@ def git_plan(
         push_target=push_target,
         outgoing_commits=outgoing_commits,
         outgoing_paths=outgoing_paths,
+        commit_content=commit_content,
         checks=checks,
     )
 

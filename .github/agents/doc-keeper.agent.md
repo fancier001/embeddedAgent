@@ -15,6 +15,8 @@ handoffs:
     agent: EmbeddedDeveloper
     prompt: >-
       文档门禁完成且已有修复、测试、必需检查和独立质量评审 PASS 证据时，按 .github/agent-contracts.md 生成 Commit Delivery Confirmation：建议 Git Delivery: commit 作为待确认默认值，只要求用户主动提供 Jira ID 并确认或修正；其余 commit 字段必须从本次修改证据自行生成。用户在当前输入框回复确认后，作为当前 EmbeddedDeveloper 直接执行，不得自我委派或等待新的 handoff 按钮；commit-and-push/auto 不得默认。 After documentation completes with repair, test, required-check, and independent-review PASS evidence, generate a Commit Delivery Confirmation under .github/agent-contracts.md: propose Git Delivery: commit as the recommended default pending confirmation, ask only for the user-supplied Jira ID plus confirmation or corrections, and generate every other commit field from this change's evidence. After confirmation in the current input box, execute directly as the current EmbeddedDeveloper; never delegate to yourself or wait for another handoff button, and never default to commit-and-push/auto.
+      先使用 Task Change Baseline、Task Change Ledger 和当前真实 diff 执行 DETECT_COMMIT_SCOPE，在预览中逐文件列出状态、增删统计、摘要、排除路径和 fingerprint，并标记 Change Confirmation: PENDING；用户要求删减时进入 ADJUST_CHANGESET，重新验证、独立评审和确认。不得按 YAML allowed_paths 选择文件，无法排除既有 dirty 内容时返回 BLOCKED。 First use Task Change Baseline, Task Change Ledger, and the current actual diff for DETECT_COMMIT_SCOPE, then list exact Commit Content per file with state, added/deleted counts, summary, excluded paths, fingerprint, and Change Confirmation: PENDING. A reduction request enters ADJUST_CHANGESET and repeats verification, independent review, and confirmation. Never select files through YAML allowed_paths, and return BLOCKED when pre-existing dirty content cannot be excluded safely.
+      commit-and-push 在 commit 后生成 CONFIRM_PUSH 并等待确认；auto 保持自动，push 失败时生成 MANUAL_PUSH。 For commit-and-push, emit CONFIRM_PUSH after commit and wait for confirmation; keep auto automatic and emit MANUAL_PUSH if push fails.
     send: false
 ---
 
@@ -104,6 +106,7 @@ handoffs:
 - 事实冲突、缺少技术确认或写入授权时返回 `BLOCKED`。
 - 已执行检查失败且无法在允许范围内修复时返回 `FAILED`。
 - `CONDITIONAL` 仅用于用户明确接受的非发布性剩余风险；不得用它绕过同步占位标记或事实冲突。
+- 每个面向用户的报告必须包含且只包含一个共享 `## Next Action`，根据事实核对、文档门禁和共享优先级动态生成规范 `Action` 与 `UI Route`。补证使用 `CURRENT_INPUT`；冲突处理和交付只使用当前 frontmatter 的精确路由 `HANDOFF:返回编排 / Resolve Conflict` 或 `HANDOFF:Git 提交交付 / Git Delivery`；终态使用 `NONE`。无需输入且已获授权的 Agent 动作使用 `AGENT_CONTINUE` 在同一轮执行并重新计算。
 
 ## English
 
@@ -185,3 +188,4 @@ All first-party team Markdown must retain the constraint block after the title a
 - Return `BLOCKED` for fact conflicts, missing technical confirmation, or missing write authority.
 - Return `FAILED` when an executed check fails and cannot be fixed within allowed scope.
 - Use `CONDITIONAL` only for explicitly accepted non-release residual risk; never use it to bypass a synchronization placeholder or a fact conflict.
+- Every user-facing report contains exactly one shared `## Next Action`, dynamically deriving its canonical `Action` and `UI Route` from fact checking, documentation gates, and the shared priority. Missing evidence uses `CURRENT_INPUT`; conflict handling and delivery use only the exact current-frontmatter routes `HANDOFF:返回编排 / Resolve Conflict` or `HANDOFF:Git 提交交付 / Git Delivery`; a terminal state uses `NONE`. Execute any authorized no-input agent action with `AGENT_CONTINUE` and recompute in the same turn.

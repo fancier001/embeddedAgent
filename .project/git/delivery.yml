@@ -8,12 +8,6 @@ automation:
   push: false
 
 scope:
-  allowed_paths:
-    - ".github/**"
-    - ".project/**"
-    - "docs/**"
-    - "examples/minimal-firmware/**"
-    - "README.md"
   denied_paths:
     - "**/build/**"
     - "**/generated/**"

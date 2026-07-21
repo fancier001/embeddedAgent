@@ -43,7 +43,7 @@ user-invocable: false
 
 ### 输出
 
-输出质量门表以及共享报告字段：`Status`、`Summary`、`Scope`、`Files/APIs`、`Commands and Exit Codes`、`Evidence`、`Review Findings`、`Assumptions`、`Risks` 和 `Next Steps`。两轮后仍有重大问题时使用 `FAILED`。
+输出质量门表以及共享报告字段：`Status`、`Summary`、`Scope`、`Files/APIs`、`Commands and Exit Codes`、`Evidence`、`Review Findings`、`Assumptions`、`Risks` 和唯一动态结构化 `Next Action`，包含规范 Action ID 与 `UI Route`。无需输入且已获授权的 Agent 下一动作使用 `AGENT_CONTINUE` 在同一轮执行并重新计算；两轮后仍有重大问题时使用 `FAILED`。
 
 ## English
 
@@ -78,4 +78,4 @@ user-invocable: false
 
 ### Output
 
-Provide a quality-gate table plus the shared report fields: `Status`, `Summary`, `Scope`, `Files/APIs`, `Commands and Exit Codes`, `Evidence`, `Review Findings`, `Assumptions`, `Risks`, and `Next Steps`. Use `FAILED` when major issues remain after two rounds.
+Provide a quality-gate table plus the shared report fields: `Status`, `Summary`, `Scope`, `Files/APIs`, `Commands and Exit Codes`, `Evidence`, `Review Findings`, `Assumptions`, `Risks`, and exactly one dynamic structured `Next Action` with a canonical Action ID and `UI Route`. Execute authorized no-input actions with `AGENT_CONTINUE` and recompute in the same turn. Use `FAILED` when major issues remain after two rounds.

@@ -134,6 +134,12 @@ class CustomizationValidatorTests(unittest.TestCase):
         self.write_yaml(".project/git/delivery.yml", policy)
         self.assertIn("PROJECT_GLOB", self.codes())
 
+    def test_legacy_allowed_paths_are_accepted_but_non_authoritative(self) -> None:
+        policy = self.read_yaml(".project/git/delivery.yml")
+        policy["scope"]["allowed_paths"] = [".github/**", "docs/**"]
+        self.write_yaml(".project/git/delivery.yml", policy)
+        self.assertEqual([], self.diagnostics())
+
     def test_git_delivery_policy_preserves_authorization_and_force_safety(self) -> None:
         policy = self.read_yaml(".project/git/delivery.yml")
         policy["safety"]["require_task_authorization"] = False
@@ -172,6 +178,12 @@ class CustomizationValidatorTests(unittest.TestCase):
             newline="\n",
         )
         self.assertIn("COMMIT_TEMPLATE_ORDER", self.codes())
+        template.write_text(
+            original.replace("<AI-Tool-Scenario>: /", "<AI-Tool-Scenario>: N/A"),
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assertIn("COMMIT_TEMPLATE_AI_DEFAULT", self.codes())
 
     def test_project_extension_namespaces_remain_extensible(self) -> None:
         manifest = self.read_yaml(".project/project.yml")
@@ -207,6 +219,16 @@ class CustomizationValidatorTests(unittest.TestCase):
                 "`AUTO_DECIDE`",
                 "`AUTO_COMMIT_AND_PUSH`",
                 "`OUTPUT_COMMIT_MESSAGE`",
+                "Task Change Baseline",
+                "Task Change Ledger",
+                "`DETECT_COMMIT_SCOPE`",
+                "Commit Content",
+                "`ADJUST_CHANGESET`",
+                "Change Confirmation: PENDING",
+                "UI Route",
+                "AGENT_CONTINUE",
+                "HANDOFF:独立评审 / Review",
+                "## Next Action",
             ),
             "embedded-developer.agent.md": (
                 "`SYNTHESIZE_METADATA`",
@@ -219,6 +241,20 @@ class CustomizationValidatorTests(unittest.TestCase):
                 "Jira ID is always user-supplied",
                 "execute directly as the current EmbeddedDeveloper",
                 "never delegate to yourself",
+                "`CONFIRM_PUSH`",
+                "Action: MANUAL_PUSH",
+                "Task Change Baseline",
+                "Task Change Ledger",
+                "`DETECT_COMMIT_SCOPE`",
+                "Commit Content",
+                "`ADJUST_CHANGESET`",
+                "Change Confirmation: PENDING",
+                "UI Route",
+                "CURRENT_INPUT",
+                "AGENT_CONTINUE",
+                "HANDOFF:文档同步 / Document Changes",
+                "Documentation=`PASS`",
+                "## Next Action",
             ),
         }
         for name, markers in required.items():
@@ -234,6 +270,30 @@ class CustomizationValidatorTests(unittest.TestCase):
                     self.assertIn("AGENT_BODY_CONTRACT", self.codes())
             agent.write_text(original, encoding="utf-8", newline="\n")
 
+    def test_specialist_dynamic_next_action_contract_is_required(self) -> None:
+        required = {
+            "quality-reviewer.agent.md": (
+                "UI Route",
+                "HANDOFF:修复问题 / Fix Issues",
+            ),
+            "doc-keeper.agent.md": (
+                "UI Route",
+                "HANDOFF:返回编排 / Resolve Conflict",
+            ),
+        }
+        for name, markers in required.items():
+            agent = self.repo / ".github" / "agents" / name
+            original = agent.read_text(encoding="utf-8")
+            for marker in markers:
+                with self.subTest(agent=name, marker=marker):
+                    agent.write_text(
+                        original.replace(marker, "REMOVED_DYNAMIC_NEXT_ACTION"),
+                        encoding="utf-8",
+                        newline="\n",
+                    )
+                    self.assertIn("AGENT_BODY_CONTRACT", self.codes())
+            agent.write_text(original, encoding="utf-8", newline="\n")
+
     def test_missing_bug_resolver_agent_is_rejected(self) -> None:
         (self.repo / ".github" / "agents" / "bug-resolver.agent.md").unlink()
         self.assertIn("AGENT_SET", self.codes())
@@ -242,7 +302,7 @@ class CustomizationValidatorTests(unittest.TestCase):
         agent = self.repo / ".github" / "agents" / "bug-resolver.agent.md"
         original = agent.read_text(encoding="utf-8")
         for marker in (
-            "DOCUMENT → DELIVERY → CLOSE",
+            "CLOSE → RESET → INTAKE",
             "GUIDE_SYMPTOMS",
             "CONFIRM_DIRECTION",
             "Usage Symptom Questions",
@@ -257,6 +317,16 @@ class CustomizationValidatorTests(unittest.TestCase):
             "recommended default",
             "Jira ID is always user-supplied",
             "separate complete delivery Task Brief",
+            "Task Change Baseline",
+            "`DETECT_COMMIT_SCOPE`",
+            "Commit Content",
+            "`ADJUST_CHANGESET`",
+            "Change Confirmation: PENDING",
+            "UI Route",
+            "AGENT_CONTINUE",
+            "HANDOFF:Git 提交交付 / Git Delivery",
+            "Action: START_NEW_ISSUE",
+            "## Next Action",
         ):
             with self.subTest(marker=marker):
                 agent.write_text(
@@ -279,6 +349,18 @@ class CustomizationValidatorTests(unittest.TestCase):
                 "Jira ID is always user-supplied",
                 "`AUTO_DECIDE`",
                 "separate delivery Task Brief",
+                "`CONFIRM_PUSH`",
+                "`MANUAL_PUSH`",
+                "`DETECT_COMMIT_SCOPE`",
+                "Commit Content",
+                "`ADJUST_CHANGESET`",
+                "Change Confirmation: PENDING",
+                "UI Route",
+                "CURRENT_INPUT",
+                "AGENT_CONTINUE",
+                "Documentation",
+                "CLOSE → RESET → INTAKE",
+                "Next Action",
             ):
                 with self.subTest(prompt=name, marker=marker):
                     prompt.write_text(
@@ -312,6 +394,76 @@ class CustomizationValidatorTests(unittest.TestCase):
         self.assertIn("AGENT_REFERENCE", codes)
         self.assertIn("HANDOFF_SEND", codes)
 
+    def test_base_handoff_buttons_are_exact_and_static(self) -> None:
+        expected = {
+            "orchestrator.agent.md": (
+                ("Bug 分析与解决 / Diagnose and Resolve Bug", "BugResolver"),
+                ("实现变更 / Implement", "EmbeddedDeveloper"),
+                ("独立评审 / Review", "QualityReviewer"),
+                ("文档沉淀 / Document", "DocKeeper"),
+            ),
+            "bug-resolver.agent.md": (
+                ("实施修复 / Implement Fix", "EmbeddedDeveloper"),
+                ("质量评估 / Quality Assessment", "QualityReviewer"),
+                ("记录结论 / Document Resolution", "DocKeeper"),
+                ("Git 提交交付 / Git Delivery", "EmbeddedDeveloper"),
+            ),
+            "embedded-developer.agent.md": (
+                ("独立评审 / Quality Review", "QualityReviewer"),
+                ("文档同步 / Document Changes", "DocKeeper"),
+                ("问题已解决 / Close Issue", "BugResolver"),
+            ),
+            "quality-reviewer.agent.md": (
+                ("修复问题 / Fix Issues", "EmbeddedDeveloper"),
+                ("沉淀质量结论 / Document Quality Findings", "DocKeeper"),
+                ("Git 提交交付 / Git Delivery", "EmbeddedDeveloper"),
+            ),
+            "doc-keeper.agent.md": (
+                ("返回编排 / Resolve Conflict", "Orchestrator"),
+                ("Git 提交交付 / Git Delivery", "EmbeddedDeveloper"),
+            ),
+        }
+        for name, expected_handoffs in expected.items():
+            source = (self.repo / ".github" / "agents" / name).read_text(
+                encoding="utf-8"
+            )
+            frontmatter = yaml.safe_load(source.split("---\n", 2)[1])
+            handoffs = frontmatter["handoffs"]
+            with self.subTest(agent=name):
+                self.assertEqual(
+                    expected_handoffs,
+                    tuple((item["label"], item["agent"]) for item in handoffs),
+                )
+                self.assertTrue(all(item["send"] is False for item in handoffs))
+                self.assertTrue(
+                    all(
+                        set(item) == {"label", "agent", "prompt", "send"}
+                        for item in handoffs
+                    )
+                )
+
+    def test_handoff_label_order_and_fields_are_validator_locked(self) -> None:
+        agent = self.repo / ".github" / "agents" / "orchestrator.agent.md"
+        original = agent.read_text(encoding="utf-8")
+        agent.write_text(
+            original.replace(
+                "Bug 分析与解决 / Diagnose and Resolve Bug",
+                "Renamed Bug Handoff",
+                1,
+            ),
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assertIn("HANDOFF_BASELINE", self.codes())
+
+        agent.write_text(
+            original.replace("    send: false", "    send: false\n    when: dynamic", 1),
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assertIn("HANDOFF_FIELDS", self.codes())
+        agent.write_text(original, encoding="utf-8", newline="\n")
+
     def test_git_delivery_handoff_is_required_after_review_and_documentation(self) -> None:
         for name in (
             "bug-resolver.agent.md",
@@ -339,19 +491,89 @@ class CustomizationValidatorTests(unittest.TestCase):
                 "current input box",
                 "execute directly as the current EmbeddedDeveloper",
                 "never delegate to yourself",
+                "Task Change Baseline",
+                "Task Change Ledger",
+                "DETECT_COMMIT_SCOPE",
+                "Commit Content",
+                "ADJUST_CHANGESET",
+                "Change Confirmation: PENDING",
+                "CONFIRM_PUSH",
+                "MANUAL_PUSH",
             ):
                 with self.subTest(agent=name, prompt_marker=marker):
                     agent.write_text(
                         original.replace(
                             marker,
                             "REMOVED_DELIVERY_DEFAULT_CONTRACT",
-                            1,
                         ),
                         encoding="utf-8",
                         newline="\n",
                     )
                     self.assertIn("HANDOFF_DELIVERY", self.codes())
             agent.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_shared_contract_requires_change_confirmation_and_adjustment(self) -> None:
+        contract = self.repo / ".github" / "agent-contracts.md"
+        original = contract.read_text(encoding="utf-8")
+        for marker in (
+            "## Next Action",
+            "`ADJUST_CHANGESET`",
+            "Change Confirmation: PENDING",
+            "confirm changes and commit",
+            "per-file `entries`",
+            "`CONFIRM_PUSH`",
+            "`MANUAL_PUSH`",
+            "`START_NEW_ISSUE`",
+            "- UI Route:",
+            "`PROVIDE_EVIDENCE`",
+            "HANDOFF:<exact current-agent button label>",
+            "AGENT_CONTINUE",
+            "NOT_RUN — Not required: <reason>",
+        ):
+            with self.subTest(marker=marker):
+                contract.write_text(
+                    original.replace(marker, "REMOVED_SHARED_CONTRACT"),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertTrue(
+                    any(code.startswith("SHARED_CONTRACT") for code in self.codes())
+                )
+        contract.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_close_issue_handoff_is_required_after_delivery(self) -> None:
+        agent = self.repo / ".github" / "agents" / "embedded-developer.agent.md"
+        original = agent.read_text(encoding="utf-8")
+        agent.write_text(
+            original.replace(
+                "问题已解决 / Close Issue",
+                "REMOVED_CLOSE_ISSUE_HANDOFF",
+            ),
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assertIn("HANDOFF_CLOSE_ISSUE", self.codes())
+
+        for marker in (
+            "Recheck",
+            "repair",
+            "selected Git delivery",
+            "clear issue-level state",
+            "fresh issue INTAKE",
+            "otherwise return BLOCKED",
+            "Next Action",
+        ):
+            with self.subTest(prompt_marker=marker):
+                agent.write_text(
+                    original.replace(
+                        marker,
+                        "REMOVED_CLOSE_ISSUE_CONTRACT",
+                    ),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("HANDOFF_CLOSE_ISSUE", self.codes())
+        agent.write_text(original, encoding="utf-8", newline="\n")
 
     def test_malformed_agent_yaml_is_rejected(self) -> None:
         shutil.copyfile(
