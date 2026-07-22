@@ -26,16 +26,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: .github/agent-kit/requirements-dev.txt
+          cache-dependency-path: tests/agent-kit/requirements.txt
 
       - name: Install validation dependencies
-        run: python -m pip install --disable-pip-version-check -r .github/agent-kit/requirements-dev.txt
+        run: python -m pip install --disable-pip-version-check -r tests/agent-kit/requirements.txt
 
       - name: Validate customizations
         run: python .github/agent-kit/scripts/validate_customizations.py --root .
 
       - name: Run validator unit tests
-        run: python -m unittest discover -s .github/agent-kit/tests -p "test_*.py" -v
+        run: python -m unittest discover -s tests/agent-kit -p "test_*.py" -v
 
       - name: Configure minimal firmware example
         run: cmake -S examples/minimal-firmware -B build/minimal-firmware -DCMAKE_BUILD_TYPE=Debug

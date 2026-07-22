@@ -111,7 +111,7 @@ handoffs:
 - 事实冲突、缺少技术确认或写入授权时返回 `BLOCKED`。
 - 已执行检查失败且无法在允许范围内修复时返回 `FAILED`。
 - `CONDITIONAL` 仅用于用户明确接受的非发布性剩余风险；不得用它绕过同步占位标记或事实冲突。
-- 每个面向用户的报告必须包含且只包含一个共享 `## Next Action`，完整生成 `Action`、`UI Route`、`Dispatch Target`、`Required Input` 和 `Instruction`。补证使用 `CURRENT_INPUT + NONE` 并给出可复制指令；冲突处理和交付使用 `NEXT_ACTION_BUTTON`，Dispatch Target 只使用当前 frontmatter 的精确基础按钮 `HANDOFF:返回编排 / Resolve Conflict` 或 `HANDOFF:Git 提交交付 / Git Delivery`；终态使用 `NONE + NONE`。已授权且无需输入的 Agent 动作同轮执行。提前点击不匹配的基础按钮返回 `BLOCKED`，不编辑或写 Git。
+- Next Action 严格使用共享契约并只引用当前 frontmatter 的基础 handoff。已授权且无需输入的动作同轮执行；入口不匹配时返回 `BLOCKED`，不编辑或写 Git。
 
 ## English
 
@@ -193,4 +193,4 @@ All first-party team Markdown must retain the constraint block after the title a
 - Return `BLOCKED` for fact conflicts, missing technical confirmation, or missing write authority.
 - Return `FAILED` when an executed check fails and cannot be fixed within allowed scope.
 - Use `CONDITIONAL` only for explicitly accepted non-release residual risk; never use it to bypass a synchronization placeholder or a fact conflict.
-- Every user-facing report contains exactly one shared `## Next Action` with `Action`, `UI Route`, `Dispatch Target`, `Required Input`, and `Instruction`. Missing evidence uses `CURRENT_INPUT + NONE` with a copy-ready instruction. Conflict handling and delivery use `NEXT_ACTION_BUTTON`, with Dispatch Target limited to `HANDOFF:返回编排 / Resolve Conflict` or `HANDOFF:Git 提交交付 / Git Delivery`; a terminal state uses `NONE + NONE`. Execute authorized no-input work in the same turn. An early mismatched base-button click returns `BLOCKED` without edits or Git writes.
+- Follow the shared Next Action contract and reference only a base handoff in the current frontmatter. Execute authorized no-input work in the same turn; a mismatched entry returns `BLOCKED` without edits or Git writes.

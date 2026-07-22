@@ -6,154 +6,78 @@
 
 ## 中文 / Chinese
 
-### 上下文入口
+### 唯一事实源
 
-- 开始任务前读取 [项目画像](embedded-project.yml) 和 [Agent 公共契约](agent-contracts.md)，再发现可选的 [项目级规则清单](../.project/project.yml)。存在时用 Task Brief 范围、允许路径和真实 diff 匹配 `applies_to` 并读取全部适用规则；缺失时兼容旧项目继续。
-- 具有 `execute` 的角色优先用只读工具 `python .github/agent-kit/scripts/project_policy.py rules --root . --path <path>` 统一路径匹配；只读角色按公共契约继承结果，不因此扩大工具权限。
-- 项目画像中的显式事实优先；字段为 `auto` 时，再从 README、CI、Make/CMake、VS Code tasks、相邻模块和现有测试中探测。
-- 如果项目级约束或项目画像与仓库实际状态冲突，报告配置漂移并停止依赖该冲突事实，不静默改写配置或仓库。
+- [Agent 公共契约](agent-contracts.md) 定义 Task Brief、状态、报告、Next Action、Bug 证据和 Git 交付；其他配置只引用，不复制该行为。
+- [项目画像](embedded-project.yml) 保存已确认的工程事实；`auto` 字段必须通过仓库只读探测解析。
+- 可选的 [项目规则清单](../.project/project.yml) 是项目级约束入口。根据 Task Brief、允许范围和真实 diff 加载所有适用规则；缺失时兼容旧项目继续。
+- 规则、画像和仓库事实冲突时报告配置漂移，并停止依赖冲突事实；不得静默改写配置。
 
-### 现有工程优先
+### 标准工作流
 
-- 复用项目已经采用的 C 标准、目录、命名、HAL、错误码、日志、构建和测试体系。
-- C99、`src/`、`drivers/`、`test/` 和 `docs/` 只作为空白工程的回退默认值，不覆盖成熟工程约定。
-- 保持最小任务范围，不重构无关代码，不覆盖或丢弃用户已有修改。
-- vendor、generated 和第三方文件默认只读；除非用户明确授权，不在这些路径内生成修改。
+1. 明确用户目标、授权范围、禁止动作和验收条件。
+2. 建立 baseline，读取共享契约、项目画像和适用项目规则。
+3. 选择一个负责 Agent；Prompt 只适配输入，Skill 只提供专项流程。
+4. 完成最小范围工作，保留真实命令、退出码、关键输出和未运行项。
+5. 按共享契约完成独立评审、必要文档、可选 Git 交付和唯一 `## Next Action`。
 
-### 应用逻辑
+### 工程与安全
 
-- 应用功能先明确状态、事件、合法转换、时间、重试、取消、幂等、恢复、兼容性和资源所有权，再实现最小垂直切片。
-- 优先使用 host test、fake clock、fake service 和表驱动状态转换；需求标为 `covered` 时必须同时提供实现、测试和证据。
+- 优先复用现有 C 标准、目录、命名、HAL、错误码、日志、构建和测试体系；空白工程默认值不得覆盖成熟工程约定。
+- 保持最小任务范围，保留用户已有修改；vendor、generated 和第三方路径默认只读。
+- 不臆造寄存器、位定义、引脚、电气、时序或芯片行为。硬件事实必须匹配器件和 revision；否则使用符号占位或返回 `BLOCKED`。
+- 未获明确授权不得执行 flash、erase、fuse、reset、HIL、设备电源、发布或外部部署；禁止破坏性 Git、静默安装依赖和无关的 formatter/codegen。
+- 分析请求默认只读。Bug 修复必须由 `BugResolver` 确认证据方向，再委派 `EmbeddedDeveloper`，随后独立评审。
 
-### Bug 诊断
+### 角色与交付
 
-- 用户要求理解、分析或修复 Bug 时，交给 `BugResolver` 使用 `bug-analysis` 建立只读诊断；日志/崩溃/ELF/MAP 场景同时使用 `fault-analysis` 辅助模式。
-- 所有 BugResolver 入口先执行 `GUIDE_SYMPTOMS`，用 `Usage Symptom Profile` 规范化用户目标/场景、操作序列、预期/实际、频率/边界、环境/revision、影响和恢复。缺失会影响方向的现象时用一张 `Usage Symptom Questions` 表集中引导，首轮最多 5 个；允许 `Unknown`，不重复询问，不以非关键未知项阻塞。
-- 只有现象可能指向多个模块/根因路径、预期/实际不清或输入矛盾时执行 `CONFIRM_DIRECTION`，输出 `Current Understanding` 与 `Possible Directions`。方向为 `PENDING` 时不得深入调用链、确认根因或委派 Developer；方向明确时标记 `NOT_REQUIRED` 并继续。
-- 方向可继续后，BugResolver 输出引用 Usage Symptom Profile 的结构化 `Problem Identification`，基于事实识别问题类别、疑似子系统、观察严重度、触发条件、复现性、影响范围和证据置信度；不得把问题分类当作根因结论。
-- 保留原始错误，区分现象、报错位置、触发条件和根因；追踪相关调用、状态、数据所有权、配置、依赖、版本与 baseline。
-- 每个假设必须记录支持证据、反证、置信度和最小验证动作。只有因果链成立且主要替代解释被排除时才确认根因；否则返回 `INSUFFICIENT_EVIDENCE` 和精确的缺失材料。
-- `Usage Symptom Questions` 只采集使用现象。缺少关键材料时，先搜索仓库并完成所有安全初判，再用一张 `Evidence Request` 表集中请求无法自行取得的日志、版本、配置、ELF/MAP/dump 等最小证据；两类请求不得混用，在补充前暂停根因确认和 Developer 委派，补充后不得重复索取。
-- 日志分析覆盖 bare-metal、RTOS、模组 SDK、Embedded Linux 和 hybrid；保留原始行/偏移与时钟域，没有可靠时间基准时不得伪造统一时间或跨域顺序。
-- 分析请求不修改代码。用户明确要求修复后，由 `BugResolver` 将已确认根因或可证伪的高置信假设交给 `EmbeddedDeveloper`，并调用 `QualityReviewer` 做独立质量评估。
+- `Orchestrator` 负责通用交付编排；`BugResolver` 负责 Bug 诊断与修复闭环。两个 manager 不自动相互调用。
+- `EmbeddedDeveloper` 是常规功能代码写入者；`QualityReviewer` 独立评审且不改功能代码；`DocKeeper` 只同步已验证事实。
+- 五个业务 Agent 的基础 handoff 是人工恢复入口；唯一自动入口是末尾 `执行下一步 / Next Action`，由只读 `NextActionRouter` 按共享契约路由。
+- Git policy 只约束交付，不产生授权。Jira 必须由用户提供；commit、push、自动交付、内容调整和 fingerprint 漂移均按共享契约处理。
+- push 目标只从当前仓库本地 Git 配置解析；禁止 force、`push -u`、自定义 refspec、删除远端分支或修改 `.git/config`。
 
-### 嵌入式安全边界
+### 证据与文档
 
-- 禁止臆造寄存器地址、位定义、引脚、电气特性、时序和芯片行为。缺少匹配型号/revision 的资料时，使用无数值符号占位或返回 `BLOCKED`。
-- MMIO 访问按项目 HAL 或寄存器定义处理。`volatile` 只解决特定编译器可见性问题，不代表原子性、内存顺序或 ISR/任务同步。
-- 跨字节序数据必须显式打包/解包，不依赖未定义的结构体布局、位域顺序或未对齐指针访问。
-- 未获明确授权不得执行 flash、erase、fuse、reset、设备电源控制、HIL、发布或外部部署命令。
-- 不执行破坏性 Git 命令，不静默安装依赖，不运行与任务无关的格式化、代码生成或迁移。
-
-### Git 交付
-
-- Task Brief 的 `Git Delivery` 只接受 `none`、`commit`、`commit-and-push`、`auto`，不得提供 remote、URL 或目标分支。policy 只约束交付，不能替代当前任务授权；`auto` 仅在修复、测试、必需检查、独立评审和必要文档均通过后进入交付决策。
-- BugResolver 的修复闭环必须在 `DOCUMENT` 后进入 `DELIVERY`。它保留用户显式提供的交付选择；未提供时，交付前使用 `none` 防止提前写入，门禁通过后生成一次 `Commit Delivery Confirmation`，建议 `commit` 为待确认默认值。推荐值不构成授权；显式 `none` 记录跳过，`commit-and-push`/`auto` 必须明确选择，其他模式通过单独交付 Task Brief 委派给 `EmbeddedDeveloper`。
-- Jira ID 始终由用户主动提供且不得猜测；其余 commit 字段必须根据项目 manifest、确认根因、真实 diff、测试/构建、独立评审和文档证据自行生成。一次性展示完整预览，只请求 Jira 和确认/修正；Project 仅在仍为 `auto` 且无法唯一解析时额外询问。未确认时返回 `BLOCKED`，Git 保持不变。
-- AI 实质参与生成、检查、重构、测试或文档时填写 `Y` 和一个真实主要场景/详情；完全未参与时精确填写 `AI-Tool-Used: N`、`AI-Tool-Scenario: /`、`AI-Tool-Detail: /`。
-- Git Delivery handoff 已经把会话切换到 `EmbeddedDeveloper`。预览后输出 `CONFIRM_COMMIT` 并要求用户在当前输入框确认或回复 `调整修改: <要求>`；任何调整都使旧确认和受影响门禁失效。`auto` 必须额外显示 `Commit Content Confirmation: PENDING`，要求回复 `确认自动提交内容` 和当前 fingerprint；选择 auto 或点击按钮不构成确认。收到最终确认后由当前 Developer 直接执行，不得自我委派。`commit-and-push` 在 commit 后等待独立的 `确认推送`；`auto` 只是不增加 commit 后的 push 确认。
-- `EmbeddedDeveloper` 用 `project_policy.py message` 校验仓库 commit 模板，用 `git-plan` 做只读预检；`automation` 只约束 `auto`。用户确认的 `commit`/`commit-and-push` 不受 automation 开关限制。commit 内容通过 `Task Change Baseline`、本任务修改账本和当前真实 diff 执行 `DETECT_COMMIT_SCOPE`，不由 YAML `allowed_paths` 过滤；`Commit Content` 逐文件展示 state、增删统计、摘要、排除路径和 fingerprint，通过 `denied_paths` 和检查后只暂存最终确认的内容。
-- `Git Delivery: auto` 使用仓库外临时消息文件运行 `git-plan --operation auto --delivery auto --expected-content-fingerprint <confirmed>`。缺失或漂移返回 `CONFIRM_COMMIT_CONTENT`，不得写 Git；只有 `content_confirmation.status: CONFIRMED` 且决策为 `AUTO_COMMIT_AND_PUSH` 才能暂存和提交，并在 push 前用首次 push fingerprint 与 `--expected-commit` 锁定唯一的新 commit。push 失败保留本地 commit，不回滚或自动重试，输出 `MANUAL_PUSH`。
-- push 的当前分支、remote、URL 和目标 ref 只从当前项目 `.git` 的 local config 解析；push 前用 fingerprint 再次预检。禁止 `push -u`、force、自定义 refspec、删除远端分支和修改 `.git/config`。
-- 每个面向用户的结果必须包含且只包含一个动态结构化 `## Next Action`，字段为 Current State、Action、Owner、UI Route、Dispatch Target、Required Input、Instruction、On Success。角色切换使用 `NEXT_ACTION_BUTTON + HANDOFF:<精确基础按钮标签>`；输入/确认使用 `CURRENT_INPUT + NONE` 和可复制 Instruction；外部/终态使用 `EXTERNAL + NONE`/`NONE + NONE`。业务 Agent 基础按钮保持 `send:false` 人工备用，末尾统一按钮使用 `send:true` 进入隐藏 Router；Router 固定保留五个有序 `send:false` 返回按钮防止 footer 为空。任何备用按钮点击都不代替输入或 commit/push 确认。
-- 问题仅在修复、验证、独立评审、必要文档和所选 Git 交付均已处理后关闭。人工交付完成时使用 `问题已解决 / Close Issue` handoff 返回 BugResolver；闭环报告后清除问题级状态并进入新问题 INTAKE，禁止继承旧 Jira、根因、范围或 Git 授权。
-
-### 证据与完成标准
-
-- 每个子任务使用公共契约中的 `Task Brief`，每个结果使用统一 Agent Report。
-- 命令证据包含实际命令、退出码和关键输出；未执行的验证标记为 `NOT_RUN` 并说明原因。
-- 将既有 baseline 失败与本次变更新增失败分开，不把缺失工具、未运行测试或启发式检查写成通过。
-- MISRA 的模型审查仅称为风险筛查；只有匹配的标准版本、deviation 配置和工具报告才能支持合规结论。
-- 硬件事实引用本地受控资料或官方/供应商来源，并记录器件型号、文档编号、revision 和页码或 URL。
-
-### 五 Agent 协作
-
-- `Orchestrator` 是默认通用交付入口；它不编辑文件或执行命令，Bug 请求通过人工 handoff 或专用 prompt 切换到 BugResolver。
-- `BugResolver` 专门编排 Bug 诊断与解决，可运行只读诊断命令并调用开发、质量评估和文档角色，但不直接修改文件；两个 manager 不自动相互调用。
-- `EmbeddedDeveloper` 是唯一常规功能代码修改者，并负责构建和测试证据。
-- `QualityReviewer` 只做独立质量评估，不负责 Bug 根因分析，也不修改功能代码。
-- `DocKeeper` 维护 README、`docs/`、项目画像、明确授权的 `.project/` 项目规范和非行为性注释，不修改功能行为。
-- 自动 subagent 委派与用户点击的 handoff 是不同机制；handoff 不代表任务已经自动提交或执行。
-
-### 双语协作
-
-- 用户未指定语言时，聊天输出可以使用中英双语标签；用户指定单一语言时遵循用户要求。
-- first-party 团队 Markdown 使用完整双区结构：先 `## 中文 / Chinese`，后 `## English`。
-- 文件名、路径、标识符、命令、寄存器名、日志和编译器原始输出保持原文。
+- 已有 baseline 失败与本次新增失败分开报告；缺失工具、未运行测试和启发式检查不得写成通过。
+- MISRA 模型结果只称风险筛查；只有匹配的标准、deviation 和工具报告可支持合规结论。
+- first-party 团队 Markdown 使用完整中英双区；路径、标识符、命令、寄存器、日志和编译器输出保持原文。
 
 ## English
 
-### Context Entry Points
+### Sources of Truth
 
-- Before starting a task, read the [project profile](embedded-project.yml) and [shared agent contract](agent-contracts.md), then discover the optional [project rule manifest](../.project/project.yml). When present, match `applies_to` against the Task Brief scope, allowed paths, and actual diff and read every applicable rule; when absent, continue in legacy-compatible mode.
-- Roles with `execute` should use read-only `python .github/agent-kit/scripts/project_policy.py rules --root . --path <path>` for consistent matching. Read-only roles inherit the result through the shared contract without expanding permissions.
-- Explicit facts in the project profile take precedence. When a field is `auto`, discover it from the README, CI, Make/CMake files, VS Code tasks, neighboring modules, and existing tests.
-- If a project-level constraint or the profile conflicts with the repository, report configuration drift and stop relying on the conflicting fact. Do not silently rewrite configuration or the repository.
+- The [shared Agent contract](agent-contracts.md) defines Task Briefs, states, reports, Next Action, bug evidence, and Git delivery. Other configuration references this behavior instead of copying it.
+- The [project profile](embedded-project.yml) stores confirmed engineering facts. Resolve `auto` fields through read-only repository discovery.
+- The optional [project rule manifest](../.project/project.yml) is the project-policy entry point. Load every rule matching the Task Brief, allowed scope, and actual diff; continue in legacy-compatible mode when it is absent.
+- When a rule, profile, and repository fact conflict, report configuration drift and stop relying on the conflicting fact; never silently rewrite configuration.
 
-### Existing Project First
+### Standard Workflow
 
-- Reuse the project's established C standard, layout, naming, HAL, error codes, logging, build, and test systems.
-- C99, `src/`, `drivers/`, `test/`, and `docs/` are fallback defaults for a greenfield project only; they do not override a mature repository.
-- Keep the task scope minimal, avoid unrelated refactors, and preserve all existing user changes.
-- Treat vendor, generated, and third-party files as read-only unless the user explicitly authorizes changes there.
+1. Establish the user's goal, authorized scope, forbidden actions, and acceptance criteria.
+2. Record the baseline and read the shared contract, project profile, and applicable project rules.
+3. Select one owning Agent. A prompt only adapts input, and a Skill only supplies a specialized procedure.
+4. Complete the smallest scoped work while preserving real commands, exit codes, key output, and unrun items.
+5. Use the shared contract to close independent review, required documentation, optional Git delivery, and exactly one `## Next Action`.
 
-### Application Logic
+### Engineering and Safety
 
-- Before implementation, define states, events, legal transitions, timing, retries, cancellation, idempotency, recovery, compatibility, and resource ownership; then deliver the smallest vertical slice.
-- Prefer host tests, fake clocks, fake services, and table-driven transitions. A `covered` requirement must include implementation, tests, and evidence.
+- Reuse the existing C standard, layout, naming, HAL, error codes, logging, build, and test systems. Greenfield defaults never override a mature repository.
+- Keep scope minimal and preserve user changes. Treat vendor, generated, and third-party paths as read-only by default.
+- Never invent registers, bit definitions, pins, electrical properties, timing, or chip behavior. Hardware facts must match the device and revision; otherwise use symbolic placeholders or return `BLOCKED`.
+- Without explicit authorization, never run flash, erase, fuse, reset, HIL, device-power, release, or external deployment actions. Destructive Git, silent dependency installation, and unrelated formatter/codegen runs are forbidden.
+- Analysis requests are read-only by default. A bug fix requires `BugResolver` to establish the evidence direction, delegate to `EmbeddedDeveloper`, and obtain independent review.
 
-### Bug Diagnosis
+### Roles and Delivery
 
-- When the user asks to understand, analyze, or fix a bug, give it to `BugResolver` to establish a read-only diagnosis in `bug-analysis` mode. Add `fault-analysis` for log/crash/ELF/MAP cases.
-- Every BugResolver entry point performs `GUIDE_SYMPTOMS` first and uses Usage Symptom Profile to normalize user goal/scenario, operation sequence, expected/actual behavior, frequency/boundaries, environment/revision, impact, and recovery. When direction-changing symptoms are missing, guide the user with one Usage Symptom Questions table containing at most five questions in the first set. Allow `Unknown`, never repeat questions, and do not block on non-critical unknowns.
-- Perform `CONFIRM_DIRECTION` only when symptoms could indicate multiple modules/root-cause paths, expected versus actual behavior is unclear, or inputs conflict. Emit Current Understanding and Possible Directions. While direction is `PENDING`, do not trace call paths deeply, confirm root cause, or delegate Developer. Mark clear direction `NOT_REQUIRED` and continue.
-- Once direction may continue, BugResolver emits a structured Problem Identification grounded in the Usage Symptom Profile, using facts to classify the problem, suspected subsystem, observed severity, trigger, reproducibility, affected scope, and evidence confidence. Classification is not a root-cause conclusion.
-- Preserve the original error and distinguish symptom, reporting location, trigger, and root cause. Trace related calls, states, data ownership, configuration, dependencies, versions, and baseline.
-- Every hypothesis records supporting evidence, counter-evidence, confidence, and the smallest validation action. Confirm root cause only when the causal chain holds and main alternatives are excluded; otherwise return `INSUFFICIENT_EVIDENCE` with exact missing material.
-- Usage Symptom Questions collects usage symptoms only. When critical material is missing, search the repository and finish every safe preliminary step before requesting unavailable logs, versions, configuration, ELF/MAP/dumps, and other minimum evidence once through an Evidence Request table. Never mix the request types. Pause root-cause confirmation and Developer delegation until evidence arrives, and never request supplied evidence twice.
-- Log analysis covers bare-metal, RTOS, module SDK, Embedded Linux, and hybrid systems. Preserve original lines/offsets and clock domains; never invent a unified time or cross-domain order without reliable timing evidence.
-- Analysis requests do not modify code. Only after the user explicitly asks for a fix may `BugResolver` give a confirmed root cause or falsifiable high-confidence hypothesis to `EmbeddedDeveloper`, followed by independent `QualityReviewer` assessment.
+- `Orchestrator` owns general delivery orchestration; `BugResolver` owns bug diagnosis and resolution. The two managers never auto-invoke each other.
+- `EmbeddedDeveloper` performs normal functional-code writes; `QualityReviewer` reviews independently without changing functional code; `DocKeeper` synchronizes verified facts only.
+- Base handoffs on the five business Agents are manual recovery entries. The only automatic entry is the final `执行下一步 / Next Action`, routed by the read-only `NextActionRouter` under the shared contract.
+- Git policy constrains delivery but grants no authority. Jira is user-supplied; commit, push, automatic delivery, change adjustment, and fingerprint drift follow the shared contract.
+- Resolve push targets only from the current repository's local Git configuration. Never force, use `push -u`, supply custom refspecs, delete remote branches, or modify `.git/config`.
 
-### Embedded Safety Boundaries
+### Evidence and Documentation
 
-- Never invent register addresses, bit definitions, pins, electrical characteristics, timing, or chip behavior. Without documentation matching the exact device and revision, use symbolic placeholders without values or return `BLOCKED`.
-- Access MMIO through the project's HAL or register definitions. `volatile` addresses specific compiler-visibility concerns; it does not provide atomicity, memory ordering, or ISR/task synchronization.
-- Explicitly pack and unpack cross-endian data. Do not rely on undefined struct layout, bit-field ordering, or unaligned pointer access.
-- Do not run flash, erase, fuse, reset, device power-control, HIL, release, or external deployment commands without explicit authorization.
-- Do not use destructive Git commands, silently install dependencies, or run unrelated formatting, code generation, or migrations.
-
-### Git Delivery
-
-- Task Brief `Git Delivery` accepts only `none`, `commit`, `commit-and-push`, or `auto`; it never supplies a remote, URL, or target branch. Policy constrains delivery but never replaces current-task authorization. Enter auto delivery decision only after the repair, tests, required checks, independent review, and required documentation pass.
-- A BugResolver repair loop must enter `DELIVERY` after `DOCUMENT`. It preserves an explicit delivery choice; when omitted, pre-delivery work uses `none` to prevent early writes, then creates one `Commit Delivery Confirmation` after all gates pass and proposes `commit` as the recommended default pending confirmation. A recommendation is not authorization. Record explicit `none`; require an explicit `commit-and-push`/`auto` choice; delegate delivery to `EmbeddedDeveloper` with a separate Task Brief.
-- Jira ID is always user-supplied and never inferred. Generate every other commit field from the project manifest, confirmed root cause, actual diff, test/build evidence, independent review, and documentation. Show one complete preview and ask only for Jira plus confirmation/corrections; ask for Project additionally only if it remains `auto` and cannot be resolved uniquely. Without confirmation return `BLOCKED` with Git unchanged.
-- Use AI=`Y` with one truthful primary scenario/detail when AI materially participated in generation, inspection, refactoring, tests, or documentation. Only when AI did not participate at all, use exactly `AI-Tool-Used: N`, `AI-Tool-Scenario: /`, and `AI-Tool-Detail: /`.
-- The Git Delivery handoff has already switched the conversation to `EmbeddedDeveloper`. After the preview, emit `CONFIRM_COMMIT` and request confirmation or `adjust changes: <request>` in the current input. Every adjustment invalidates old confirmation and affected gates. Auto additionally shows `Commit Content Confirmation: PENDING` and requires `confirm automatic commit content` with the current fingerprint; selecting auto or clicking a button is not confirmation. On final confirmation, the current Developer executes directly and never delegates to itself. `commit-and-push` waits for separate push confirmation after commit; auto only omits that post-commit push confirmation.
-- `EmbeddedDeveloper` validates the repository commit template with `project_policy.py message` and performs read-only `git-plan` preflight. `automation` gates only `auto`; user-confirmed `commit`/`commit-and-push` ignore disabled automation switches. Detect commit content through `DETECT_COMMIT_SCOPE` from `Task Change Baseline`, the task-change ledger, and the current actual diff, never through YAML `allowed_paths`. Show per-file state, added/deleted counts, summary, excluded paths, and fingerprint in `Commit Content`; after denied-path and check validation, stage only finally confirmed content.
-- `Git Delivery: auto` uses a message file outside the repository and runs `git-plan --operation auto --delivery auto --expected-content-fingerprint <confirmed>`. Missing or stale confirmation returns `CONFIRM_COMMIT_CONTENT` with no Git write. Only `content_confirmation.status: CONFIRMED` together with `AUTO_COMMIT_AND_PUSH` may stage and commit; before push, lock the single new commit with the first push fingerprint and `--expected-commit`. Keep the local commit if push fails and emit `MANUAL_PUSH`.
-- Resolve the current branch, remote, URL, and target ref only from this project's local `.git` config, then repeat preflight with the fingerprint immediately before push. Never use `push -u`, force, custom refspecs, remote deletion, or `.git/config` mutation.
-- Every user-facing result contains exactly one dynamic structured `## Next Action` with Current State, Action, Owner, UI Route, Dispatch Target, Required Input, Instruction, and On Success. Role transitions use `NEXT_ACTION_BUTTON + HANDOFF:<exact base-button label>`; input/confirmation uses `CURRENT_INPUT + NONE` with a copy-ready Instruction; external/terminal states use `EXTERNAL + NONE`/`NONE + NONE`. Business-agent base buttons remain `send:false` manual fallbacks and the final `send:true` unified button enters the hidden Router; the Router retains five ordered `send:false` return buttons so its footer is never empty. No fallback-button click replaces input or commit/push confirmation.
-- Close an issue only after repair, verification, independent review, required documentation, and selected Git delivery are handled. After manual delivery, use the `问题已解决 / Close Issue` handoff back to BugResolver; after the closure report, clear issue-level state and enter a fresh issue INTAKE without inheriting the old Jira, root cause, scope, or Git authorization.
-
-### Evidence and Completion
-
-- Use the shared contract's `Task Brief` for every delegated task and the common Agent Report for every result.
-- Command evidence includes the exact command, exit code, and relevant output. Mark unexecuted checks as `NOT_RUN` and explain why.
-- Separate pre-existing baseline failures from regressions introduced by the change. Never present missing tools, unexecuted tests, or heuristic checks as passing.
-- Describe model-based MISRA work as risk screening only. A compliance claim requires a matching standard edition, deviation configuration, and tool report.
-- Cite hardware facts from controlled local documents or official/vendor sources, recording the device, document number, revision, and page or URL.
-
-### Five-Agent Collaboration
-
-- `Orchestrator` is the default general-delivery entry point; it does not edit files or run commands, and bug requests transition to BugResolver through a manual handoff or dedicated prompt.
-- `BugResolver` exclusively orchestrates bug diagnosis and resolution. It may run read-only diagnostic commands and invoke development, quality-assessment, and documentation roles, but it does not edit files directly; the two managers never auto-invoke each other.
-- `EmbeddedDeveloper` is the sole routine functional-code writer and supplies build and test evidence.
-- `QualityReviewer` performs independent quality assessment only; it neither diagnoses bug root causes nor modifies functional code.
-- `DocKeeper` maintains the README, `docs/`, the project profile, explicitly authorized project rules under `.project/`, and non-behavioral comments without changing functional behavior.
-- Automatic subagent delegation and user-selected handoffs are different mechanisms. A handoff does not mean a task was automatically submitted or executed.
-
-### Bilingual Collaboration
-
-- When the user does not specify a language, chat output may use bilingual labels. Follow an explicit single-language request.
-- First-party team Markdown uses two complete sections: `## 中文 / Chinese` first, followed by `## English`.
-- Keep file names, paths, identifiers, commands, register names, logs, and raw compiler output unchanged.
+- Report pre-existing baseline failures separately from failures introduced by the change. Missing tools, unrun tests, and heuristic checks are never passes.
+- Model-based MISRA results are risk screening only. A compliance conclusion requires the matching standard, deviation configuration, and tool report.
+- First-party team Markdown uses complete Chinese and English sections. Preserve paths, identifiers, commands, registers, logs, and compiler output verbatim.

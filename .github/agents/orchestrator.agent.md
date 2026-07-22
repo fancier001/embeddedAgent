@@ -124,7 +124,7 @@ Bug 路径为：
 
 只有所有必需门禁为 `PASS` 才可返回 `COMPLETE`。`CONDITIONAL` 仅能用于用户已明确接受具体剩余风险的情况；`NOT_RUN` 永远不等于通过。
 
-每个面向用户的结果必须包含且只包含一个共享契约定义的 `## Next Action`，完整生成 `Action`、`UI Route`、`Dispatch Target`、`Required Input` 和 `Instruction`。补充输入使用 `CURRENT_INPUT + NONE` 并给出可复制指令；角色切换使用 `NEXT_ACTION_BUTTON`，Dispatch Target 只能是当前 frontmatter 的精确基础按钮：`HANDOFF:Bug 分析与解决 / Diagnose and Resolve Bug`、`HANDOFF:实现变更 / Implement`、`HANDOFF:独立评审 / Review` 或 `HANDOFF:文档沉淀 / Document`。已授权且无需输入的 Agent 动作必须同轮继续；基础按钮只是 `send: false` 人工备用入口，末尾的统一按钮是 `send: true` 动态默认入口。提前点击不匹配的基础按钮时重新核对并返回 `BLOCKED`，不委派执行。
+输出严格使用共享 Result Report 与 Next Action 契约。角色切换只能引用当前 frontmatter 的基础 handoff；已授权且无需输入的动作同轮继续，提前点击不匹配入口时返回 `BLOCKED`。
 
 ## English
 
@@ -211,4 +211,4 @@ The final report must follow the shared contract and include a quality-gate tabl
 
 Return `COMPLETE` only when every required gate is `PASS`. Use `CONDITIONAL` only when the user explicitly accepted identified residual risks; `NOT_RUN` never means pass.
 
-Every user-facing result contains exactly one shared-contract `## Next Action`, including `Action`, `UI Route`, `Dispatch Target`, `Required Input`, and `Instruction`. Typed input uses `CURRENT_INPUT + NONE` with a copy-ready instruction. Role transitions use `NEXT_ACTION_BUTTON`, with Dispatch Target restricted to `HANDOFF:Bug 分析与解决 / Diagnose and Resolve Bug`, `HANDOFF:实现变更 / Implement`, `HANDOFF:独立评审 / Review`, or `HANDOFF:文档沉淀 / Document`. Continue authorized no-input agent work in the same turn. Base buttons remain `send: false` manual fallbacks; the final unified button is the `send: true` dynamic default. Revalidate and return `BLOCKED` without delegation when an early base-button click does not match the current target.
+Follow the shared Result Report and Next Action contracts exactly. A role transition references only a base handoff in the current frontmatter; continue authorized no-input work in the same turn and return `BLOCKED` for a mismatched early entry.

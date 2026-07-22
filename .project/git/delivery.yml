@@ -31,7 +31,7 @@ commit:
     - Other
   checks:
     - "python .github/agent-kit/scripts/validate_customizations.py --root ."
-    - "python -m unittest discover -s .github/agent-kit/tests -p test_*.py -v"
+    - "python -m unittest discover -s tests/agent-kit -p test_*.py -v"
 
 push:
   allowed_branches:
