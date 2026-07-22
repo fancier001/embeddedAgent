@@ -147,6 +147,8 @@ Task Brief 规则：
 
 每个 `## Next Action` 必须包含当前权威 `Chat Language`。Router 和目标 Agent 必须原样传递该值；由按钮或自动 prompt 触发的路由不得重算语言。用户亲自输入新消息后，当前业务 Agent 必须先更新 `Chat Language`，再生成任何聊天内容或下一动作。
 
+Next Action 必须经过独立的语言渲染门禁，不得从契约中复制另一语言的示例。先计算语义字段，再根据 `Chat Language` 一次性渲染 `Required Input`、`Reply Template`、`Instruction` 和 `On Success`。当语言为 `en` 或 `en-*` 时，从 `## Next Action` 到 `On Success` 的所有 Agent 生成字段值必须只使用英文词表与 ASCII 标点，不得包含 Han、CJK 标点或全角字符；发送前必须扫描整个块，任一字段失败就丢弃并重新渲染整块。英文 `START_NEW_ISSUE` 只允许 `analysis only` 和 `analyze and fix`，不得夹带 `仅分析`、`分析并修复`、`必填`、中文占位符或全角分号。
+
 五个业务 Agent 的底部按钮分为两类：原有基础按钮是始终可见、`send: false` 的静态人工角色入口；末尾的 `执行下一步 / Next Action` 是 `send: true` 的动态默认入口，固定切换到隐藏的 `NextActionRouter`。基础按钮不代表当前推荐动作；用户应优先遵循唯一 Next Action。提前点击与 `Dispatch Target` 不匹配的基础按钮时，目标 Agent 必须重新核对状态并返回 `BLOCKED`，不得编辑、commit 或 push。
 
 切换到 Router 后，底部必须继续显示五个固定顺序的静态备用返回按钮：`返回编排 / Return to Orchestrator`、`返回问题解决 / Return to Bug Resolver`、`返回实施 / Return to Embedded Developer`、`返回评审 / Return to Quality Reviewer`、`返回文档 / Return to Doc Keeper`。这些 Router fallback handoffs 全部使用 `send: false`，仅用于避免活动 Agent 切换后底部为空并允许人工恢复；它们不是动态 Next Action，也不补充输入或确认 commit、push、外部命令。用户手工发送后，目标 Agent 必须重新核对最新唯一 Next Action 和门禁，不匹配时返回 `BLOCKED`。
@@ -169,7 +171,7 @@ Task Brief 规则：
 - Required Input: `Git Delivery`（必填，固定为 `commit`）；`Jira ID`（必填，格式如 `QDC017-1111`）；`Decision`（必填，固定为 `确认修改并提交`，或改为 `调整修改: <要求>`）
 - Reply Template: `Git Delivery: commit；Jira ID: <PROJECT-123>；Decision: 确认修改并提交`
 - Instruction: 直接在当前输入框复制、填写并发送 Reply Template；不要点击“执行下一步”代替确认
-- On Success: PREFLIGHT → STAGE → COMMIT → REPORT
+- On Success: PREFLIGHT -> STAGE -> COMMIT -> REPORT
 ```
 
 例如需要输入新问题时输出：
@@ -188,6 +190,8 @@ Task Brief 规则：
 - Instruction: 直接在当前输入框复制、填写并发送 Reply Template；不要点击“执行下一步”
 - On Success: GUIDE_SYMPTOMS → SCOPE
 ```
+
+对于 `Chat Language: zh-CN`，上述 `START_NEW_ISSUE` 模板为强制映射：`Current State` 必须是 `INTAKE`，不得仍写 `CLOSE`；`Required Input`、`Reply Template` 和 `Instruction` 使用中文模板。
 
 例如无需输入、需要人工独立评审时输出：
 
@@ -549,6 +553,8 @@ Every user-facing result contains exactly one `## Next Action`. Generate it dyna
 
 Every `## Next Action` includes the authoritative current `Chat Language`. The Router and target agent preserve it unchanged, and routing triggered by a button or generated prompt never recalculates it. After the user authors a new message, the active business agent updates `Chat Language` before producing any chat content or next action.
 
+Next Action has a separate language-rendering gate: compute the semantic fields first, then render `Required Input`, `Reply Template`, `Instruction`, and `On Success` exactly once from `Chat Language`; never copy an example written for another language. For `en` or `en-*`, every agent-generated value from `## Next Action` through `On Success` uses English vocabulary and ASCII punctuation only, with no Han, CJK punctuation, or fullwidth characters. Scan the entire block before sending; if any field fails, discard and rerender the whole block. An English `START_NEW_ISSUE` accepts only `analysis only` and `analyze and fix`; it never includes Chinese allowed values, Chinese placeholders, Chinese required/optional labels, or fullwidth semicolons.
+
 The five business agents expose two button classes: existing base buttons are always-visible static manual role entries with `send: false`; the final `执行下一步 / Next Action` button is the dynamic default entry with `send: true` and a fixed transition to the hidden `NextActionRouter`. Base buttons do not indicate the recommended current action. If a user clicks a base button that does not match `Dispatch Target`, the target agent revalidates state and returns `BLOCKED` without editing, committing, or pushing.
 
 After switching to the Router, the footer continues to expose five static fallback handoffs in this fixed order: `返回编排 / Return to Orchestrator`, `返回问题解决 / Return to Bug Resolver`, `返回实施 / Return to Embedded Developer`, `返回评审 / Return to Quality Reviewer`, and `返回文档 / Return to Doc Keeper`. All five use `send: false`; they prevent an empty footer and provide manual recovery only. They are not the dynamic Next Action and supply no input or commit, push, or external-command confirmation. After manual submission, the target agent revalidates the latest unique Next Action and all gates, returning `BLOCKED` on a mismatch.
@@ -571,7 +577,7 @@ For commit confirmation, emit:
 - Required Input: `Git Delivery` (required, exactly `commit`); `Jira ID` (required, format such as `QDC017-1111`); `Decision` (required, exactly `confirm changes and commit`, or `adjust changes: <request>`)
 - Reply Template: `Git Delivery: commit; Jira ID: <PROJECT-123>; Decision: confirm changes and commit`
 - Instruction: Copy, complete, and send the Reply Template in the current input; do not click Next Action as confirmation
-- On Success: PREFLIGHT → STAGE → COMMIT → REPORT
+- On Success: PREFLIGHT -> STAGE -> COMMIT -> REPORT
 ```
 
 For initial issue input, emit:
@@ -588,8 +594,10 @@ For initial issue input, emit:
 - Required Input: `Goal` (required, `analysis only` or `analyze and fix`); `Problem` (required, observed problem); `Expected` (required); `Actual` (required); `Version` (required or explicitly `Unknown`); `Jira` (optional, required only for Git delivery)
 - Reply Template: `Goal: <analysis only|analyze and fix>; Problem: <description>; Expected: <expected>; Actual: <actual>; Version: <version|Unknown>; Jira: <ID|Not provided>`
 - Instruction: Copy, complete, and send the Reply Template in the current input; do not click Next Action
-- On Success: GUIDE_SYMPTOMS → SCOPE
+- On Success: GUIDE_SYMPTOMS -> SCOPE
 ```
+
+For `Chat Language: en-US`, the `START_NEW_ISSUE` values above are mandatory: `Current State` is `INTAKE`, never `CLOSE`; `Required Input` uses only the listed English labels and allowed values, `Reply Template` starts with `Goal: <analysis only|analyze and fix>`, and `Instruction` starts with `Copy, complete, and send the Reply Template`. Do not translate or reuse the Chinese example.
 
 For a manual independent review that needs no input, emit:
 

@@ -1,6 +1,7 @@
 # Embedded Project Copilot Instructions
 
 > RUNTIME CHAT-LANGUAGE PREFLIGHT — HIGHEST OUTPUT PRIORITY: Before emitting the first character of the first response, inspect only the latest user-authored natural-language message. Latin-script natural-language words with no Han natural-language text require `Chat Language: en-US`, even when Jira IDs or other identifiers are present. For `en` or `en-*`, discard and regenerate any draft whose agent-authored text contains a Han-script character. Never answer in Chinese first and apologize afterward.
+> NEXT ACTION LANGUAGE RENDER GATE: After selecting the semantic action, render every generated Next Action field from `Chat Language`. For `en` or `en-*`, use English vocabulary and ASCII punctuation only; reject and rerender the whole block if it contains Han, CJK punctuation, fullwidth characters, Chinese allowed values, or a Chinese reply template.
 
 > 中文：本文档采用固定双语结构。更新中文或英文内容时，必须同步更新另一部分，保持两部分语义一致。
 >
