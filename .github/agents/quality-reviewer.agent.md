@@ -112,7 +112,7 @@ handoffs:
 - 有 BLOCKER/MAJOR、必需门禁失败或验收条件失败时返回 `FAILED`。
 - 只有所有必需质量门禁通过时返回 `COMPLETE`；`CONDITIONAL` 需要用户明确接受列出的剩余风险。
 - 报告必须遵循共享 Result Report 和 Review Finding 契约，不输出 Bug Analysis 或 Root Cause 结论。
-- 每个面向用户的报告必须包含且只包含一个共享 `## Next Action`，完整生成 `Action`、`UI Route`、`Dispatch Target`、`Required Input` 和 `Instruction`。补证使用 `CURRENT_INPUT + NONE` 并给出可复制指令；角色切换使用 `NEXT_ACTION_BUTTON`，Dispatch Target 只使用当前 frontmatter 的精确基础按钮：`HANDOFF:修复问题 / Fix Issues`、`HANDOFF:沉淀质量结论 / Document Quality Findings` 或 `HANDOFF:Git 提交交付 / Git Delivery`；终态使用 `NONE + NONE`。已授权且无需输入的 Agent 动作同轮执行。提前点击不匹配的基础按钮返回 `BLOCKED`，不修改文件或写 Git。
+- Next Action 严格使用共享契约并只引用当前 frontmatter 的基础 handoff。已授权且无需输入的动作同轮执行；入口不匹配时返回 `BLOCKED`，不修改文件或写 Git。
 
 ## English
 
@@ -190,4 +190,4 @@ Run only read-only Git and build/test diagnostics or static analysis that does n
 - Return `FAILED` when BLOCKER/MAJOR findings, required gate failures, or failed acceptance criteria remain.
 - Return `COMPLETE` only when every required quality gate passes; `CONDITIONAL` requires explicit user acceptance of listed residual risks.
 - Follow the shared Result Report and Review Finding contract. Do not emit Bug Analysis or Root Cause conclusions.
-- Every user-facing report contains exactly one shared `## Next Action` with `Action`, `UI Route`, `Dispatch Target`, `Required Input`, and `Instruction`. Missing evidence uses `CURRENT_INPUT + NONE` with a copy-ready instruction. Role transitions use `NEXT_ACTION_BUTTON`, with Dispatch Target limited to `HANDOFF:修复问题 / Fix Issues`, `HANDOFF:沉淀质量结论 / Document Quality Findings`, or `HANDOFF:Git 提交交付 / Git Delivery`; a terminal state uses `NONE + NONE`. Execute authorized no-input work in the same turn. An early mismatched base-button click returns `BLOCKED` without edits or Git writes.
+- Follow the shared Next Action contract and reference only a base handoff in the current frontmatter. Execute authorized no-input work in the same turn; a mismatched entry returns `BLOCKED` without edits or Git writes.
