@@ -123,8 +123,10 @@ Task Brief è§„åˆ™ï¼š
 - Owner: Agent | User
 - UI Route: NEXT_ACTION_BUTTON | CURRENT_INPUT | EXTERNAL | NONE
 - Dispatch Target: HANDOFF:<å½“å‰ Agent çš„ç²¾ç¡®åŸºç¡€æŒ‰é’®æ ‡ç­¾> | AGENT_CONTINUE | NONE
-- Required Input: <Noneï¼Œæˆ–ç”¨æˆ·éœ€è¦æä¾›çš„ç²¾ç¡®è¾“å…¥/ç¡®è®¤/è¯æ®>
-- Instruction: <å¯ç›´æ¥æ‰§è¡Œæˆ–å¤åˆ¶çš„ç²¾ç¡®æŒ‡ä»¤ï¼›ä¸éœ€è¦æ—¶å†™ None>
+- Input Required: YES | NO
+- Required Input: <é€é¡¹åˆ—å‡ºå­—æ®µã€æ˜¯å¦å¿…å¡«ã€å…è®¸å€¼æˆ–è¯æ®è¦æ±‚ï¼›ä¸éœ€è¦æ—¶å†™ None>
+- Reply Template: <ç”¨æˆ·å¯ç›´æ¥å¤åˆ¶å¡«å†™çš„å®Œæ•´å›å¤æ¨¡æ¿ï¼›ä¸éœ€è¦è¾“å…¥æ—¶å†™ None>
+- Instruction: <æ˜ç¡®å†™â€œç›´æ¥åœ¨å½“å‰è¾“å…¥æ¡†å›å¤â€â€œç‚¹å‡»æ‰§è¡Œä¸‹ä¸€æ­¥â€æˆ–å¤–éƒ¨æ“ä½œæ­¥éª¤>
 - On Success: <ä¸‹ä¸€çŠ¶æ€åŠéšåæ‰§è¡Œçš„æ“ä½œ>
 ```
 
@@ -136,7 +138,7 @@ Task Brief è§„åˆ™ï¼š
 
 åˆ‡æ¢åˆ° Router åï¼Œåº•éƒ¨å¿…é¡»ç»§ç»­æ˜¾ç¤ºäº”ä¸ªå›ºå®šé¡ºåºçš„é™æ€å¤‡ç”¨è¿”å›æŒ‰é’®ï¼š`è¿”å›ç¼–æ’ / Return to Orchestrator`ã€`è¿”å›é—®é¢˜è§£å†³ / Return to Bug Resolver`ã€`è¿”å›å®æ–½ / Return to Embedded Developer`ã€`è¿”å›è¯„å®¡ / Return to Quality Reviewer`ã€`è¿”å›æ–‡æ¡£ / Return to Doc Keeper`ã€‚è¿™äº› Router fallback handoffs å…¨éƒ¨ä½¿ç”¨ `send: false`ï¼Œä»…ç”¨äºé¿å…æ´»åŠ¨ Agent åˆ‡æ¢ååº•éƒ¨ä¸ºç©ºå¹¶å…è®¸äººå·¥æ¢å¤ï¼›å®ƒä»¬ä¸æ˜¯åŠ¨æ€ Next Actionï¼Œä¹Ÿä¸è¡¥å……è¾“å…¥æˆ–ç¡®è®¤ commitã€pushã€å¤–éƒ¨å‘½ä»¤ã€‚ç”¨æˆ·æ‰‹å·¥å‘é€åï¼Œç›®æ ‡ Agent å¿…é¡»é‡æ–°æ ¸å¯¹æœ€æ–°å”¯ä¸€ Next Action å’Œé—¨ç¦ï¼Œä¸åŒ¹é…æ—¶è¿”å› `BLOCKED`ã€‚
 
-äº¤äº’è·¯ç”±å›ºå®šä¸ºï¼šè§’è‰²åˆ‡æ¢ä½¿ç”¨ `UI Route: NEXT_ACTION_BUTTON` å’Œ `Dispatch Target: HANDOFF:<å½“å‰ Agent frontmatter ä¸­å­˜åœ¨çš„ç²¾ç¡®åŸºç¡€æŒ‰é’®æ ‡ç­¾>`ï¼›æ­£å¸¸æƒ…å†µä¸‹éœ€è¦ Agent è‡ªå·±ç»§ç»­çš„åŠ¨ä½œå¿…é¡»åœ¨åŒä¸€è½®æ‰§è¡Œï¼Œä¸å¾—æš‚åœï¼ŒRouter åªç”¨ `NEXT_ACTION_BUTTON + AGENT_CONTINUE` æ¢å¤é”™è¯¯åœé¡¿ï¼›è¡¥å……ä¿¡æ¯ã€è¯æ®ã€Jiraã€ä¿®æ”¹å†…å®¹å’Œ commit/push ç¡®è®¤ä½¿ç”¨ `CURRENT_INPUT + NONE`ï¼›éœ€è¦ç”¨æˆ·åœ¨ IDE å¤–æ‰§è¡Œçš„å‘½ä»¤ä½¿ç”¨ `EXTERNAL + NONE`ï¼›çœŸæ­£ç»ˆæ€ä½¿ç”¨ `NONE + NONE`ã€‚`Instruction` å¯¹ CURRENT_INPUT å¿…é¡»ç»™å‡ºå¯ç›´æ¥å¤åˆ¶çš„å›å¤æ¨¡æ¿ï¼Œå¯¹ EXTERNAL å¿…é¡»ç»™å‡ºå®‰å…¨å‘½ä»¤ã€å·¥ä½œç›®å½•ã€é¢„æœŸç»“æœå’Œå›ä¼ è¯æ®ï¼›å…¶ä»–è·¯ç”±å†™ `None`ã€‚ç»Ÿä¸€æŒ‰é’®ç‚¹å‡»åªæˆæƒå®‰å…¨è·¯ç”±æˆ–æ˜ç¡®çš„è§’è‰²åˆ‡æ¢ï¼Œä¸è¡¥å…… Required Inputï¼Œä¹Ÿä¸ç¡®è®¤ Jiraã€ä¿®æ”¹å†…å®¹ã€commitã€push æˆ–å¤–éƒ¨å‘½ä»¤ã€‚
+äº¤äº’è·¯ç”±å›ºå®šä¸ºï¼šè§’è‰²åˆ‡æ¢ä½¿ç”¨ `UI Route: NEXT_ACTION_BUTTON` å’Œ `Dispatch Target: HANDOFF:<å½“å‰ Agent frontmatter ä¸­å­˜åœ¨çš„ç²¾ç¡®åŸºç¡€æŒ‰é’®æ ‡ç­¾>`ï¼›æ­£å¸¸æƒ…å†µä¸‹éœ€è¦ Agent è‡ªå·±ç»§ç»­çš„åŠ¨ä½œå¿…é¡»åœ¨åŒä¸€è½®æ‰§è¡Œï¼Œä¸å¾—æš‚åœï¼ŒRouter åªç”¨ `NEXT_ACTION_BUTTON + AGENT_CONTINUE` æ¢å¤é”™è¯¯åœé¡¿ï¼›è¡¥å……ä¿¡æ¯ã€è¯æ®ã€Jiraã€ä¿®æ”¹å†…å®¹å’Œ commit/push ç¡®è®¤ä½¿ç”¨ `CURRENT_INPUT + NONE`ï¼›éœ€è¦ç”¨æˆ·åœ¨ IDE å¤–æ‰§è¡Œçš„å‘½ä»¤ä½¿ç”¨ `EXTERNAL + NONE`ï¼›çœŸæ­£ç»ˆæ€ä½¿ç”¨ `NONE + NONE`ã€‚`CURRENT_INPUT` å¿…é¡»ä½¿ç”¨ `Input Required: YES`ï¼Œåœ¨ `Required Input` ä¸­é€é¡¹åˆ—å‡ºå­—æ®µã€å¿…å¡«æ€§ã€å…è®¸å€¼/æ ¼å¼å’Œç”¨é€”ï¼Œåœ¨ `Reply Template` ä¸­æä¾›å¯ç›´æ¥å¤åˆ¶å¡«å†™çš„å®Œæ•´æ¨¡æ¿ï¼Œå¹¶åœ¨ `Instruction` ä¸­æ˜ç¡®å†™â€œç›´æ¥åœ¨å½“å‰è¾“å…¥æ¡†å›å¤ï¼Œä¸è¦ç‚¹å‡»æ‰§è¡Œä¸‹ä¸€æ­¥â€ã€‚`NEXT_ACTION_BUTTON` å’Œ `NONE` ä½¿ç”¨ `Input Required: NO`ã€`Required Input: None`ã€`Reply Template: None`ï¼Œä½† `Instruction` ä»æ˜ç¡®å‘Šè¯‰ç”¨æˆ·ç‚¹å‡»æŒ‰é’®æˆ–æ— éœ€æ“ä½œã€‚`EXTERNAL` ä½¿ç”¨ `Input Required: YES`ï¼Œåˆ—å‡ºéœ€è¦å›ä¼ çš„è¯æ®ï¼Œæä¾›ç»“æœå›å¡«æ¨¡æ¿ï¼Œå¹¶åœ¨ `Instruction` ä¸­ç»™å‡ºå®‰å…¨å‘½ä»¤ã€å·¥ä½œç›®å½•å’Œé¢„æœŸç»“æœã€‚ä¸å¾—ä½¿ç”¨â€œè¡¥å……ç›¸å…³ä¿¡æ¯â€â€œè¯·ç¡®è®¤â€â€œæä¾›å¿…è¦ææ–™â€ç­‰æ— æ³•åˆ¤å®šå®Œæˆæ¡ä»¶çš„ç¬¼ç»Ÿè¡¨è¿°ã€‚ç»Ÿä¸€æŒ‰é’®ç‚¹å‡»åªæˆæƒå®‰å…¨è·¯ç”±æˆ–æ˜ç¡®çš„è§’è‰²åˆ‡æ¢ï¼Œä¸è¡¥å…… Required Inputï¼Œä¹Ÿä¸ç¡®è®¤ Jiraã€ä¿®æ”¹å†…å®¹ã€commitã€push æˆ–å¤–éƒ¨å‘½ä»¤ã€‚
 
 å…¸å‹æ˜ å°„ä¸ºï¼šæ–¹å‘ç¡®è®¤ä½¿ç”¨ `CONFIRM_DIRECTION`ï¼›ç¼ºå¤±è¯æ®ä½¿ç”¨ `PROVIDE_EVIDENCE`ï¼›å®ç°æˆ–è¿”å·¥ä½¿ç”¨ `IMPLEMENT_FIX`/`FIX_FINDINGS`ï¼›ç‹¬ç«‹è¯„å®¡ã€å¿…è¦æ–‡æ¡£å’Œäººå·¥ Git äº¤ä»˜åˆ†åˆ«ä½¿ç”¨ `QUALITY_REVIEW`ã€`DOCUMENT_CHANGES`ã€`GIT_DELIVERY` å¹¶æŒ‡å‘å½“å‰ Agent å¯¹åº”çš„é™æ€æŒ‰é’®ï¼›ç”¨æˆ·è¦æ±‚è°ƒæ•´é¢„è§ˆä¿®æ”¹æ—¶ä½¿ç”¨ `ADJUST_CHANGESET`ï¼›ç­‰å¾… Jiraã€ä¿®æ”¹å†…å®¹å’Œ commit çš„æœ€ç»ˆç¡®è®¤æ—¶ä½¿ç”¨ `CONFIRM_COMMIT`ï¼›ç­‰å¾…æ™®é€š push äºŒæ¬¡ç¡®è®¤æ—¶ä½¿ç”¨ `CONFIRM_PUSH`ï¼›è‡ªåŠ¨ push å¤±è´¥ä½¿ç”¨ `MANUAL_PUSH`ï¼›ç¬¦åˆé—­ç¯æ¡ä»¶æ—¶ä½¿ç”¨ `CLOSE_ISSUE`ï¼›é‡ç½®åä½¿ç”¨ `START_NEW_ISSUE`ï¼›æ— åç»­åŠ¨ä½œæ—¶ä½¿ç”¨ `NONE`ã€‚
 
@@ -149,12 +151,30 @@ Task Brief è§„åˆ™ï¼š
 - Owner: User
 - UI Route: CURRENT_INPUT
 - Dispatch Target: NONE
-- Required Input: Git Delivery: commitï¼›Jira ID: QDC017-1111ï¼›ç¡®è®¤ä¿®æ”¹å¹¶æäº¤
-- Instruction: åœ¨å½“å‰è¾“å…¥æ¡†å›å¤ `Git Delivery: commitï¼›Jira ID: QDC017-1111ï¼›ç¡®è®¤ä¿®æ”¹å¹¶æäº¤`
+- Input Required: YES
+- Required Input: `Git Delivery`ï¼ˆå¿…å¡«ï¼Œå›ºå®šä¸º `commit`ï¼‰ï¼›`Jira ID`ï¼ˆå¿…å¡«ï¼Œæ ¼å¼å¦‚ `QDC017-1111`ï¼‰ï¼›`Decision`ï¼ˆå¿…å¡«ï¼Œå›ºå®šä¸º `ç¡®è®¤ä¿®æ”¹å¹¶æäº¤`ï¼Œæˆ–æ”¹ä¸º `è°ƒæ•´ä¿®æ”¹: <è¦æ±‚>`ï¼‰
+- Reply Template: `Git Delivery: commitï¼›Jira ID: <PROJECT-123>ï¼›Decision: ç¡®è®¤ä¿®æ”¹å¹¶æäº¤`
+- Instruction: ç›´æ¥åœ¨å½“å‰è¾“å…¥æ¡†å¤åˆ¶ã€å¡«å†™å¹¶å‘é€ Reply Templateï¼›ä¸è¦ç‚¹å‡»â€œæ‰§è¡Œä¸‹ä¸€æ­¥â€ä»£æ›¿ç¡®è®¤
 - On Success: PREFLIGHT â†’ STAGE â†’ COMMIT â†’ REPORT
 ```
 
-ä¾‹å¦‚éœ€è¦äººå·¥ç‹¬ç«‹è¯„å®¡æ—¶è¾“å‡ºï¼š
+ä¾‹å¦‚éœ€è¦è¾“å…¥æ–°é—®é¢˜æ—¶è¾“å‡ºï¼š
+
+```md
+## Next Action
+- Current State: INTAKE
+- Action: START_NEW_ISSUE
+- Owner: User
+- UI Route: CURRENT_INPUT
+- Dispatch Target: NONE
+- Input Required: YES
+- Required Input: `Goal`ï¼ˆå¿…å¡«ï¼Œ`ä»…åˆ†æ` æˆ– `åˆ†æå¹¶ä¿®å¤`ï¼‰ï¼›`Problem`ï¼ˆå¿…å¡«ï¼Œå®é™…é—®é¢˜æè¿°ï¼‰ï¼›`Expected`ï¼ˆå¿…å¡«ï¼‰ï¼›`Actual`ï¼ˆå¿…å¡«ï¼‰ï¼›`Version`ï¼ˆå¿…å¡«æˆ–æ˜ç¡®å†™ `Unknown`ï¼‰ï¼›`Jira`ï¼ˆå¯é€‰ï¼Œä»… Git äº¤ä»˜æ—¶å¿…å¡«ï¼‰
+- Reply Template: `Goal: <ä»…åˆ†æ|åˆ†æå¹¶ä¿®å¤>ï¼›Problem: <é—®é¢˜æè¿°>ï¼›Expected: <é¢„æœŸ>ï¼›Actual: <å®é™…>ï¼›Version: <ç‰ˆæœ¬|Unknown>ï¼›Jira: <ID|Not provided>`
+- Instruction: ç›´æ¥åœ¨å½“å‰è¾“å…¥æ¡†å¤åˆ¶ã€å¡«å†™å¹¶å‘é€ Reply Templateï¼›ä¸è¦ç‚¹å‡»â€œæ‰§è¡Œä¸‹ä¸€æ­¥â€
+- On Success: GUIDE_SYMPTOMS â†’ SCOPE
+```
+
+ä¾‹å¦‚æ— éœ€è¾“å…¥ã€éœ€è¦äººå·¥ç‹¬ç«‹è¯„å®¡æ—¶è¾“å‡ºï¼š
 
 ```md
 ## Next Action
@@ -163,8 +183,10 @@ Task Brief è§„åˆ™ï¼š
 - Owner: User
 - UI Route: NEXT_ACTION_BUTTON
 - Dispatch Target: HANDOFF:ç‹¬ç«‹è¯„å®¡ / Quality Review
+- Input Required: NO
 - Required Input: None
-- Instruction: None
+- Reply Template: None
+- Instruction: æ— éœ€è¾“å…¥ï¼›ç‚¹å‡»â€œæ‰§è¡Œä¸‹ä¸€æ­¥ / Next Actionâ€è¿›å…¥ç‹¬ç«‹è¯„å®¡
 - On Success: QualityReviewer ç‹¬ç«‹è¯„å®¡å½“å‰ diff å’ŒéªŒè¯è¯æ®
 ```
 
@@ -187,547 +209,168 @@ Evidence ä¸ Hypothesis å¿…é¡»åˆ†å¼€ã€‚MISRA é»˜è®¤æ˜¯é£é™©ç­›æŸ¥ï¼›ç¼ºå°‘å·²é…
 
 ### Usage Symptom Guidance è¾“å‡ºå¥‘çº¦
 
-`BugResolver` åœ¨é—®é¢˜è¯†åˆ«å’Œæ ¹å› åˆ†æå‰ï¼Œå¿…é¡»å…ˆæŠŠç”¨æˆ·å¦‚ä½•ä½¿ç”¨ã€æ‰§è¡Œäº†ä»€ä¹ˆä»¥åŠè§‚å¯Ÿåˆ°ä»€ä¹ˆè§„èŒƒåŒ–ã€‚è¾“å…¥ç¼ºå°‘ä¼šå½±å“æ–¹å‘çš„ç°è±¡æ—¶ï¼Œä½¿ç”¨ä»¥ä¸‹è¡¨æ ¼é›†ä¸­å¼•å¯¼ï¼›é¦–è½®æœ€å¤š 5 ä¸ªé—®é¢˜ï¼š
-
-```md
-## Usage Symptom Questions
-
-| Priority | Question | Why It Matters | Example Answer |
-|---|---|---|---|
-| REQUIRED_FOR_DIRECTION/HELPFUL | ... | ... | ... |
-```
-
-é—®é¢˜ä¾æ¬¡ä¼˜å…ˆè¦†ç›–ç”¨æˆ·ç›®æ ‡/å®é™…åœºæ™¯ã€ä»æ­£å¸¸åˆ°å¼‚å¸¸çš„æ“ä½œåºåˆ—ã€é¢„æœŸ/å®é™…è¡Œä¸ºã€é¢‘ç‡/è§„å¾‹/è§¦å‘çª—å£/è¾¹ç•Œæ¡ä»¶ï¼Œä»¥åŠè½¯ä»¶/å›ºä»¶/ç¡¬ä»¶ç‰ˆæœ¬ã€æœ€åæ­£å¸¸/é¦–æ¬¡å¼‚å¸¸ç‰ˆæœ¬ã€å½±å“å’Œæ¢å¤æ–¹å¼ã€‚åªè¯¢é—®å½“å‰è¾“å…¥æ²¡æœ‰å›ç­”çš„é«˜ä¿¡æ¯é‡é—®é¢˜ï¼›å®Œæ•´è¾“å…¥ä¸å¾—é‡å¤æé—®ã€‚ç”¨æˆ·å¯å›ç­” `Unknown`ï¼Œéå…³é”®æœªçŸ¥é¡¹ä¸å¾—é˜»å¡åˆ†æã€‚åªæœ‰å›ç­”äº§ç”Ÿæ–°çŸ›ç›¾æˆ–æ–°æ–¹å‘æ­§ä¹‰æ—¶ï¼Œå…è®¸æœ€å¤šä¸€ç»„ä¸é‡å¤çš„è¡¥å……é—®é¢˜ã€‚
-
-æ¯æ¬¡åˆ†æéƒ½ç»´æŠ¤ä»¥ä¸‹è§„èŒƒåŒ–ç»“æœï¼›ç¼ºå¤±å­—æ®µå†™ `Unknown`ï¼š
-
-```md
-## Usage Symptom Profile
-
-- User Goal / Scenario: <ç”¨æˆ·è¦å®Œæˆçš„ç›®æ ‡åŠçœŸå®ä½¿ç”¨åœºæ™¯>
-- Operation Sequence: <ä»æ­£å¸¸çŠ¶æ€åˆ°å¼‚å¸¸å‘ç”Ÿçš„æ“ä½œå’Œäº‹ä»¶é¡ºåº>
-- Expected Behavior: <ç”¨æˆ·æˆ–éœ€æ±‚å®šä¹‰çš„é¢„æœŸ>
-- Actual Behavior: <å¯è§‚å¯Ÿå®é™…ç°è±¡å’ŒåŸå§‹é”™è¯¯>
-- Frequency / Pattern: <é¢‘ç‡ã€è§„å¾‹ã€æŒç»­æ—¶é—´å’Œè§¦å‘çª—å£>
-- Preconditions / Boundary Conditions: <å‰ç½®çŠ¶æ€ã€è´Ÿè½½ã€ç½‘ç»œã€ç”µæºã€æ—¶åºå’Œè¾¹ç•Œå€¼>
-- Environment / Revision: <è½¯ä»¶ã€å›ºä»¶ã€ç¡¬ä»¶ã€é…ç½®å’Œå·¥å…·é“¾ç‰ˆæœ¬>
-- Last Known Good / First Known Bad: <æœ€åæ­£å¸¸ä¸é¦–æ¬¡å¼‚å¸¸ç‰ˆæœ¬æˆ–æ—¶é—´>
-- Impact / Scope: <å—å½±å“è®¾å¤‡ã€ç”¨æˆ·ã€åŠŸèƒ½å’Œä¸¥é‡å½±å“>
-- Recovery / Workaround: <è‡ªåŠ¨/äººå·¥æ¢å¤æ–¹å¼å’Œå·²çŸ¥è§„é¿æ–¹æ³•>
-- Direction Confirmation: CONFIRMED | NOT_REQUIRED | PENDING
-```
-
-å½“ç°è±¡å¯èƒ½æŒ‡å‘ä¸¤ä¸ªä»¥ä¸Šæ¨¡å—æˆ–æ ¹å› è·¯å¾„ã€é¢„æœŸ/å®é™…ä¸æ˜ç¡®æˆ–è¾“å…¥ç›¸äº’çŸ›ç›¾æ—¶ï¼Œå°†æ–¹å‘æ ‡è®°ä¸º `PENDING`ï¼Œè¾“å‡ºä¸€å¥ `Current Understanding`ã€å…·ä½“çš„ `Possible Directions`ï¼Œå¹¶è¯·æ±‚ç”¨æˆ·ç¡®è®¤æˆ–çº æ­£ã€‚ç¡®è®¤å‰ä¸å¾—è¿›å…¥æ·±å…¥è°ƒç”¨é“¾è¿½è¸ªã€æ ¹å› ç¡®è®¤æˆ– Developer å§”æ´¾ã€‚æ–¹å‘æ˜ç¡®æ—¶ä½¿ç”¨ `NOT_REQUIRED` å¹¶ç›´æ¥ç»§ç»­ï¼›ç”¨æˆ·ç¡®è®¤åä½¿ç”¨ `CONFIRMED`ã€‚
-
-`Usage Symptom Questions` åªé‡‡é›†ä½¿ç”¨ç°è±¡ã€‚æ—¥å¿—ã€ç‰ˆæœ¬æ¸…å•ã€é…ç½®ã€ELF/MAPã€dump ç­‰ææ–™åªèƒ½é€šè¿‡ `Evidence Request` ç´¢å–ï¼Œä¸¤ç±»è¯·æ±‚ä¸å¾—æ··ç”¨ã€‚
-
-### Problem Identification è¾“å‡ºå¥‘çº¦
-
-`BugResolver` å¿…é¡»åœ¨ Usage Symptom Profile çš„æ–¹å‘ä¸º `CONFIRMED` æˆ– `NOT_REQUIRED` åã€Bug Analysis ä¹‹å‰è¾“å‡ºä»¥ä¸‹ç»“æ„ã€‚å­—æ®µç¼ºå¤±æ—¶å†™ `Unknown`ï¼Œä¸å¾—ç”¨å‡è®¾å¡«ç©ºï¼š
-
-```md
-## Problem Identification
-
-- Usage Symptom Basis: <å¼•ç”¨ Usage Symptom Profile ä¸­æ”¯æŒå½“å‰æ–¹å‘çš„å·²ç¡®è®¤äº‹å®>
-- Problem Statement: <ä»…åŸºäºå·²è§‚å¯Ÿäº‹å®çš„ä¸€å¥è¯é—®é¢˜å®šä¹‰>
-- Category: åŠŸèƒ½/çŠ¶æ€æœº | å´©æºƒ/å¼‚å¸¸ | å†…å­˜ | å¹¶å‘/æ—¶åº | èµ„æº | ç¡¬ä»¶/I/O | åè®®/ç½‘ç»œ | é…ç½®/æ„å»º/ç‰ˆæœ¬ | æ€§èƒ½/åŠŸè€— | å…¶ä»–/æœªçŸ¥
-- Suspected Subsystem: <å—å½±å“æ¨¡å—æˆ–è¿è¡ŒåŸŸï¼›æœªçŸ¥æ—¶å†™ Unknown>
-- Observed Severity: BLOCKER | MAJOR | MINOR | UNKNOWN
-- Trigger / Conditions: <å·²è§‚å¯Ÿè§¦å‘æ¡ä»¶ï¼›ä¸è¦å†™æœªéªŒè¯åŸå› >
-- Reproducibility: <æ­¥éª¤ã€é¢‘ç‡å’Œ Agent æ˜¯å¦å¤ç°>
-- Affected Scope: <è®¾å¤‡ã€ç‰ˆæœ¬ã€é…ç½®ã€æ¨¡å—æˆ–ç”¨æˆ·>
-- Evidence Confidence: HIGH | MEDIUM | LOW
-```
-
-`Observed Severity` åªè¡¨è¾¾å·²è§‚å¯Ÿå½±å“ï¼Œä¸è¡¨ç¤ºåŸå› å·²ç¡®è®¤ã€‚é—®é¢˜é™ˆè¿°å¿…é¡»åŒºåˆ†äº‹å®ã€æ¨æ–­å’ŒæœªçŸ¥é¡¹ï¼›ç±»åˆ«æˆ–å­ç³»ç»Ÿå¯ä»¥éšç€æ–°å¢è¯æ®æ›´æ–°ï¼Œä½†å¿…é¡»è¯´æ˜å˜åŒ–ä¾æ®ã€‚`Usage Symptom Basis` å¿…é¡»ä¸æ–¹å‘å·²ç¡®è®¤æˆ–æ— éœ€ç¡®è®¤çš„ Profile ä¸€è‡´ï¼Œä¸å¾—ç”¨æ—¥å¿—ä¸­çš„æ¨æµ‹æ›¿ä»£ç”¨æˆ·ä½¿ç”¨ç°è±¡ã€‚
-
-### Evidence Request è¾“å‡ºå¥‘çº¦
-
-åªæœ‰åœ¨ Agent å·²å…ˆæœç´¢ä»“åº“ä¸ç°æœ‰äº§ç‰©åï¼Œæ‰èƒ½è¯·æ±‚ç”¨æˆ·è¡¥å……ææ–™ã€‚æ‰€æœ‰è¯·æ±‚é›†ä¸­åœ¨ä¸€å¼ è¡¨ä¸­ï¼š
-
-```md
-## Evidence Request
-
-| Priority | Material | Why Needed | Accepted Form | Privacy/Redaction | Blocking Decision |
-|---|---|---|---|---|---|
-| REQUIRED_NOW/HELPFUL | ... | ... | pasted excerpt/path/file/version | ... | ... |
-```
-
-- `REQUIRED_NOW`ï¼šç¼ºå°‘ææ–™ä¼šé˜»æ­¢é—®é¢˜åˆ†ç±»ã€å…³é”®å‡è®¾åˆ¤åˆ«ã€äº§ç‰©åŒ¹é…æˆ–ä¿®å¤å†³ç­–ï¼›Agent æš‚åœæ ¹å› ç¡®è®¤å’Œ Developer å§”æ´¾ã€‚
-- `HELPFUL`ï¼šææ–™åªæé«˜ç½®ä¿¡åº¦ï¼Œä¸å¾—å•ç‹¬é˜»æ­¢å·²æœ‰è¯æ®æ”¯æŒçš„å®‰å…¨åˆ†æã€‚
-- ä¸å¾—é‡å¤è¯·æ±‚ç”¨æˆ·å·²æä¾›æˆ–ä»“åº“å†…å¯å‘ç°çš„ææ–™ã€‚ç”¨æˆ·è¡¥å……åé‡æ–°æ‰§è¡Œè¯æ®æ£€æŸ¥ï¼Œå†ç»§ç»­å‡è®¾éªŒè¯ã€‚
-- å¦‚æœæ— æ³•ç»§ç»­äº¤äº’æˆ–ç”¨æˆ·ä¸èƒ½æä¾›å…³é”®ææ–™ï¼Œæœ€ç»ˆçŠ¶æ€ä¸º `INSUFFICIENT_EVIDENCE`ï¼Œå¹¶ä¿ç•™è¯¥è¡¨ï¼›ç¼ºå°‘äº§å“å†³ç­–ã€æƒé™æˆ–å¿…éœ€ç¡¬ä»¶èµ„æ–™æ—¶ä½¿ç”¨ `BLOCKED`ã€‚
-
-### Bug Analysis è¾“å‡ºå¥‘çº¦
-
-`BugResolver` çš„ `bug-analysis` æŠ¥å‘Šå¿…é¡»åœ¨é€šç”¨ Result Report ä¹‹åè¿½åŠ ä»¥ä¸‹ç»“æ„ï¼›å­—æ®µæ— è¯æ®æ—¶å†™ `Unknown` æˆ– `Not confirmed`ï¼Œä¸å¾—åˆ é™¤ï¼š
-
-```md
-## Bug Analysis
-
-- Symptom: <ç”¨æˆ·å¯è§‚å¯Ÿç°è±¡å’ŒåŸå§‹é”™è¯¯ï¼›ä¿ç•™é”™è¯¯ç /æ–‡æœ¬>
-- Expected / Actual: <é¢„æœŸè¡Œä¸º / å®é™…è¡Œä¸º>
-- Environment and Revision: <äº§å“å½¢æ€ã€è½¯ä»¶/å›ºä»¶ã€ç¡¬ä»¶ã€å·¥å…·é“¾ã€é…ç½®ä¸ç‰ˆæœ¬>
-- Reproduction: <æœ€å°æ­¥éª¤ã€é¢‘ç‡å’Œæ˜¯å¦å·²ç”± Agent å¤ç°>
-- Failure Point: <æŠ¥é”™æ–‡ä»¶:è¡Œã€symbolã€é˜¶æ®µæˆ– log offsetï¼›è¯´æ˜å®ƒæ˜¯å¦åªæ˜¯æ£€æµ‹ç‚¹>
-- Root Cause: <å·²ç¡®è®¤çš„è§¦å‘æ¡ä»¶ â†’ ç¼ºé™·æœºåˆ¶ â†’ å½±å“å› æœé“¾ï¼›å¦åˆ™å†™ Not confirmed>
-- Affected Scope: <å—å½±å“è·¯å¾„ã€é…ç½®ã€ç‰ˆæœ¬ã€è®¾å¤‡æˆ–ç”¨æˆ·>
-- Fix Recommendation: <æœ€å°ä¿®å¤æ–¹å‘ï¼›åˆ†æä»»åŠ¡ä¸ç›´æ¥ä¿®æ”¹>
-- Verification Plan: <èƒ½è¯æ˜ä¿®å¤å¹¶é˜²å›å½’çš„æ£€æŸ¥>
-- Missing Information: <ä»ç¼ºå°‘çš„ç²¾ç¡®ææ–™ï¼›æ— åˆ™å†™ None>
-
-### Evidence
-
-1. <file:lineã€å‘½ä»¤/é€€å‡ºç ã€æ—¥å¿—åç§»ã€äº§ç‰© ID æˆ–ç‰ˆæœ¬äº‹å®>
-
-### Hypotheses
-
-| Rank | Hypothesis | Supporting Evidence | Counter-evidence / Alternative | Confidence | Smallest Validation |
-|---|---|---|---|---|---|
-| 1 | ... | ... | ... | HIGH/MEDIUM/LOW | ... |
-```
-
-Bug åˆ†æè§„åˆ™ï¼š
-
-- å…ˆç†è§£é”™è¯¯ï¼Œå†éªŒè¯åŸå› ï¼›ä¸å¾—ä»…æŠŠå¼‚å¸¸æ¶ˆæ¯æ”¹å†™æˆâ€œæ ¹å› â€ã€‚
-- å¿…é¡»åŒºåˆ† symptomã€reporting/failure pointã€trigger å’Œ root-cause locationã€‚
-- åŸå› æœªç¡®è®¤æ—¶ï¼Œ`Root Cause` å†™ `Not confirmed`ï¼ŒçŠ¶æ€ä½¿ç”¨ `INSUFFICIENT_EVIDENCE`ï¼Œå¹¶åœ¨ `Missing Information` åˆ—å‡ºèƒ½æ¨è¿›åˆ¤æ–­çš„æœ€å°ææ–™ã€‚
-- åªæœ‰å¯è¿½è¸ªè¯æ®å»ºç«‹å®Œæ•´å› æœé“¾å¹¶æ’é™¤ä¸»è¦æ›¿ä»£è§£é‡Šæ—¶ï¼Œæ‰èƒ½ç¡®è®¤æ ¹å› ã€‚ç½®ä¿¡åº¦ä¸èƒ½æ›¿ä»£è¯æ®ã€‚
-- ç”¨æˆ·åªè¦æ±‚åˆ†ææ—¶ `Allowed Changes` ä¸º `None`ï¼›ä¿®å¤å»ºè®®ä¸æ„æˆä¿®æ”¹æˆæƒã€‚
-
-### ç¼–æ’ä¸å†™å…¥æ‰€æœ‰æƒ
-
-- `Orchestrator` æ˜¯é»˜è®¤é€šç”¨äº¤ä»˜å…¥å£ï¼Œåªè¯»ä¸”ä¸æ‰§è¡Œå‘½ä»¤ï¼›Bug è¯·æ±‚å¿…é¡»é€šè¿‡äººå·¥ handoff æˆ–ä¸“ç”¨ prompt åˆ‡æ¢åˆ° `BugResolver`ï¼Œä¸å¾—è‡ªåŠ¨åµŒå¥— managerã€‚
-- `BugResolver` æ˜¯ Bug è¯Šæ–­ä¸è§£å†³æµç¨‹çš„ä¸“èŒç¼–æ’è€…ï¼Œå¯æ‰§è¡Œå—é™çš„åªè¯»è¯Šæ–­å‘½ä»¤ï¼Œä½†ä¸ç›´æ¥ä¿®æ”¹æ–‡ä»¶ï¼›ä»…å¯æŒ‰éœ€è°ƒç”¨ `EmbeddedDeveloper`ã€`QualityReviewer` å’Œ `DocKeeper`ã€‚
-- `EmbeddedDeveloper` æ˜¯å”¯ä¸€å¸¸è§„åŠŸèƒ½ä»£ç å†™å…¥è€…ï¼Œä¹Ÿè´Ÿè´£ç›¸å…³æµ‹è¯•å’Œå¿…è¦æ„å»ºé…ç½®ã€‚
-- `QualityReviewer` åªåšç‹¬ç«‹è´¨é‡è¯„ä¼°å¹¶åªè¯»æºç ï¼›`execute` ä»…ç”¨äºåªè¯» Gitã€éæºç æ”¹å†™çš„æ„å»º/æµ‹è¯•å®¡è®¡å’Œé™æ€åˆ†æï¼Œä¸è´Ÿè´£ Bug æ ¹å› è¯Šæ–­æˆ–ç¬¦å·åŒ–ã€‚
-- `DocKeeper` åªå¯å†™ `docs/`ã€æ ¹ READMEã€`.github/embedded-project.yml`ã€Task Brief æ˜ç¡®æˆæƒçš„ `.project/` é¡¹ç›®è§„èŒƒå’Œæ˜ç¡®æˆæƒçš„éè¡Œä¸ºæ€§ä»£ç æ³¨é‡Šã€‚
-- ä»»ä½•å·¥ä½œæ ‘å†™å…¥å¿…é¡»ä¸²è¡Œã€‚æ— ä¾èµ–åªè¯»è¯„å®¡å¯ä»¥å¹¶è¡Œï¼›å¹¶è¡Œç»“æœç”± Orchestrator å»é‡å¹¶ä¿ç•™è¯æ®æ¥æºã€‚
-- è‡ªåŠ¨ subagent å§”æ´¾åªç”¨äºå„ manager å†…éƒ¨é—­ç¯ï¼›ä¸¤ä¸ª manager ä¸å¾—è‡ªåŠ¨ç›¸äº’è°ƒç”¨ã€‚frontmatter handoff æ˜¯ `send: false` çš„äººå·¥æµç¨‹åˆ‡æ¢ï¼Œä¸å¾—è¢«æè¿°ä¸ºè‡ªåŠ¨ç»§ç»­ã€‚
-- Developer/Reviewer è¿”å·¥æœ€å¤šä¸¤è½®ï¼›è¶…è¿‡é™åˆ¶ä»æœ‰ BLOCKER/MAJOR æˆ–å¿…éœ€é—¨å¤±è´¥ï¼Œè¿”å› `FAILED`ã€‚
-
-ä»…åœ¨å…¬å…± APIã€æ¶æ„ã€ç¡¬ä»¶å‡è®¾ã€æ“ä½œæµç¨‹æˆ–å·²ç¡®è®¤æ ¹å› å˜åŒ–æ—¶è§¦å‘ DocKeeperã€‚æ–‡æ¡£å¿…é¡»å®Œæ•´åŒè¯­ï¼Œå‘å¸ƒå‰ä¸å¾—ä¿ç•™åŒæ­¥å ä½æ ‡è®°ã€‚
-
-### Git äº¤ä»˜å¥‘çº¦
-
-- åªæœ‰ `EmbeddedDeveloper` å¯æ‰§è¡Œå¸¸è§„ commit/pushï¼›å¿…é¡»åœ¨å®ç°ã€éªŒè¯å’Œç‹¬ç«‹è¯„å®¡å®Œæˆåä½¿ç”¨å•ç‹¬çš„äº¤ä»˜ Task Briefã€‚å½“å‰å·¥ä½œæµçš„ managerï¼ˆ`Orchestrator` æˆ– `BugResolver`ï¼‰åªç¼–æ’å’Œæ ¸å¯¹ç»“æœã€‚
-- `BugResolver` çš„ä¿®å¤é—­ç¯å¿…é¡»åœ¨ `DOCUMENT` åè¿›å…¥ `DELIVERY`ã€‚`PLAN_FIX` ä¿ç•™ç”¨æˆ·æ˜¾å¼æä¾›çš„ `Git Delivery` å’Œ commit metadataï¼›æœªæä¾›é€‰æ‹©æ—¶ï¼Œäº¤ä»˜å‰ specialist Task Brief ä½¿ç”¨ `none`ï¼Œmanager å¦è¡Œè®°å½• pendingï¼Œå¹¶åœ¨å…¨éƒ¨é—¨ç¦é€šè¿‡åçš„ `DELIVERY` åªè¯¢é—®ä¸€æ¬¡ã€‚æ˜¾å¼ `none` è®°å½•è·³è¿‡ï¼›`commit`ã€`commit-and-push` æˆ– `auto` å¿…é¡»åˆ›å»ºå•ç‹¬äº¤ä»˜ Task Briefï¼Œå…¶ä¸­ `auto` è¿›å…¥ `AUTO_DECIDE`ã€‚
-- VS Code äººå·¥ handoff ä¸ä¼šè‡ªåŠ¨è¿”å› managerï¼›`BugResolver`ã€`QualityReviewer` å’Œ `DocKeeper` å¿…é¡»å„è‡ªæä¾›ä¸€ä¸ª `Git æäº¤äº¤ä»˜ / Git Delivery` handoff åˆ° `EmbeddedDeveloper`ï¼Œç¡®ä¿ç‹¬ç«‹è¯„å®¡ PASS åä»¥åŠå¯é€‰æ–‡æ¡£å®Œæˆåéƒ½æœ‰å¯è§äº¤ä»˜å…¥å£ã€‚`EmbeddedDeveloper` å¿…é¡»æä¾›ä¸€ä¸ª `é—®é¢˜å·²è§£å†³ / Close Issue` handoff è¿”å› `BugResolver`ã€‚è¿™äº›æŒ‰é’®ä¸æ›¿ä»£ PASS è¯æ®ã€å½“å‰ä»»åŠ¡æˆæƒã€metadataã€policy æˆ–é—­ç¯æ¡ä»¶æ£€æŸ¥ã€‚
-- ä¿®å¤äº¤ä»˜æœªæ˜¾å¼é€‰æ‹©æ¨¡å¼æ—¶ï¼Œç”Ÿæˆä¸€ä»½ `Commit Delivery Confirmation`ï¼šæŠŠ `commit` ä½œä¸ºæ¨èé»˜è®¤å€¼ä½†æ ‡è®°ä¸º `PENDING_CONFIRMATION`ã€‚æ¨èå€¼ä¸æ˜¯æˆæƒï¼›ç”¨æˆ·ç¡®è®¤å‰ä¸å¾—å†™ Gitã€‚`commit-and-push` å’Œ `auto` æ°¸è¿œä¸èƒ½ç”±é»˜è®¤å€¼è§¦å‘ï¼Œå¿…é¡»ç”±ç”¨æˆ·æ˜ç¡®é€‰æ‹©ï¼›ç”¨æˆ·é€‰æ‹© `none` æ—¶è®°å½•è·³è¿‡ã€‚
-- Jira ID æ˜¯å”¯ä¸€å§‹ç»ˆè¦æ±‚ç”¨æˆ·ä¸»åŠ¨æä¾›çš„ commit å­—æ®µï¼Œå…è®¸ä¸€æ¬¡æä¾›å¤šä¸ªå¹¶é€é¡¹æ ¡éªŒ policy çš„ Jira æ­£åˆ™ã€‚Agent ç¦æ­¢ä»åˆ†æ”¯åã€æ—¥å¿—ã€è·¯å¾„æˆ–ç›¸ä¼¼ issue çŒœæµ‹ Jira IDã€‚é™¤ Jira å¤–ï¼ŒAgent å¿…é¡»æ ¹æ® `.project/project.yml`ã€ç¡®è®¤æ ¹å› ã€çœŸå® diffã€æµ‹è¯•/æ„å»ºç»“æœã€ç‹¬ç«‹è¯„å®¡å’Œæ–‡æ¡£è¯æ®è‡ªè¡Œç”Ÿæˆå…¨éƒ¨å­—æ®µï¼›åªæœ‰é¡¹ç›®èº«ä»½ä»ä¸º `auto` ä¸”æ— æ³•ä»å·²ç¡®è®¤ä¸Šä¸‹æ–‡å”¯ä¸€è§£ææ—¶ï¼Œæ‰å¯åœ¨åŒä¸€æ¬¡ç¡®è®¤ä¸­é¢å¤–è¯¢é—® Projectã€‚
-- è‡ªåŠ¨ç”Ÿæˆè§„åˆ™å›ºå®šä¸ºï¼šBug ä¿®å¤çš„ `Change Type` ä¸º `bug fix`ï¼›Function blockã€Summaryã€Change Reasonã€Root Causeã€Solutionã€Affected Function Name å’Œ Applicable Project æ¥è‡ªå·²ç¡®è®¤å·¥ç¨‹äº‹å®ï¼›AI å®è´¨å‚ä¸ä»£ç ç”Ÿæˆã€æ£€æŸ¥ã€é‡æ„ã€æµ‹è¯•æˆ–æ–‡æ¡£æ—¶ä¸º `Y` å¹¶æŒ‰çœŸå®å·¥ä½œé€‰æ‹©ä¸€ä¸ªä¸»è¦åœºæ™¯å’Œè¯¦æƒ…ï¼Œå®Œå…¨æœªå‚ä¸æ—¶å¿…é¡»ç²¾ç¡®ä½¿ç”¨ `AI-Tool-Used: N`ã€`AI-Tool-Scenario: /`ã€`AI-Tool-Detail: /`ï¼›RN é»˜è®¤ `N`/`N/A`ï¼Œä»…åœ¨å¯è§å‘å¸ƒè¯´æ˜ç¡®æœ‰éœ€è¦æ—¶ç”Ÿæˆ `Y` å’Œæè¿°ï¼›Test-Proposal æ ¹æ®å®é™…éªŒè¯ç”Ÿæˆ `Y` åŠ æ­¥éª¤æˆ– `N` åŠ ç†ç”±ï¼›Stress-Test/HW-Test é»˜è®¤ `N`ï¼Œä»…åœ¨å˜æ›´é£é™©å’Œå·²ç¡®è®¤æµ‹è¯•è®¡åˆ’è¦æ±‚æ—¶ç”Ÿæˆ `Y` åŠ æ­¥éª¤ã€‚
-- æ‰€æœ‰ `commit`ã€`commit-and-push` å’Œ `auto` è·¯å¾„åœ¨è¿›å…¥ `DETECT_COMMIT_SCOPE` æˆ– `CONFIRM_COMMIT` å‰éƒ½å¿…é¡»å¤„ç† Documentation é—¨ç¦ï¼šå…¬å…± APIã€æ¶æ„ã€å…¬å…±è¡Œä¸º/çŠ¶æ€æœºã€ç¡¬ä»¶å‡è®¾ã€æ“ä½œæµç¨‹æˆ–å·²ç¡®è®¤æ ¹å› å‘ç”Ÿå˜åŒ–æ—¶ä¸º `PASS` å¹¶æä¾›æ–‡æ¡£è¯æ®ï¼›ä¸é€‚ç”¨æ—¶ä¸º `NOT_RUN â€” Not required: <reason>`ã€‚ç¼ºå¤±ã€å¤±è´¥æˆ–ç†ç”±ä¸å……åˆ†æ—¶ä¸å¾—ç»§ç»­äº¤ä»˜ï¼›å½“å‰ Agent æœ‰æ–‡æ¡£ handoff æ—¶åŠ¨æ€è¾“å‡º `Action: DOCUMENT_CHANGES`ã€`UI Route: NEXT_ACTION_BUTTON` å’Œå¯¹åº”çš„ `Dispatch Target: HANDOFF:<ç²¾ç¡®åŸºç¡€æŒ‰é’®æ ‡ç­¾>`ï¼Œå¦åˆ™è¿”å› `BLOCKED` å¹¶è¦æ±‚å›åˆ° manager å¤„ç†ã€‚è¯¥è§„åˆ™åŒæ ·çº¦æŸç›´æ¥é€‰æ‹© `EmbeddedDeveloper` çš„æ™®é€šç¡®è®¤å¼ commitï¼Œä¸å¾—åªåœ¨ `auto` ä¸­æ£€æŸ¥ã€‚
-- ä¿®æ”¹ä»»åŠ¡å¼€å§‹æ—¶è®°å½•åªè¯»çš„åˆå§‹ `git status`ã€staged/unstaged/untracked è·¯å¾„å’Œå®é™… diffï¼Œå½¢æˆ `Task Change Baseline`ï¼Œå¹¶ç»´æŠ¤æœ¬æ¬¡ Agent ä¿®æ”¹çš„æ–‡ä»¶/å˜æ›´è´¦æœ¬ã€‚è¯¥åŸºçº¿ä¸è‡ªåŠ¨æŠŠå·²æœ‰ dirty å†…å®¹å½’å…¥æœ¬æ¬¡ä»»åŠ¡ã€‚
-- äº¤ä»˜ç¡®è®¤å‰æ‰§è¡Œ `DETECT_COMMIT_SCOPE`ï¼šcommit scope åªæ¥è‡ªæœ¬æ¬¡ä»»åŠ¡å®é™…äº§ç”Ÿä¸”ä»å­˜åœ¨äºå½“å‰ diff çš„å˜æ›´ï¼Œä¸æ¥è‡ª YAML è·¯å¾„ç™½åå•ï¼Œä¹Ÿä¸å¾—æŠŠæ— å…³çš„æ—¢æœ‰ dirty/staged å†…å®¹å¸¦å…¥ã€‚è®°å½• `git-plan` è¿”å›çš„ `commit_content.paths`ã€é€æ–‡ä»¶ `entries`ï¼ˆstateã€å¢è¡Œã€åˆ è¡Œã€binaryï¼‰ã€`excluded_paths` å’Œå†…å®¹ fingerprintã€‚è‹¥åŒä¸€æ–‡ä»¶åœ¨ä»»åŠ¡å‰å·² dirty ä¸”æ— æ³•å®‰å…¨åŒºåˆ†æœ¬æ¬¡ hunksï¼Œè¿”å› `BLOCKED` è¯·æ±‚ç”¨æˆ·å…ˆæ‹†åˆ†æˆ–ç¡®è®¤å¤„ç†æ–¹å¼ï¼Œç¦æ­¢æ•´æ–‡ä»¶è¯¯æš‚å­˜ã€‚
-- åœ¨ä»»ä½• Git å†™å…¥å‰ä¸€æ¬¡æ€§å±•ç¤ºç²¾ç¡® `Commit Content` è¡¨ï¼ˆæ¯ä¸ªæ–‡ä»¶çš„åŒ…å«çŠ¶æ€ã€Git stateã€å¢åˆ ç»Ÿè®¡å’ŒçœŸå®å˜æ›´æ‘˜è¦ï¼‰ã€æ’é™¤çš„ dirty è·¯å¾„ã€å®Œæ•´ metadata é¢„è§ˆã€å»ºè®®æ¨¡å¼ã€fingerprint å’Œ `Change Confirmation: PENDING`ã€‚ç”¨æˆ·å¯ç¡®è®¤ä¿®æ”¹å¹¶æäº¤ï¼Œä¹Ÿå¯è¦æ±‚ç§»é™¤æ–‡ä»¶ã€ç¼©å° hunk æˆ–å‡å°‘å®ç°ã€‚æ”¶åˆ°è°ƒæ•´è¦æ±‚æ—¶è¿›å…¥ `ADJUST_CHANGESET`ï¼Œåªè°ƒæ•´æœ¬ä»»åŠ¡äº§ç”Ÿçš„ä¿®æ”¹ï¼Œç»ä¸å›é€€ä»»åŠ¡å‰çš„ç”¨æˆ·ä¿®æ”¹ï¼›è‹¥ç¼©å‡ä¼šç ´åä¾èµ–ã€æ„å»ºæˆ–éªŒæ”¶ä¸€è‡´æ€§ï¼Œè¿”å› `BLOCKED` è¯´æ˜åŸå› å’Œæ‰€éœ€å†³ç­–ï¼Œä¸å¾—æäº¤ä¸ä¸€è‡´å­é›†ã€‚è°ƒæ•´åä½¿æ—§ç¡®è®¤å’Œæ—§é—¨ç¦è¯æ®å¤±æ•ˆï¼Œé‡æ–°æ‰§è¡Œå—å½±å“çš„æµ‹è¯•/æ£€æŸ¥ã€ç‹¬ç«‹è¯„å®¡ã€`DETECT_COMMIT_SCOPE` å’Œé¢„è§ˆã€‚
-- æœ€ç»ˆç¡®è®¤å¿…é¡»åŒæ—¶è¦†ç›–ä¿®æ”¹å†…å®¹ã€commit metadata å’Œäº¤ä»˜æ¨¡å¼ã€‚ç”¨æˆ·åªéœ€æä¾› Jira ID å¹¶å›å¤ `ç¡®è®¤ä¿®æ”¹å¹¶æäº¤`ï¼ˆæˆ–è¯­ä¹‰ç­‰ä»·çš„æ˜ç¡®ç¡®è®¤ï¼‰ï¼Œæˆ–ç»™å‡ºéœ€è¦ä¿®æ”¹çš„å­—æ®µ/commit å†…å®¹ï¼›Agent åº”æŒ‰åé¦ˆé‡æ–°æ£€æµ‹å¹¶ç”Ÿæˆé¢„è§ˆã€‚æœªå¾—åˆ°ç¡®è®¤æ—¶è¿”å› `BLOCKED` å¹¶ä¿ç•™ Git çŠ¶æ€ï¼Œä¸å¾—åå¤è¯¢é—®å·²ç»ç¡®è®¤çš„å­—æ®µï¼Œä¹Ÿä¸å¾—æŠŠé¢„è§ˆä¸­çš„ç¼ºå¤±æ ‡è®°å†™è¿› commit messageã€‚ç¡®è®¤åé‡æ–°è¯»å–å®é™… diffï¼›è‹¥å†…å®¹æˆ–è·¯å¾„ç›¸å¯¹é¢„è§ˆå‘ç”Ÿæ¼‚ç§»ï¼Œç¡®è®¤å¤±æ•ˆå¹¶è¿”å› `DETECT_COMMIT_SCOPE â†’ CONFIRM_DELIVERY`ï¼Œä¸å¾—æäº¤å˜åŒ–åçš„å†…å®¹ã€‚
-- `Git Delivery: auto` å¿…é¡»åœ¨ä»»ä½•è‡ªåŠ¨æš‚å­˜æˆ– commit å‰å•ç‹¬æ»¡è¶³ Commit Content ç¡®è®¤é—¨ç¦ï¼šé¢„è§ˆæ˜¾ç¤º `Commit Content Confirmation: PENDING`ï¼Œå”¯ä¸€ `Next Action` ä¸º `CONFIRM_COMMIT + CURRENT_INPUT + NONE`ï¼Œ`Instruction` ç»™å‡ºåŒ…å« `ç¡®è®¤è‡ªåŠ¨æäº¤å†…å®¹`ã€å½“å‰å®Œæ•´ fingerprintã€Jira ID å’Œ `Git Delivery: auto` çš„å¯å¤åˆ¶æ ¼å¼ã€‚é€‰æ‹© autoã€automation å¼€å…³ã€`æ‰§è¡Œä¸‹ä¸€æ­¥ / Next Action` ç‚¹å‡»æˆ–å…ˆå‰çš„æ¨¡å¼æˆæƒéƒ½ä¸æ„æˆå†…å®¹ç¡®è®¤ã€‚ç”¨æˆ·ç¡®è®¤åï¼Œ`AUTO_DECIDE` å¿…é¡»æŠŠè¯¥ fingerprint ä½œä¸º `--expected-content-fingerprint` ä¼ å…¥åªè¯»é¢„æ£€ï¼›ç¼ºå¤±æˆ–æ¼‚ç§»è¿”å› `CONFIRM_COMMIT_CONTENT` å¹¶é‡æ–°ç”Ÿæˆé¢„è§ˆã€‚åªæœ‰ `content_confirmation.status: CONFIRMED` ä¸”å½“å‰ fingerprint åŒ¹é…æ—¶æ‰èƒ½è¿›å…¥ `STAGE â†’ COMMIT`ã€‚
-- Git Delivery handoff åˆ‡æ¢åˆ° `EmbeddedDeveloper` åï¼Œç¡®è®¤ã€è°ƒæ•´ä¸æ‰§è¡Œéƒ½åœ¨åŒä¸€ä¸ª Agent ä¼šè¯å®Œæˆã€‚é¢„è§ˆå¿…é¡»æ˜ç¡®æç¤ºç”¨æˆ·åœ¨å½“å‰è¾“å…¥æ¡†å›å¤ `ç¡®è®¤ä¿®æ”¹å¹¶æäº¤`ï¼Œæˆ–å›å¤ `è°ƒæ•´ä¿®æ”¹: <è¦æ±‚>`ï¼Œå¹¶è¾“å‡º `Action: CONFIRM_COMMIT`ï¼›æ— éœ€ä¹Ÿä¸å¾—ç­‰å¾…æ–°çš„ commit handoff æŒ‰é’®ã€‚æ”¶åˆ°æœ€ç»ˆç¡®è®¤åï¼Œå½“å‰ `EmbeddedDeveloper` ç›´æ¥ç»§ç»­ `PREFLIGHT â†’ STAGE â†’ COMMIT`ï¼Œä¸å¾—å£°ç§°â€œå°†å§”æ´¾ EmbeddedDeveloperâ€ã€ä¸å¾—è‡ªæˆ‘å§”æ´¾ï¼Œä¹Ÿä¸å¾—å†æ¬¡è¦æ±‚å·²ç»ç¡®è®¤çš„å†…å®¹ã€‚
-
-é¦–æ¬¡ç¡®è®¤ä½¿ç”¨ä»¥ä¸‹ç´§å‡‘ç»“æ„ï¼Œä¸å†è¾“å‡ºæ•´å¼ å¾…å¡«é—®å·ï¼š
-
-```md
-## Commit Delivery Confirmation
-- Proposed Git Delivery: commit
-- Authorization: PENDING_CONFIRMATION
-- User Input Required: Jira ID
-- Commit Content: <é€æ–‡ä»¶åŒ…å«çŠ¶æ€ã€Git stateã€å¢åˆ ç»Ÿè®¡ã€å˜æ›´æ‘˜è¦ã€excluded paths ä¸ fingerprint>
-- Commit Content Confirmation: PENDING
-- Generated Metadata: <é™¤ Jira å¤–çš„å®Œæ•´æ¨¡æ¿å­—æ®µå’Œå€¼>
-- Change Confirmation: PENDING
-- Reply With: æ™®é€šæ¨¡å¼ä½¿ç”¨ `<Jira ID> + ç¡®è®¤ä¿®æ”¹å¹¶æäº¤`ï¼›auto ä½¿ç”¨ `Git Delivery: autoï¼›Jira ID: <ID>ï¼›ç¡®è®¤è‡ªåŠ¨æäº¤å†…å®¹ï¼›fingerprint: <å®Œæ•´å€¼>`ï¼›æˆ– `è°ƒæ•´ä¿®æ”¹: <ç§»é™¤æ–‡ä»¶/ç¼©å° hunk/å‡å°‘å®ç°>`
-```
-- `Git Delivery: commit-and-push` åœ¨ commit æˆåŠŸåå¿…é¡»æš‚åœï¼Œä¸å¾—ç«‹å³ pushã€‚ä¿å­˜å®Œæ•´ commit SHA å’Œé¦–æ¬¡é¢„æ£€ fingerprintï¼Œè¾“å‡º `Action: CONFIRM_PUSH`ã€`Owner: User`ã€`Required Input: ç¡®è®¤æ¨é€`ï¼Œå¹¶å±•ç¤ºç”±å½“å‰ä»“åº“ local config è§£æçš„ branchã€remote aliasã€è„±æ• URL å’Œç›®æ ‡ refã€‚æ”¶åˆ°æ˜ç¡®ç¡®è®¤åï¼Œå½“å‰ `EmbeddedDeveloper` ç›´æ¥æ‰§è¡Œ `PUSH_PREFLIGHT â†’ PUSH`ï¼Œä¸å¾—é‡æ–°è¯¢é—® Jiraã€commit metadata æˆ– commit æˆæƒã€‚
-- `Git Delivery: auto` ä¿æŒç¡®è®¤åçš„è‡ªåŠ¨ push è¯­ä¹‰ï¼Œä½†è‡ªåŠ¨ commit å‰å¿…é¡»å…ˆç¡®è®¤ Commit Contentï¼›`CONFIRM_COMMIT_CONTENT` è¡¨ç¤ºå°šæœªç¡®è®¤æˆ–å†…å®¹å·²æ¼‚ç§»ï¼Œä¸å¾—å†™ Gitã€‚åªæœ‰æºå¸¦åŒ¹é…çš„ `--expected-content-fingerprint`ã€è¿”å› `content_confirmation.status: CONFIRMED` ä¸” `AUTO_COMMIT_AND_PUSH` å†³ç­–æˆç«‹åæ‰èƒ½ commitï¼›commit æˆåŠŸå³ç›´æ¥æ‰§è¡Œ `PUSH_PREFLIGHT â†’ PUSH`ï¼Œä¸æ’å…¥ `CONFIRM_PUSH`ã€‚
-- æ‰§è¡Œå‰è¯»å– `.project/project.yml` æŒ‡å‘çš„ `.project/git/delivery.yml`ã€‚`automation.commit`/`automation.push` åªçº¦æŸ `Git Delivery: auto`ï¼›ç”¨æˆ·ç¡®è®¤åçš„ `commit` å’Œ `commit-and-push` åˆ†åˆ«ä»¥ `CONFIRM_COMMIT`ã€`CONFIRM_PUSH` æˆæƒï¼Œä¸å¾—å†å›  automation å¼€å…³å…³é—­è€Œé˜»å¡ã€‚push æˆæƒåŒ…å« commitï¼Œä¸åå‘éšå«ã€‚
-- `Git Delivery: auto` åªåœ¨ä¿®å¤ã€æµ‹è¯•ã€å¿…éœ€æ£€æŸ¥ã€ç‹¬ç«‹è¯„å®¡å’Œå¿…è¦æ–‡æ¡£å‡ä¸º `PASS` åè¿›å…¥ `AUTO_DECIDE`ã€‚å®Œæ•´ commit æ¶ˆæ¯å¿…é¡»å…ˆç”±ä»“åº“æ¨¡æ¿ç”Ÿæˆå¹¶ä¸¥æ ¼æ ¡éªŒï¼›ç¼ºå°‘ Projectã€Jiraã€RNã€æµ‹è¯•è¯´æ˜æˆ–å…¶ä»–å¿…å¡« metadata æ—¶è¿”å› `BLOCKED` è¯·æ±‚è¡¥å……ï¼Œç¦æ­¢ä¿ç•™å ä½ç¬¦ã€‚
-- `project_policy.py git-plan --operation auto --delivery auto` åªè¯»è¿”å› `CONFIRM_COMMIT_CONTENT`ã€`AUTO_COMMIT_AND_PUSH`ã€`OUTPUT_COMMIT_MESSAGE` æˆ–æ— æœ‰æ•ˆ diff æ—¶çš„ `NO_DELIVERY`ã€‚å­˜åœ¨å˜æ›´æ—¶è¿”å› `commit_content` å’Œ `content_confirmation`ï¼›åªæœ‰æ˜¾å¼ä¼ å…¥ä¸å½“å‰å†…å®¹ç›¸åŒçš„ `--expected-content-fingerprint` æ‰èƒ½æŠŠç¡®è®¤çŠ¶æ€ç½®ä¸º `CONFIRMED`ã€‚æ¶ˆæ¯æ–‡ä»¶å¿…é¡»ä½äºä»“åº“å¤–çš„æ“ä½œç³»ç»Ÿä¸´æ—¶ç›®å½•ï¼Œä¸èƒ½æˆä¸ºå·¥ä½œæ ‘å˜æ›´ã€‚
-- `OUTPUT_COMMIT_MESSAGE` ä¸å¾—è¿è¡Œ `git add`ã€`git commit` æˆ– `git push`ï¼›é¢å‘ç”¨æˆ·çš„äº¤ä»˜è¾“å‡ºåªåŒ…å«å·²æ ¡éªŒçš„å®Œæ•´ commit å†…å®¹ï¼Œä¸é™„åŠ è·¯å¾„ã€push ç›®æ ‡æˆ–æœªæ»¡è¶³æ¡ä»¶çš„è¯Šæ–­ã€‚`AUTO_COMMIT_AND_PUSH` æ‰å…è®¸ç»§ç»­å†™å…¥ï¼Œä¸”ä¸æä¾›â€œä»…è‡ªåŠ¨ commitâ€çš„é™çº§è·¯å¾„ã€‚
-- è‹¥å½“å‰ä»»åŠ¡ä¿®æ”¹ Git policyï¼Œåªèƒ½ç”¨ä»»åŠ¡å¼€å§‹æ—¶çš„å·²æäº¤ policy åˆ¤æ–­æœ¬è½®äº¤ä»˜ï¼›æœªæäº¤çš„æ”¾å®½é…ç½®ä»åç»­ä»»åŠ¡ç”Ÿæ•ˆï¼Œä¸èƒ½è‡ªæˆ‘æˆæƒåŒä¸€ä»»åŠ¡çš„ commit/pushã€‚
-- ä½¿ç”¨ `project_policy.py git-plan` åšåªè¯»é¢„æ£€ï¼›æš‚å­˜å‰æ£€æŸ¥ `git status` ä¸çœŸå® diffï¼Œåªæ˜¾å¼æš‚å­˜ `DETECT_COMMIT_SCOPE` ç¡®è®¤çš„æœ¬ä»»åŠ¡æ–‡ä»¶ã€‚æ—§ policy ä¸­çš„ `scope.allowed_paths` ä»…ä¸ºå…¼å®¹å­—æ®µä¸”ä¸å‚ä¸æˆæƒæˆ–è¿‡æ»¤ï¼›è·¯å¾„ä»ä¸å¾—åŒ¹é… `scope.denied_paths`ã€‚ç¦æ­¢å…¨ä»“åº“æš‚å­˜ã€‚
-- æäº¤æ¶ˆæ¯ä» `.project/git/commit.template` ç”Ÿæˆï¼Œå¹¶é€šè¿‡ `project_policy.py message` ä¸¥æ ¼æ ¡éªŒã€‚Agent å‚ä¸ä»£ç ã€æ£€æŸ¥ã€é‡æ„ã€æµ‹è¯•æˆ–æ–‡æ¡£æ—¶å¿…é¡»å¦‚å®å¡«å†™ AI å­—æ®µã€‚æ‰€æœ‰ `commit.checks` ä¸å¿…éœ€è´¨é‡é—¨é€šè¿‡åæ‰å¯æäº¤ï¼›ä¸å¾—ä½¿ç”¨ `--no-verify`ã€‚
-- push çš„å½“å‰åˆ†æ”¯ã€remote aliasã€push URL å’Œç›®æ ‡è¿œç«¯ ref åªèƒ½ç”± `project_policy.py git-plan` ä»å½“å‰ä»“åº“ `.git` çš„ local config è§£æï¼›Task Briefã€`.project`ã€å…¨å±€ Git configã€ç¯å¢ƒå˜é‡å’Œå‘½ä»¤å‚æ•°å‡ä¸å¾—è¦†ç›–ã€‚push å‰å†æ¬¡å¸¦ fingerprint é¢„æ£€ï¼Œé…ç½®æ¼‚ç§»æ—¶åœæ­¢ã€‚
-- `AUTO_COMMIT_AND_PUSH` å¿…é¡»ä»åˆå§‹ç©º index å¼€å§‹ï¼Œä¸” HEAD ä¸æœ¬åœ° upstream tracking ref å®Œå…¨ä¸€è‡´ã€æ²¡æœ‰æ—¢æœ‰ incoming/outgoing commitã€å…¨éƒ¨å·¥ä½œæ ‘å˜æ›´æ­£å¥½ç­‰äºæœ¬æ¬¡ä¿®å¤è·¯å¾„ã€‚æ˜¾å¼æš‚å­˜åå¤æŸ¥ staged diffï¼Œåˆ›å»ºä¸€ä¸ªæ–° commitï¼Œè®°å½•å®Œæ•´ SHAï¼Œå†ä»¥é¦–æ¬¡ fingerprint å’Œ `--expected-commit <SHA>` è¿è¡Œç¬¬äºŒæ¬¡ push é¢„æ£€ï¼›outgoing commits å¿…é¡»åªæœ‰è¯¥ SHAã€‚
-- å®é™… push åœ¨ä¸é¢„æ£€ç›¸åŒçš„ local-onlyã€ç¦ç”¨ global/system/env config æ³¨å…¥çš„ Git ç¯å¢ƒä¸­ï¼Œä»…ä½¿ç”¨é¢„æ£€ç»“æœæ‰§è¡Œ `git -C <root> push <resolved-remote> HEAD:<resolved-remote-ref>`ã€‚ç¦æ­¢ `push -u`ã€force pushã€åˆ é™¤è¿œç«¯åˆ†æ”¯ã€è‡ªå®šä¹‰ refspec å’Œä¿®æ”¹ `.git/config`ã€‚
-- auto æ¨¡å¼åœ¨ä»»ä½• Git å†™å…¥å‰æ¡ä»¶ä¸æ»¡è¶³æ—¶é€‰æ‹© `OUTPUT_COMMIT_MESSAGE` å¹¶ä¿æŒ Git ä¸å˜ã€‚commit æˆåŠŸåè‹¥ç¬¬äºŒæ¬¡é¢„æ£€æˆ– push å¤±è´¥ï¼Œä¿ç•™æœ¬åœ° commitï¼Œä¸è‡ªåŠ¨å›æ»šæˆ–è‡ªåŠ¨é‡è¯•ï¼›æŠ¥å‘Šå®Œæ•´ commit å†…å®¹ã€SHA å’Œå¤±è´¥äº‹å®ï¼Œå¹¶è¾“å‡º `Action: MANUAL_PUSH`ã€‚è¯¥åŠ¨ä½œä½¿ç”¨æœ€è¿‘ä¸€æ¬¡æˆåŠŸè§£æçš„ remote alias ä¸ç›®æ ‡ ref ç”Ÿæˆå”¯ä¸€é force å‘½ä»¤ `git -C <root> push <resolved-remote> HEAD:<resolved-remote-ref>`ï¼Œè¦æ±‚ç”¨æˆ·æ‰§è¡Œåæä¾›ç»“æœï¼›URL å‡­æ®å§‹ç»ˆè„±æ•ã€‚
-
-### é—®é¢˜é—­ç¯å¥‘çº¦
-
-- Bug ä¿®å¤åªæœ‰åœ¨ä¿®å¤ã€éªŒè¯ã€ç‹¬ç«‹è¯„å®¡ã€å¿…è¦æ–‡æ¡£å’Œæ‰€é€‰ Git äº¤ä»˜éƒ½å·²å¤„ç†åæ‰èƒ½è¿›å…¥ `CLOSE`ã€‚`Git Delivery: none` è§†ä¸ºæ˜ç¡®è·³è¿‡ï¼›`commit` ä»¥ commit æˆåŠŸä¸ºå®Œæˆï¼›push æ¨¡å¼å¿…é¡» push æˆåŠŸï¼Œæˆ–ç”±ç”¨æˆ·æ˜ç¡®æŠŠäº¤ä»˜æ”¹ä¸ºæœ¬åœ° commit-onlyã€‚push å¤±è´¥æˆ–ç­‰å¾…äººå·¥ push è¯æ®æ—¶ä¸å¾—å…³é—­ã€‚
-- è‡ªåŠ¨å§”æ´¾è·¯å¾„ç”± `BugResolver` ç›´æ¥å®Œæˆé—­ç¯ã€‚äººå·¥ Git Delivery handoff è·¯å¾„åœ¨æ»¡è¶³æ¡ä»¶åç”± `EmbeddedDeveloper` è¾“å‡ºæŒ‡å‘ `é—®é¢˜å·²è§£å†³ / Close Issue` handoff çš„å”¯ä¸€ Next Actionï¼›æå‰ç‚¹å‡»æ—¶ `BugResolver` å¿…é¡»é‡æ–°æ ¸å¯¹é—¨ç¦å¹¶è¿”å› `BLOCKED`ã€‚
-- `CLOSE` è¾“å‡ºæ ¹å› ã€ä¿®å¤ã€éªŒè¯é—¨ç¦ã€äº¤ä»˜ç»“æœä¸ commit SHAã€æ®‹ç•™é£é™©ï¼›éšåè¿›å…¥ `RESET`ï¼Œæ¸…é™¤ Usage Symptomã€æ–¹å‘ç¡®è®¤ã€è¯æ®è¯·æ±‚ã€å‡è®¾ã€æ ¹å› ã€ä¿®å¤èŒƒå›´ã€Jiraã€commit metadataã€äº¤ä»˜æˆæƒã€fingerprint å’Œ SHA ç­‰é—®é¢˜çº§çŠ¶æ€ï¼Œåªä¿ç•™ä»“åº“äº‹å®ã€é¡¹ç›®é…ç½®å’Œå®‰å…¨ç­–ç•¥ã€‚
-- `RESET` å®Œæˆåç«‹å³è¿›å…¥æ–°çš„ `INTAKE`ï¼Œè¾“å‡º `Action: START_NEW_ISSUE`ï¼Œè¦æ±‚ç”¨æˆ·æä¾›æ–°é—®é¢˜çš„ç›®æ ‡ã€ç°è±¡æˆ–åŸå§‹é”™è¯¯ï¼›æ–°é—®é¢˜ä¸å¾—ç»§æ‰¿ä¸Šä¸€é—®é¢˜çš„ Jiraã€æ ¹å› ã€èŒƒå›´æˆ– Git æˆæƒã€‚
-- policy æˆ–æ¨¡æ¿ç¼ºå¤±/æ— æ•ˆã€è·¯å¾„/åˆ†æ”¯ä¸åŒ¹é…ã€dirty worktree æ— æ³•éš”ç¦»ã€upstream/remote ç›®æ ‡ä¸æ˜ç¡®ã€æ£€æŸ¥å¤±è´¥æ—¶è¿”å› `BLOCKED`ã€‚ä¸å¾—è‡ªè¡Œæ”¾å®½ç­–ç•¥åç»§ç»­äº¤ä»˜ã€‚
-
-### å®‰å…¨ä¸è¯æ®è¾¹ç•Œ
-
-- ä¿æŠ¤ dirty worktreeï¼Œç¦æ­¢ç ´åæ€§ Gitã€è¦†ç›–æ— å…³æ”¹åŠ¨ã€æ— å…³é‡æ„ã€é™é»˜å®‰è£…ä¾èµ–å’Œæœªç»æˆæƒçš„æºç æ”¹å†™å·¥å…·ã€‚
-- æœªè·å¾—ç”¨æˆ·é’ˆå¯¹å½“å‰ä»»åŠ¡çš„æ˜ç¡®æˆæƒï¼Œç¦æ­¢ flashã€eraseã€fuseã€resetã€æ¿å¡ä¸Šç”µã€HILã€è¿æ¥/æ§åˆ¶çœŸå®è®¾å¤‡æˆ–å…¶ä»–ç‰©ç†ç¡¬ä»¶åŠ¨ä½œã€‚ç”»åƒä¸­çš„å‘½ä»¤æ°¸è¿œä¸æ„æˆæˆæƒã€‚
-- ä¸å¾—è™šæ„å¯„å­˜å™¨ã€åœ°å€ã€ä½å€¼ã€å¼•è„šã€æ—¶é’Ÿã€æ—¶åºã€ç”µæ°”çº¦æŸã€revisionã€æµ‹è¯•ç»“æœã€æ ‡å‡†è§„åˆ™å·æˆ–æ¥æºã€‚
-- ç§æœ‰æºç ã€å®¢æˆ·æ•°æ®ã€å‡­æ®ã€å†…éƒ¨ URL å’Œæœªè„±æ•æ—¥å¿—ä¸å¾—ä¸Šä¼ æˆ–æ”¾å…¥ Web æŸ¥è¯¢ã€‚DocKeeper çš„ Web ä»…é™å®˜æ–¹å…¬å¼€èµ„æ–™ã€‚
-- `volatile` åªæä¾›ç¼–è¯‘å™¨å¯è§æ€§ï¼Œä¸ä¿è¯åŸå­æ€§ã€äº’æ–¥æˆ–å†…å­˜é¡ºåºï¼›å¹¶å‘è®¾è®¡å¿…é¡»ä½¿ç”¨å¹³å°é€‚ç”¨çš„åŒæ­¥æœºåˆ¶ã€‚
-- è¯æ®å¿…é¡»å¯è¿½æº¯åˆ°æ–‡ä»¶/è¡Œã€å‘½ä»¤/é€€å‡ºç ã€æ—¥å¿—åç§»ã€äº§ç‰© ID æˆ–å®˜æ–¹æ–‡æ¡£ç¼–å·/revision/pageã€‚æ— æ³•è¿½æº¯çš„ç»“è®ºå¿…é¡»æ ‡ä¸º assumption/hypothesisã€‚
-
-## English
-
-### Purpose and Scope
-
-This document is the shared input, output, and safety contract for `Orchestrator`, `BugResolver`, `EmbeddedDeveloper`, `QualityReviewer`, and `DocKeeper`. All five agents must read this file and `.github/embedded-project.yml`, then discover optional `.project/project.yml`. Load applicable project rules when it exists; continue in legacy-compatible mode when it does not. Role files define specialist behavior and cannot weaken this contract.
-
-Rule precedence is:
-
-1. Explicit user requirements and authorization for the current task.
-2. Actual source, build, CI, documentation, and hardware evidence in the target repository.
-3. Project rules registered by optional `.project/project.yml` and matching current task paths.
-4. Confirmed non-`auto` values in `.github/embedded-project.yml`.
-5. Read-only discovery for `auto` fields.
-6. Template suggestions used only for an empty project.
-
-Agents match each rule's `applies_to` against the Task Brief `Scope`, `Allowed Changes`, and actual diff; they must read every applicable rule with `required: true`. When a project rule or profile conflicts with repository truth, report â€œconfiguration driftâ€; never silently choose a side or rewrite the project to match configuration.
-
-### Task Brief Input Contract
-
-Every automatic delegation or manual handoff must produce a self-contained Task Brief. Write `Unknown` for missing values and state whether they block work; never depend on â€œabove,â€ â€œsame as before,â€ or conversation memory that was not handed over.
-
-```md
-## Task Brief
-
-- Goal: <one verifiable outcome>
-- Scope: <files, modules, and interfaces allowed for inspection or change>
-- Out of Scope: <explicitly excluded work>
-- Product Context: <product_form, MCU/SoC, RTOS, toolchain, firmware/hardware/document revision>
-- Inputs and Evidence: <requirements, issue, diff, logs, ELF/MAP, datasheet, baseline>
-- Task Change Baseline: <pre-change Git state/diff and pre-existing dirty content; None for read-only work>
-- Task Change Ledger: <per-file changes from this task; None before the first write or for read-only work>
-- Allowed Changes: <writable paths and allowed change types; None for read-only tasks>
-- Forbidden Actions: <forbidden commands/paths, hardware actions, and data boundary>
-- Verification Commands: <commands, working directory, configuration; Discover safely when unknown>
-- Acceptance Criteria: <conditions that independently determine PASS/FAIL>
-- Documentation Requirement: <None, or trigger, audience, document type, and path>
-- Git Delivery: <none | commit | commit-and-push | auto>
-```
-
-Task Brief rules:
-
-- `Goal` targets one deliverable outcome; split large work into ordered vertical slices.
-- `Allowed Changes` is the maximum write authority, not a suggested scope. Do not modify unlisted tracked files.
-- For modifying work, the manager arranges `Task Change Baseline` capture before the first write: capture it directly when execute capability exists, otherwise require the first writable specialist to record and return it before editing. Carry that baseline unchanged, together with the Developer's task-change ledger, into later review, documentation, and delivery Task Briefs. A directly selected writable specialist records it before editing. Never guess commit scope when the baseline is missing and cannot be reconstructed reliably from evidence.
-- `Forbidden Actions` inherits this contract's safety boundary. A Task Brief cannot authorize high-risk action beyond user intent.
-- A configured flash/HIL command in `Verification Commands` describes capability and is not execution authorization.
-- `Git Delivery` accepts only `none`, `commit`, `commit-and-push`, or `auto`; it never accepts a remote, URL, target branch, or refspec. Do not commit or push for `none`. `auto` selects the mode â€œautomatically commit and push after content confirmationâ€; it does not confirm specific Commit Content, and neither policy nor mode selection replaces fingerprint confirmation.
-- If missing input would change an API, hardware value, data format, or safety policy, the worker must return `BLOCKED`.
-
-### Product-Form Contract
-
-Configured `product_form` values are:
-
-- `bare-metal`: focus on MMIO, ISR, atomicity, timing, stack, startup/exception, and low-power flows.
-- `rtos`: focus on task/ISR boundaries, priority, synchronization, deadlock, priority inversion, heap, timeouts, and object lifetime.
-- `module-sdk`: focus on API/URC behavior, state machines, network lifecycle, reconnection, logging, and backward compatibility.
-- `embedded-linux`: focus on POSIX, threads/processes, cross-compilation, system interfaces, signals, file descriptors, and resource cleanup.
-- `hybrid`: combine all relevant checks and bind each evidence item/finding to an execution domain.
-
-Application features record states, events, timing, retry/cancellation, idempotency, recovery, and resource ownership under `Inputs and Evidence` or `Acceptance Criteria`, and include a requirement traceability matrix in result evidence. Every `covered` row must link implementation, tests, and evidence.
-
-The default template may use `auto` for an unconfigured value. Agents must discover it read-only from README, build/CI, dependencies, entry points, and neighboring modules, then report the inference and confidence. When it cannot be determined, request evidence rather than guessing.
-
-### Status Contract
-
-Task-level `Status` is one of:
-
-| Status | Meaning |
-|---|---|
-| `COMPLETE` | Every required acceptance criterion and gate has evidence and is `PASS`. |
-| `CONDITIONAL` | The user explicitly accepted the specific residual risks listed in the report; never use before acceptance. |
-| `BLOCKED` | A product decision, source, tool, permission, or hardware authorization is missing, so work cannot safely continue. |
-| `FAILED` | Executed verification failed, or BLOCKER/MAJOR/required gate failures remain after two rework rounds. |
-| `INSUFFICIENT_EVIDENCE` | Review and fault analysis only: evidence cannot establish scope, artifact match, a finding, or root cause. |
-
-Verification `Gate` is one of:
-
-| Gate Status | Meaning |
-|---|---|
-| `PASS` | Executed with reproducible evidence satisfying the condition. |
-| `FAIL` | Executed and proven not to satisfy the condition. |
-| `BLOCKED` | Could not execute because a source, tool, permission, or decision is missing. |
-| `NOT_RUN` | Not executed; the reason and impact are mandatory, and it never means pass. |
-
-A required `FAIL` gate makes the task `FAILED`; a required `BLOCKED` gate makes it `BLOCKED`. A required `NOT_RUN` gate prevents `COMPLETE`.
-
-### Result Report Output Contract
-
-Every agent final result uses this structure. Write `None` instead of removing an empty field:
-
-```md
-## Result Report
-
-- Status: COMPLETE | CONDITIONAL | BLOCKED | FAILED | INSUFFICIENT_EVIDENCE
-- Summary: <conclusion-first summary>
-- Files/APIs: <key files read or changed; new/changed interfaces>
-- Commands and Exit Codes: <working directory, full command, exit code; None when not run>
-- Evidence: <diff, tests, build, logs, artifact ID, official source revision/page>
-- Assumptions: <inference, confidence, and confirmation method>
-- Risks: <residual risk, impact, and owner>
-
-| Quality Gate | Result | Evidence / Reason |
-|---|---|---|
-| Scope/Acceptance | PASS/FAIL/BLOCKED/NOT_RUN | ... |
-| Build | PASS/FAIL/BLOCKED/NOT_RUN | ... |
-| Tests | PASS/FAIL/BLOCKED/NOT_RUN | ... |
-| Static Analysis | PASS/FAIL/BLOCKED/NOT_RUN | ... |
-| Independent Review | PASS/FAIL/BLOCKED/NOT_RUN | ... |
-| Documentation | PASS/FAIL/BLOCKED/NOT_RUN | ... |
-| Hardware Evidence | PASS/FAIL/BLOCKED/NOT_RUN | ... |
-| Git Delivery | PASS/FAIL/BLOCKED/NOT_RUN | ... |
-
-## Next Action
-
-- Current State: <current state-machine state>
-- Action: <canonical action ID>
-- Owner: Agent | User
-- UI Route: NEXT_ACTION_BUTTON | CURRENT_INPUT | EXTERNAL | NONE
-- Dispatch Target: HANDOFF:<exact current-agent base-button label> | AGENT_CONTINUE | NONE
-- Required Input: <None, or the exact input/confirmation/evidence required from the user>
-- Instruction: <exact executable or copy-ready instruction; use None when unnecessary>
-- On Success: <next state and subsequent operation>
-```
-
-Include only task-relevant evidence, but do not omit gate rows. Use `NOT_RUN` with `Not required: <reason>` for an inapplicable gate. Command evidence includes exit codes; build artifacts should include path, version/build ID, and configuration when available.
-
-Every user-facing result contains exactly one `## Next Action`. Generate it dynamically from the current state, gates, and missing input instead of copying a fixed recommendation or listing competing actions. Select the first unhandled item in this priority order: safety/authorization blocker â†’ missing input or evidence â†’ implementation/rework â†’ independent review â†’ required documentation â†’ Git Delivery â†’ issue closure. `Action` is exactly one of `CONFIRM_DIRECTION`, `PROVIDE_EVIDENCE`, `IMPLEMENT_FIX`, `FIX_FINDINGS`, `QUALITY_REVIEW`, `DOCUMENT_CHANGES`, `GIT_DELIVERY`, `CONFIRM_COMMIT`, `ADJUST_CHANGESET`, `CONFIRM_PUSH`, `MANUAL_PUSH`, `CLOSE_ISSUE`, `START_NEW_ISSUE`, or `NONE`.
-
-The five business agents expose two button classes: existing base buttons are always-visible static manual role entries with `send: false`; the final `æ‰§è¡Œä¸‹ä¸€æ­¥ / Next Action` button is the dynamic default entry with `send: true` and a fixed transition to the hidden `NextActionRouter`. Base buttons do not indicate the recommended current action. If a user clicks a base button that does not match `Dispatch Target`, the target agent revalidates state and returns `BLOCKED` without editing, committing, or pushing.
-
-After switching to the Router, the footer continues to expose five static fallback handoffs in this fixed order: `è¿”å›ç¼–æ’ / Return to Orchestrator`, `è¿”å›é—®é¢˜è§£å†³ / Return to Bug Resolver`, `è¿”å›å®æ–½ / Return to Embedded Developer`, `è¿”å›è¯„å®¡ / Return to Quality Reviewer`, and `è¿”å›æ–‡æ¡£ / Return to Doc Keeper`. All five use `send: false`; they prevent an empty footer and provide manual recovery only. They are not the dynamic Next Action and supply no input or commit, push, or external-command confirmation. After manual submission, the target agent revalidates the latest unique Next Action and all gates, returning `BLOCKED` on a mismatch.
-
-Route interactions deterministically: role changes use `UI Route: NEXT_ACTION_BUTTON` with `Dispatch Target: HANDOFF:<exact base-button label from the current agent frontmatter>`; an agent-owned action normally continues in the same turn, with `NEXT_ACTION_BUTTON + AGENT_CONTINUE` reserved for Router recovery from an erroneous pause; information, evidence, Jira, change-content, and commit/push confirmation use `CURRENT_INPUT + NONE`; a user-run command uses `EXTERNAL + NONE`; and a terminal state uses `NONE + NONE`. For CURRENT_INPUT, `Instruction` is a copy-ready reply template. For EXTERNAL, it contains the safe command, working directory, expected result, and evidence to return. Use `None` for other routes. Clicking the unified button authorizes only safe routing or an explicit role transition; it supplies no Required Input and confirms no Jira, change content, commit, push, or external command.
-
-Canonical mappings are: `CONFIRM_DIRECTION` for direction confirmation; `PROVIDE_EVIDENCE` for missing evidence; `IMPLEMENT_FIX`/`FIX_FINDINGS` for implementation or rework; `QUALITY_REVIEW`, `DOCUMENT_CHANGES`, and `GIT_DELIVERY` for their current-agent static handoffs; `ADJUST_CHANGESET` when the user asks to reduce, remove, or rework previewed changes; `CONFIRM_COMMIT` for final Jira/change-content/commit confirmation; `CONFIRM_PUSH` for ordinary-push confirmation; `MANUAL_PUSH` after failed automatic push; `CLOSE_ISSUE` when closure is eligible; `START_NEW_ISSUE` after reset; and `NONE` when no action remains.
-
-For commit confirmation, emit:
-
-```md
-## Next Action
-- Current State: CONFIRM_DELIVERY
-- Action: CONFIRM_COMMIT
-- Owner: User
-- UI Route: CURRENT_INPUT
-- Dispatch Target: NONE
-- Required Input: Git Delivery: commit; Jira ID: QDC017-1111; confirm changes and commit
-- Instruction: Reply in the current input with `Git Delivery: commit; Jira ID: QDC017-1111; confirm changes and commit`
-- On Success: PREFLIGHT â†’ STAGE â†’ COMMIT â†’ REPORT
-```
-
-For a manual independent review, emit:
-
-```md
-## Next Action
-- Current State: QUALITY_REVIEW_PENDING
-- Action: QUALITY_REVIEW
-- Owner: User
-- UI Route: NEXT_ACTION_BUTTON
-- Dispatch Target: HANDOFF:ç‹¬ç«‹è¯„å®¡ / Quality Review
-- Required Input: None
-- Instruction: None
-- On Success: QualityReviewer independently reviews the current diff and verification evidence
-```
-
-### Review Finding Contract
-
-Every `QualityReviewer` finding uses:
-
-```md
-### <Severity>: <short title>
-
-- Dimension: Spec | Standards | Spec, Standards
-- Location: <file:line, symbol, or log offset>
-- Evidence: <reproducible fact>
-- Rationale: <trigger, failure mechanism, and impact>
-- Recommendation: <smallest fix or next evidence>
-- Confidence: HIGH | MEDIUM | LOW
-```
-
-Evidence and Hypothesis must remain separate. MISRA is risk screening by default; without a configured standard version, deviation record, and actual tool evidence, do not claim compliance or invent rule numbers.
-
-### Usage Symptom Guidance Output Contract
-
-Before problem identification or root-cause analysis, `BugResolver` normalizes how the user operated the product, what they did, and what they observed. When direction-changing symptoms are missing, guide the user with one consolidated table containing at most five questions in the first set:
-
-```md
-## Usage Symptom Questions
-
-| Priority | Question | Why It Matters | Example Answer |
-|---|---|---|---|
-| REQUIRED_FOR_DIRECTION/HELPFUL | ... | ... | ... |
-```
-
-Prioritize user goal/real scenario; operation sequence from normal state to failure; expected versus actual behavior; frequency/pattern/trigger window/boundaries; and software/firmware/hardware revisions, last-known-good/first-known-bad, impact, and recovery. Ask only high-information questions not already answered by the current input, and never repeat questions for complete input. The user may answer `Unknown`; non-critical unknowns do not block analysis. Allow at most one non-repeating follow-up set, and only when answers create a new contradiction or direction ambiguity.
-
-Maintain this normalized result for every analysis, using `Unknown` for unavailable fields:
-
-```md
-## Usage Symptom Profile
-
-- User Goal / Scenario: <user goal and real usage scenario>
-- Operation Sequence: <operations and events from normal state to failure>
-- Expected Behavior: <behavior defined by the user or requirement>
-- Actual Behavior: <observable behavior and original error>
-- Frequency / Pattern: <frequency, pattern, duration, and trigger window>
-- Preconditions / Boundary Conditions: <prior state, load, network, power, timing, and boundary values>
-- Environment / Revision: <software, firmware, hardware, configuration, and toolchain revisions>
-- Last Known Good / First Known Bad: <last good and first bad version or time>
-- Impact / Scope: <affected devices, users, functions, and observed impact>
-- Recovery / Workaround: <automatic/manual recovery and known workaround>
-- Direction Confirmation: CONFIRMED | NOT_REQUIRED | PENDING
-```
-
-When symptoms could indicate two or more modules or root-cause paths, expected versus actual behavior is unclear, or inputs conflict, set direction to `PENDING`, emit one `Current Understanding`, list concrete `Possible Directions`, and ask the user to confirm or correct them. Do not begin deep call-path tracing, confirm root cause, or delegate Developer before confirmation. Use `NOT_REQUIRED` and continue directly when direction is clear; use `CONFIRMED` after user confirmation.
-
-`Usage Symptom Questions` collects usage symptoms only. Request logs, version manifests, configuration, ELF/MAP, dumps, and other material only through `Evidence Request`; never mix the two request types.
-
-### Problem Identification Output Contract
-
-`BugResolver` emits the following structure after the Usage Symptom Profile direction is `CONFIRMED` or `NOT_REQUIRED` and before Bug Analysis. Use `Unknown` for missing fields and never fill them with assumptions:
-
-```md
-## Problem Identification
-
-- Usage Symptom Basis: <reference confirmed facts from the Usage Symptom Profile that support this direction>
-- Problem Statement: <one-sentence definition based only on observed facts>
-- Category: functional/state-machine | crash/exception | memory | concurrency/timing | resource | hardware/I/O | protocol/network | configuration/build/version | performance/power | other/unknown
-- Suspected Subsystem: <affected module or execution domain; Unknown when unavailable>
-- Observed Severity: BLOCKER | MAJOR | MINOR | UNKNOWN
-- Trigger / Conditions: <observed trigger; do not insert an unverified cause>
-- Reproducibility: <steps, frequency, and whether the Agent reproduced it>
-- Affected Scope: <devices, versions, configurations, modules, or users>
-- Evidence Confidence: HIGH | MEDIUM | LOW
-```
-
-`Observed Severity` describes observed impact only and does not imply root-cause certainty. Keep facts, inferences, and unknowns separate. Category or subsystem may change with new evidence, but the report must state why. `Usage Symptom Basis` must agree with a Profile whose direction is confirmed or does not require confirmation; never replace user-observed usage symptoms with speculation from a log.
-
-### Evidence Request Output Contract
-
-The Agent may request user material only after searching the repository and existing artifacts. Consolidate every request in one table:
-
-```md
-## Evidence Request
-
-| Priority | Material | Why Needed | Accepted Form | Privacy/Redaction | Blocking Decision |
-|---|---|---|---|---|---|
-| REQUIRED_NOW/HELPFUL | ... | ... | pasted excerpt/path/file/version | ... | ... |
-```
-
-- `REQUIRED_NOW`: without the material, problem classification, critical hypothesis discrimination, artifact matching, or a repair decision cannot continue; pause root-cause confirmation and Developer delegation.
-- `HELPFUL`: the material only improves confidence and must not block safe analysis already supported by evidence.
-- Never re-request material already supplied by the user or discoverable in the repository. After new evidence arrives, repeat the evidence check before hypothesis validation.
-- If interaction cannot continue or the user cannot supply critical material, return `INSUFFICIENT_EVIDENCE` and retain this table. Use `BLOCKED` for a missing product decision, authority, or required hardware source.
-
-### Bug Analysis Output Contract
-
-A `BugResolver` `bug-analysis` report appends the following structure after the general Result Report. Use `Unknown` or `Not confirmed` when evidence is absent; do not remove fields:
-
-```md
-## Bug Analysis
-
-- Symptom: <user-visible behavior and original error; preserve codes/text>
-- Expected / Actual: <expected behavior / actual behavior>
-- Environment and Revision: <product form, software/firmware, hardware, toolchain, configuration, and versions>
-- Reproduction: <minimum steps, frequency, and whether the Agent reproduced it>
-- Failure Point: <reporting file:line, symbol, phase, or log offset; state whether it is only the detection point>
-- Root Cause: <confirmed trigger â†’ defect mechanism â†’ impact causal chain; otherwise Not confirmed>
-- Affected Scope: <affected paths, configurations, versions, devices, or users>
-- Fix Recommendation: <smallest fix direction; analysis does not modify source>
-- Verification Plan: <checks that prove the fix and prevent regression>
-- Missing Information: <exact material still required; None when complete>
-
-### Evidence
-
-1. <file:line, command/exit code, log offset, artifact ID, or version fact>
-
-### Hypotheses
-
-| Rank | Hypothesis | Supporting Evidence | Counter-evidence / Alternative | Confidence | Smallest Validation |
-|---|---|---|---|---|---|
-| 1 | ... | ... | ... | HIGH/MEDIUM/LOW | ... |
-```
-
-Bug-analysis rules:
-
-- Understand the error before testing causes; never paraphrase an exception message as the root cause.
-- Distinguish symptom, reporting/failure point, trigger, and root-cause location.
-- When the cause is unconfirmed, write `Not confirmed` for `Root Cause`, use `INSUFFICIENT_EVIDENCE`, and list the minimum material that advances the decision under `Missing Information`.
-- Confirm root cause only when traceable evidence establishes the complete causal chain and excludes the main alternatives. Confidence does not replace evidence.
-- For analysis-only requests, `Allowed Changes` is `None`; a fix recommendation is not authorization to modify source.
-
-### Orchestration and Write Ownership
-
-- `Orchestrator` is the default general-delivery entry point; it is read-only and does not execute commands. Bug requests transition to `BugResolver` through a manual handoff or dedicated prompt, never nested manager auto-invocation.
-- `BugResolver` is the dedicated orchestrator for bug diagnosis and resolution. It may run restricted read-only diagnostic commands but never edits files directly; it may invoke only `EmbeddedDeveloper`, `QualityReviewer`, and `DocKeeper` as needed.
-- `EmbeddedDeveloper` is the only routine functional-code writer and owns related tests and necessary build configuration.
-- `QualityReviewer` performs independent quality assessment only and reads source without editing it. Its `execute` access is restricted to read-only Git, non-source-rewriting build/test audit, and static analysis; it does not diagnose bug root causes or symbolize faults.
-- `DocKeeper` may write only `docs/`, the root README, `.github/embedded-project.yml`, Task-Brief-authorized project rules under `.project/`, and explicitly authorized non-behavioral code comments.
-- Serialize every working-tree write. Independent read-only reviews may run in parallel; Orchestrator deduplicates results while preserving evidence provenance.
-- Automatic subagent delegation drives the internal loop of each manager; the two managers must not auto-invoke each other. A frontmatter handoff is a manual `send: false` workflow transition and must not be described as automatic continuation.
-- Allow at most two Developer/Reviewer rework rounds. Return `FAILED` if BLOCKER/MAJOR findings or required gate failures remain.
-
-Invoke DocKeeper only when a public API, architecture, hardware assumption, operating procedure, or confirmed root cause changed. Documentation must be fully bilingual and contain no synchronization placeholder at release.
-
-### Git Delivery Contract
-
-- Only `EmbeddedDeveloper` performs routine commit/push operations, using a separate delivery Task Brief after implementation, verification, and independent review complete. The current workflow manager (`Orchestrator` or `BugResolver`) only coordinates and checks the result.
-- A `BugResolver` repair loop must enter `DELIVERY` after `DOCUMENT`. `PLAN_FIX` preserves explicitly supplied `Git Delivery` and commit metadata. If no choice was supplied, pre-delivery specialist Task Briefs use `none`, the manager separately records a pending decision, and `DELIVERY` asks once only after all gates pass. Record and skip explicit `none`; create a separate delivery Task Brief for `commit`, `commit-and-push`, or `auto`, with `auto` entering `AUTO_DECIDE`.
-- A manual VS Code handoff does not automatically return to the manager. `BugResolver`, `QualityReviewer`, and `DocKeeper` must each expose one `Git æäº¤äº¤ä»˜ / Git Delivery` handoff to `EmbeddedDeveloper`, keeping delivery visible after a PASS independent review and after optional documentation. `EmbeddedDeveloper` must expose one `é—®é¢˜å·²è§£å†³ / Close Issue` handoff back to `BugResolver`. These buttons do not replace PASS evidence, current-task authorization, metadata, policy, or closure checks.
-- When repair delivery has no explicit mode, generate a `Commit Delivery Confirmation` with `commit` as the recommended default and mark it `PENDING_CONFIRMATION`. A recommendation is not authorization: perform no Git write until the user confirms it. Never default to `commit-and-push` or `auto`; each requires an explicit user choice. Record a `none` choice as skipped delivery.
-- Jira ID is the only commit field that is always user-supplied. Accept multiple IDs in one response and validate each against the policy Jira pattern. Never infer a Jira ID from a branch, log, path, or similar issue. Generate every other field from `.project/project.yml`, confirmed root cause, actual diff, test/build results, independent review, and documentation evidence. Ask for Project in the same confirmation only when project identity remains `auto` and cannot be resolved uniquely from confirmed context.
-- Default synthesis is deterministic: use `bug fix` for a BugResolver repair; derive Function block, Summary, Change Reason, Root Cause, Solution, Affected Function Name, and Applicable Project from confirmed engineering facts; use AI=`Y` with one truthful primary scenario and detail when AI materially participated in generation, inspection, refactoring, tests, or documentation, and use exactly `AI-Tool-Used: N`, `AI-Tool-Scenario: /`, and `AI-Tool-Detail: /` only when AI did not participate at all; default RN to `N`/`N/A` unless a visible release note is required; derive Test-Proposal as `Y` with actual steps or `N` with a reason; default Stress-Test/HW-Test to `N` unless change risk and a confirmed test plan require `Y` with steps.
-- Every `commit`, `commit-and-push`, and `auto` path handles the Documentation gate before `DETECT_COMMIT_SCOPE` or `CONFIRM_COMMIT`: use `PASS` with documentation evidence when a public API, architecture, public behavior/state machine, hardware assumption, operating procedure, or confirmed root cause changed; otherwise record `NOT_RUN â€” Not required: <reason>`. Missing, failed, or unjustified documentation status blocks delivery. When the current agent has a documentation handoff, dynamically emit `Action: DOCUMENT_CHANGES`, `UI Route: NEXT_ACTION_BUTTON`, and the matching `Dispatch Target: HANDOFF:<exact base-button label>`; otherwise return `BLOCKED` and require manager handling. This also applies to a direct ordinary confirmed commit through `EmbeddedDeveloper`, not only to `auto`.
-- At the start of a modifying task, record a read-only initial `git status`, staged/unstaged/untracked paths, and actual diff as the `Task Change Baseline`, and maintain a ledger of files/changes made by the agent in this task. The baseline never absorbs pre-existing dirty content into the task automatically.
-- Before delivery confirmation, run `DETECT_COMMIT_SCOPE`: commit scope comes from the current task's actual diff only, never from a YAML path allowlist, and excludes unrelated pre-existing dirty/staged content. Record the `commit_content.paths`, per-file `entries` (state, added lines, deleted lines, binary), `excluded_paths`, and content fingerprint returned by `git-plan`. If a file was already dirty before the task and task hunks cannot be separated safely, return `BLOCKED` and ask the user to split it or confirm a handling method; never stage the entire file accidentally.
-- Before any Git write, show an exact `Commit Content` table with inclusion, Git state, added/deleted counts, and a truthful summary for every file, plus excluded dirty paths, one complete metadata preview, the proposed mode, fingerprint, and `Change Confirmation: PENDING`. The user may confirm the changes and commit, or ask to remove a file, narrow hunks, or reduce the implementation. An adjustment enters `ADJUST_CHANGESET`, changes only work created by the current task, and never reverts pre-task user work. If reducing the change would break dependency, build, or acceptance consistency, return `BLOCKED` with the reason and required decision instead of committing an inconsistent subset. Any adjustment invalidates prior confirmation and affected gate evidence; rerun affected tests/checks, independent review, `DETECT_COMMIT_SCOPE`, and the preview.
-- Final confirmation covers the change content, commit metadata, and delivery mode together. The user need only supply Jira ID and reply `confirm changes and commit` (or an equivalent unambiguous confirmation), or name corrections to fields/commit content. Redetect and regenerate the preview after corrections. Without confirmation, return `BLOCKED` with Git unchanged. Do not ask again for confirmed fields or copy preview missing markers into the commit message. After confirmation, reread the actual diff; if content or paths drifted from the preview, invalidate confirmation and return to `DETECT_COMMIT_SCOPE â†’ CONFIRM_DELIVERY` instead of committing changed content.
-- `Git Delivery: auto` has a separate Commit Content gate before any automatic staging or commit. The preview shows `Commit Content Confirmation: PENDING`; its sole Next Action is `CONFIRM_COMMIT + CURRENT_INPUT + NONE`, with a copy-ready `Instruction` containing `confirm automatic commit content`, the full current fingerprint, Jira ID, and `Git Delivery: auto`. Selecting auto, enabling automation, clicking `æ‰§è¡Œä¸‹ä¸€æ­¥ / Next Action`, or prior mode authorization is not content confirmation. After user confirmation, `AUTO_DECIDE` passes that fingerprint as `--expected-content-fingerprint`; absence or drift returns `CONFIRM_COMMIT_CONTENT` and regenerates the preview. Only `content_confirmation.status: CONFIRMED` with a matching current fingerprint may enter `STAGE â†’ COMMIT`.
-- After a Git Delivery handoff switches to `EmbeddedDeveloper`, confirmation, adjustment, and execution remain in that same agent conversation. The preview explicitly tells the user to reply `confirm changes and commit` or `adjust changes: <request>` in the current input box and emits `Action: CONFIRM_COMMIT`; no further commit handoff button is required or awaited. On final confirmation, the current `EmbeddedDeveloper` proceeds directly through `PREFLIGHT â†’ STAGE â†’ COMMIT`. It never says it will delegate to EmbeddedDeveloper, never delegates to itself, and never re-asks confirmed content.
-
-Use this compact first confirmation instead of a full questionnaire:
-
-```md
-## Commit Delivery Confirmation
-- Proposed Git Delivery: commit
-- Authorization: PENDING_CONFIRMATION
-- User Input Required: Jira ID
-- Commit Content: <per-file inclusion, Git state, added/deleted counts, summary, excluded paths, and fingerprint>
-- Commit Content Confirmation: PENDING
-- Generated Metadata: <all template fields and values except Jira>
-- Change Confirmation: PENDING
-- Reply With: use `<Jira ID> + confirm changes and commit` for ordinary modes; for auto use `Git Delivery: auto; Jira ID: <ID>; confirm automatic commit content; fingerprint: <full value>`; or use `adjust changes: <remove file/narrow hunk/reduce implementation>`
-```
-- For `Git Delivery: commit-and-push`, stop after a successful commit and do not push immediately. Preserve the full commit SHA and first-preflight fingerprint, then emit `Action: CONFIRM_PUSH`, `Owner: User`, and `Required Input: confirm push`, showing the branch, remote alias, redacted URL, and target ref resolved from repository-local config. After explicit confirmation, the current `EmbeddedDeveloper` directly executes `PUSH_PREFLIGHT â†’ PUSH` without re-asking for Jira, commit metadata, or commit authorization.
-- `Git Delivery: auto` retains automatic push semantics after confirmation, but Commit Content must be confirmed before automatic commit. `CONFIRM_COMMIT_CONTENT` means confirmation is missing or stale and authorizes no Git write. Commit is allowed only when the preflight receives a matching `--expected-content-fingerprint`, returns `content_confirmation.status: CONFIRMED`, and selects `AUTO_COMMIT_AND_PUSH`; a successful commit then proceeds directly to `PUSH_PREFLIGHT â†’ PUSH` without `CONFIRM_PUSH`.
-- Before delivery, read `.project/git/delivery.yml` through `.project/project.yml`. `automation.commit`/`automation.push` gate only `Git Delivery: auto`; user-confirmed `commit` and `commit-and-push` are authorized through `CONFIRM_COMMIT` and `CONFIRM_PUSH` respectively and must not be blocked because an automation switch is off. Push authorization includes commit, not conversely.
-- Enter `AUTO_DECIDE` for `Git Delivery: auto` only after the repair, tests, required checks, independent review, and required documentation are all `PASS`. First generate the complete commit message from the repository template and validate it strictly. Missing Project, Jira, RN, test notes, or other required metadata returns `BLOCKED` for input; never leave placeholders.
-- Read-only `project_policy.py git-plan --operation auto --delivery auto` returns `CONFIRM_COMMIT_CONTENT`, `AUTO_COMMIT_AND_PUSH`, `OUTPUT_COMMIT_MESSAGE`, or `NO_DELIVERY` when there is no effective diff. With changes, it returns `commit_content` and `content_confirmation`; only an explicit `--expected-content-fingerprint` matching current content yields `CONFIRMED`. Store the message file in an operating-system temporary directory outside the repository so it cannot become a worktree change.
-- `OUTPUT_COMMIT_MESSAGE` runs no `git add`, `git commit`, or `git push`. Its user-facing delivery output contains only the complete validated commit content, without paths, push target, or failed-condition diagnostics. Only `AUTO_COMMIT_AND_PUSH` permits writes, and there is no automatic commit-only fallback.
-- If the current task changes Git policy, evaluate delivery against the committed policy present at task start. An uncommitted relaxation takes effect only for a later task and cannot self-authorize commit/push in the same task.
-- Use `project_policy.py git-plan` for read-only preflight. Inspect `git status` and the actual diff and explicitly stage only task files confirmed by `DETECT_COMMIT_SCOPE`. A legacy `scope.allowed_paths` field is compatibility-only and never authorizes or filters commit content; paths still must not match `scope.denied_paths`. Never stage repository-wide.
-- Generate the message from `.project/git/commit.template` and strictly validate it with `project_policy.py message`. When an agent participated in code, inspection, refactoring, tests, or documentation, disclose that in the AI fields. Run every `commit.checks` entry and required quality gate; never bypass hooks with `--no-verify`.
-- Resolve the current branch, remote alias, push URL, and target remote ref only from this repository's local `.git` config through `project_policy.py git-plan`. Task Briefs, `.project`, global Git config, environment variables, and command arguments cannot override them. Repeat preflight with the fingerprint immediately before push and stop on drift.
-- `AUTO_COMMIT_AND_PUSH` requires an initially empty index, HEAD exactly equal to the local upstream tracking ref, no existing incoming/outgoing commit, and a worktree change set exactly equal to the repair paths. Reinspect the staged diff after explicit staging, create one new commit, record its full SHA, then run the second push preflight with the first fingerprint and `--expected-commit <SHA>`; outgoing commits must contain only that SHA.
-- In the same local-only Git environment used by preflight, with global/system/environment config injection disabled, the only permitted push form is `git -C <root> push <resolved-remote> HEAD:<resolved-remote-ref>`. Never use `push -u`, force push, remote deletion, custom refspecs, or `.git/config` mutation.
-- Before any Git write, an unmet auto-upload condition selects `OUTPUT_COMMIT_MESSAGE` and leaves Git unchanged. If commit succeeds but the second preflight or push fails, keep the local commit without rollback or automatic retry, report the complete message, SHA, and failure fact, and emit `Action: MANUAL_PUSH`. Build its sole non-force command from the most recently resolved remote alias and target ref as `git -C <root> push <resolved-remote> HEAD:<resolved-remote-ref>`, require the user to run it and provide the result, and always redact URL credentials.
-
-### Issue Closure Contract
-
-- A bug repair enters `CLOSE` only after the repair, verification, independent review, required documentation, and selected Git delivery are handled. Explicit `Git Delivery: none` is a handled skip; `commit` completes when the commit succeeds; a push mode requires a successful push or an explicit user change to local commit-only. Do not close while push has failed or manual-push evidence is pending.
-- The automatic-delegation path closes directly in `BugResolver`. After a manual Git Delivery handoff, an eligible `EmbeddedDeveloper` result exposes the sole Next Action pointing to `é—®é¢˜å·²è§£å†³ / Close Issue`; if clicked early, `BugResolver` rechecks every gate and returns `BLOCKED`.
-- `CLOSE` reports root cause, fix, verification gates, delivery result and commit SHA, and residual risks. It then enters `RESET`, clearing issue-level Usage Symptoms, direction confirmation, evidence requests, hypotheses, root cause, repair scope, Jira, commit metadata, delivery authorization, fingerprint, and SHA while retaining repository facts, project configuration, and safety policy.
-- After `RESET`, immediately enter a fresh `INTAKE` and emit `Action: START_NEW_ISSUE`, requesting the new issue's goal, symptoms, or original error. Never carry the previous issue's Jira, root cause, scope, or Git authorization into the new issue.
-- Return `BLOCKED` for missing/invalid policy or template, path/branch mismatch, unisolatable dirty worktree, ambiguous upstream/remote target, or failed checks. Never loosen policy merely to continue delivery.
-
-### Safety and Evidence Boundary
-
-- Preserve the dirty worktree. No destructive Git, unrelated overwrite/refactor, silent dependency installation, or unauthorized source-rewriting tools.
-- Without explicit user authorization for the current task, do not flash, erase, fuse, reset, power a board, run HIL, connect/control a physical device, or perform other physical-hardware actions. Commands in the profile never constitute authorization.
-- Never fabricate registers, addresses, bit values, pins, clocks, timing, electrical constraints, revisions, test results, standards rule numbers, or sources.
-- Never upload or place private source, customer data, credentials, internal URLs, or unsanitized logs in Web queries. DocKeeper Web access is restricted to public official sources.
-- `volatile` provides compiler visibility only and does not guarantee atomicity, mutual exclusion, or memory ordering; concurrency design requires platform-appropriate synchronization.
-- Evidence must trace to a file/line, command/exit code, log offset, artifact ID, or official document identifier/revision/page. Anything untraceable must be labeled as an assumption or hypothesis.
+`BugResolver` åœ¨é—®é¢˜è¯†åˆ«å’Œæµï½=ÚÚ$z{-®éÜj×Šœİ\Y\È›ÈZ\ÜÚ[™È[œ]‹[™Ù™–Èœ›Û\—JBˆÙ[‹˜\ÜÙ\[Šˆ˜ÛÛ™š\›\È›ÈÛÛ[Z]\ÚÜˆ^\›˜[ÛÛ[X[™‹ˆ[™Ù™–Èœ›Û\—Kˆ
+B‚ˆYÙ[HÙ[‹œ™\ÈÈ‹™Ú]XˆˆÈ˜YÙ[ÈˆÈ›Ü˜Ú\İ˜]Ü‹˜YÙ[›Y‚ˆÜšYÚ[˜[HYÙ[œ™XYİ^
+[˜ÛÙ[™ÏH]‹NŠBˆ]]][ÛœÈH
+ˆ
+˜YÙ[ˆ™^Xİ[Û”›İ]\ˆ‹˜YÙ[ˆ[X™YY]™[Ü\ˆŠKˆ
+ˆÙ[™ˆYH‹ˆÙ[™ˆ˜[ÙHŠKˆ
+œİ\Y\È›ÈZ\ÜÚ[™È[œ]‹œİ\Y\È[\XÚ][œ]ŠKˆ
+Bˆ›ÜˆÛ™]È[ˆ]]][ÛœÎ‚ˆÚ]Ù[‹œİX•\İ
+]]][Û[Û
+N‚ˆYÙ[Üš]Wİ^
+ˆÜšYÚ[˜[œ™\XÙJÛ™]ËJKˆ[˜ÛÙ[™ÏH]‹N‹ˆ™]Û[™OH—ˆ‹ˆ
+BˆÙ[‹˜\ÜÙ\[Š’S‘Ñ‘—Ó‘VĞPÕSÓˆ‹Ù[‹˜ÛÙ\Ê
+JBˆYÙ[Üš]Wİ^
+ÜšYÚ[˜[[˜ÛÙ[™ÏH]‹N‹™]Û[™OH—ˆŠB‚ˆYˆ\İÛ™^ØXİ[Û—Ü›İ]\—Ú\×ÚY[—Ø[™ÛZ[š[X[
+Ù[ŠHOˆ›Û™N‚ˆ›İ]\ˆHÙ[‹œ™\ÈÈ‹™Ú]XˆˆÈ˜YÙ[ÈˆÈ›™^XXİ[Û‹\›İ]\‹˜YÙ[›Y‚ˆÜšYÚ[˜[H›İ]\‹œ™XYİ^
+[˜ÛÙ[™ÏH]‹NŠBˆœ›ÛX]\ˆHX[[œØY™WÛØY
+ÜšYÚ[˜[œÜ]
+‹KKWˆ‹ŠVÌWJBˆÙ[‹˜\ÜÙ\\]X[
+“™^Xİ[Û”›İ]\ˆ‹œ›ÛX]\–È›˜[YH—JBˆÙ[‹˜\ÜÙ\\Êœ›ÛX]\–È\Ù\‹Z[›ØØX›H—K˜[ÙJBˆÙ[‹˜\ÜÙ\\Êœ›ÛX]\–È™\ØX›K[[Ù[Z[›ØØ][Ûˆ—KYJBˆÙ[‹˜\ÜÙ\\]X[
+È˜YÙ[‹œ™XY‹œÙX\˜Ú—Kœ›ÛX]\–ÈÛÛÈ—JBˆÙ[‹˜\ÜÙ\\]X[
+ˆÂˆ“Ü˜Ú\İ˜]Üˆ‹ˆYÔ™\ÛÛ™\ˆ‹ˆ‘[X™YY]™[Ü\ˆ‹ˆ”]X[]T™]šY]Ù\ˆ‹ˆ‘ØÒÙY\\ˆ‹ˆKˆœ›ÛX]\–È˜YÙ[È—Kˆ
+Bˆ^XİYÚ[™Ù™œÈH
+ˆ
+º/å9fç¹ï%¹£¤ˆÈ™]\›ˆÈÜ˜Ú\İ˜]Üˆ‹“Ü˜Ú\İ˜]ÜˆŠKˆ
+º/å9fçºeëºh¦:)èùa¬ÈÈ™]\›ˆÈYÈ™\ÛÛ™\ˆ‹YÔ™\ÛÛ™\ˆŠKˆ
+º/å9fç¹k§¹¥¯HÈ™]\›ˆÈ[X™YY]™[Ü\ˆ‹‘[X™YY]™[Ü\ˆŠKˆ
+º/å9fçº+á9k¨HÈ™]\›ˆÈ]X[]H™]šY]Ù\ˆ‹”]X[]T™]šY]Ù\ˆŠKˆ
+º/å9fç¹¥¡ù¨hÈÈ™]\›ˆÈØÈÙY\\ˆ‹‘ØÒÙY\\ˆŠKˆ
+Bˆ[™Ù™œÈHœ›ÛX]\–Èš[™Ù™œÈ—BˆÙ[‹˜\ÜÙ\\]X[
+ˆ^XİYÚ[™Ù™œËˆ\J
+][VÈ›X™[—K][VÈ˜YÙ[—JH›Üˆ][H[ˆ[™Ù™œÊKˆ
+BˆÙ[‹˜\ÜÙ\YJ[
+][VÈœÙ[™—H\È˜[ÙH›Üˆ][H[ˆ[™Ù™œÊJBˆÙ[‹˜\ÜÙ\YJˆ[
+ˆ”™]˜[Y]HH]\İ[š\]YH™^Xİ[Ûˆˆ[ˆ][VÈœ›Û\—Bˆ[™œİ\Y\È›ÈZ\ÜÚ[™È[œ]ˆ[ˆ][VÈœ›Û\—Bˆ[™˜ÛÛ™š\›\È›ÈÛÛ[Z]\ÚÜˆ^\›˜[ÛÛ[X[™‚ˆ[ˆ][VÈœ›Û\—Bˆ›Üˆ][H[ˆ[™Ù™œÂˆ
+Bˆ
+B‚ˆ]]][ÛœÈH
+ˆ
+\Ù\‹Z[›ØØX›Nˆ˜[ÙH‹\Ù\‹Z[›ØØX›NˆYH‹QÑS•ÒS•“ĞĞP“HŠKˆ
+ˆÛÛÎˆÉØYÙ[	Ë	Ü™XY	Ë	ÜÙX\˜Ú	×H‹ˆÛÛÎˆÉØYÙ[	Ë	Ü™XY	Ë	ÜÙX\˜Ú	Ë	Ù^Xİ]I×H‹ˆQÑS•ÕÓÓÈ‹ˆ
+Kˆ
+ˆ˜][ÜİZYÚÛÛœÙXİ]]™HXİ[ÛœÈ‹ˆÚ]İ]H˜[œÚ][Ûˆ[Z]‹ˆQÑS•Ğ“ÑWĞÓÓ•PÕ‹ˆ
+Kˆ
+ˆº/å9fç¹ï%¹£¤ˆÈ™]\›ˆÈÜ˜Ú\İ˜]Üˆ‹ˆ”‘SSÕ‘QÔ“ÕUT—ÑSPÒÈ‹ˆ’S‘Ñ‘—ĞTÑSS‘H‹ˆ
+Kˆ
+ˆˆÙ[™ˆ˜[ÙH‹ˆˆÙ[™ˆYH‹ˆ’S‘Ñ‘—Ô“ÕUT—ÑSPÒÈ‹ˆ
+Kˆ
+ˆœİ\Y\È›ÈZ\ÜÚ[™È[œ]‹ˆœİ\Y\È[\XÚ][œ]‹ˆ’S‘Ñ‘—Ô“ÕUT—ÑSPÒÈ‹ˆ
+Kˆ
+Bˆ›ÜˆÛ™]ËÛÙH[ˆ]]][ÛœÎ‚ˆÚ]Ù[‹œİX•\İ
+]]][Û[Û
+N‚ˆ›İ]\‹Üš]Wİ^
+ˆÜšYÚ[˜[œ™\XÙJÛ™]ËJKˆ[˜ÛÙ[™ÏH]‹N‹ˆ™]Û[™OH—ˆ‹ˆ
+BˆÙ[‹˜\ÜÙ\[ŠÛÙKÙ[‹˜ÛÙ\Ê
+JBˆ›İ]\‹Üš]Wİ^
+ÜšYÚ[˜[[˜ÛÙ[™ÏH]‹N‹™]Û[™OH—ˆŠB‚ˆ›ÜˆX\šÙ\ˆ[ˆ
+’[œ]™\]Z\™Y‹”™\H[\]HŠN‚ˆÚ]Ù[‹œİX•\İ
+™\]Z\™YÚ[œ]ÛX\šÙ\[X\šÙ\ŠN‚ˆ›İ]\‹Üš]Wİ^
+ˆÜšYÚ[˜[œ™\XÙJX\šÙ\‹”‘SSÕ‘QÒS”UĞÓÓ•PÕŠKˆ[˜ÛÙ[™ÏH]‹N‹ˆ™]Û[™OH—ˆ‹ˆ
+BˆÙ[‹˜\ÜÙ\[ŠQÑS•Ğ“ÑWĞÓÓ•PÕ‹Ù[‹˜ÛÙ\Ê
+JBˆ›İ]\‹Üš]Wİ^
+ÜšYÚ[˜[[˜ÛÙ[™ÏH]‹N‹™]Û[™OH—ˆŠB‚ˆYˆ\İÙÚ]Ù[]™\WÚ[™Ù™—Ú\×Ü™\]Z\™YØY\—Ü™]šY]×Ø[™ÙØİ[Y[][ÛŠÙ[ŠHOˆ›Û™N‚ˆ›Üˆ˜[YH[ˆ
+ˆ˜YË\™\ÛÛ™\‹˜YÙ[›Y‹ˆœ]X[]K\™]šY]Ù\‹˜YÙ[›Y‹ˆ™ØËZÙY\\‹˜YÙ[›Y‹ˆ
+N‚ˆYÙ[HÙ[‹œ™\ÈÈ‹™Ú]XˆˆÈ˜YÙ[ÈˆÈ˜[YBˆÜšYÚ[˜[HYÙ[œ™XYİ^
+[˜ÛÙ[™ÏH]‹NŠBˆÚ]Ù[‹œİX•\İ
+YÙ[[˜[YJN‚ˆYÙ[Üš]Wİ^
+ˆÜšYÚ[˜[œ™\XÙJˆ‘Ú]9£ä9.©9.©9.æÈÚ][]™\H‹ˆ”‘SSÕ‘QÑÒUÑSU‘T–WÒS‘Ñ‘ˆ‹ˆ
+Kˆ[˜ÛÙ[™ÏH]‹N‹ˆ™]Û[™OH—ˆ‹ˆ
+BˆÙ[‹˜\ÜÙ\[Š’S‘Ñ‘—ÑSU‘T–H‹Ù[‹˜ÛÙ\Ê
+JBˆYÙ[Üš]Wİ^
+ÜšYÚ[˜[[˜ÛÙ[™ÏH]‹N‹™]Û[™OH—ˆŠB‚ˆ›ÜˆX\šÙ\ˆ[ˆ
+ˆœ™XÛÛ[Y[™YY˜][‹ˆ\Ù\‹\İ\YYš\˜HQ‹ˆ™Ù[™\˜]H]™\Hİ\ˆÛÛ[Z]šY[‹ˆ˜İ\œ™[[œ]›Ş‹ˆ™^Xİ]H\™XİH\ÈHİ\œ™[[X™YY]™[Ü\ˆ‹ˆ›™]™\ˆ[YØ]HÈ[İ\œÙ[ˆ‹ˆ•\ÚÈÚ[™ÙH˜\Ù[[™H‹ˆ•\ÚÈÚ[™ÙHYÙ\ˆ‹ˆ‘UPÕĞÓÓSRUÔĞÓÔH‹ˆÛÛ[Z]ÛÛ[‹ˆQ•TÕĞÒS‘ÑTÑU‹ˆÚ[™ÙHÛÛ™š\›X][ÛˆS‘S‘È‹ˆÓÓ‘’T“WÔTÒ‹ˆ“PS•PSÔTÒ‹ˆ
+N‚ˆÚ]Ù[‹œİX•\İ
+YÙ[[˜[YK›Û\ÛX\šÙ\[X\šÙ\ŠN‚ˆYÙ[Üš]Wİ^
+ˆÜšYÚ[˜[œ™\XÙJˆX\šÙ\‹ˆ”‘SSÕ‘QÑSU‘T–WÑQUSĞÓÓ•PÕ‹ˆ
+Kˆ[˜ÛÙ[™ÏH]‹N‹ˆ™]Û[™OH—ˆ‹ˆ
+BˆÙ[‹˜\ÜÙ\[Š’S‘Ñ‘—ÑSU‘T–H‹Ù[‹˜ÛÙ\Ê
+JBˆYÙ[Üš]Wİ^
+ÜšYÚ[˜[[˜ÛÙ[™ÏH]‹N‹™]Û[™OH—ˆŠB‚ˆYˆ\İÜÚ\™YØÛÛ˜XİÜ™\]Z\™\×ØÚ[™ÙWØÛÛ™š\›X][Û—Ø[™ØY\İY[
+Ù[ŠHOˆ›Û™N‚ˆÛÛ˜XİHÙ[‹œ™\ÈÈ‹™Ú]XˆˆÈ˜YÙ[XÛÛ˜XİË›Y‚ˆÜšYÚ[˜[HÛÛ˜Xİœ™XYİ^
+[˜ÛÙ[™ÏH]‹NŠBˆ›ÜˆX\šÙ\ˆ[ˆ
+ˆˆÈÈ™^Xİ[Ûˆ‹ˆ˜Q•TÕĞÒS‘ÑTÑU‹ˆÚ[™ÙHÛÛ™š\›X][ÛˆS‘S‘È‹ˆ˜ÛÛ™š\›HÚ[™Ù\È[™ÛÛ[Z]‹ˆœ\‹Yš[H[šY\Ø‹ˆ˜ÓÓ‘’T“WÔTÒ‹ˆ˜PS•PSÔTÒ‹ˆ˜ÕT•Ó‘U×ÒTÔÕQX‹ˆ‹HRH›İ]Nˆ‹ˆ‹H\Ü]Ú\™Ù]ˆ‹ˆ‹H[œ]™\]Z\™Yˆ‹ˆ‹H™\]Z\™Y[œ]ˆ‹ˆ‹H™\H[\]Nˆ‹ˆ‹H[œİXİ[Ûˆ‹ˆ˜“Õ’QWÑU’QSÑX‹ˆ“‘VĞPÕSÓ—Ğ•UÓˆ‹ˆ’S‘Ñ‘^Xİİ\œ™[XYÙ[˜\ÙKX]ÛˆX™[ˆ‹ˆQÑS•ĞÓÓ•S•QH‹ˆ““ÕÔ•Sˆ8 %›İ™\]Z\™Yˆ™X\ÛÛˆ‹ˆ˜ÓÓ‘’T“WĞÓÓSRUĞÓÓ•S•‹ˆ‹KY^XİYXÛÛ[Yš[™Ù\œš[‹ˆ˜ÛÛ[ØÛÛ™š\›X][Û‹œİ]\ÎˆÓÓ‘’T“QQ‹ˆÛÛ[Z]ÛÛ[ÛÛ™š\›X][ÛˆS‘S‘È‹ˆº/å9fç¹ï%¹£¤ˆÈ™]\›ˆÈÜ˜Ú\İ˜]Üˆ‹ˆ™š]™Hİ]XÈ˜[˜XÚÈ[™Ù™œÈ‹ˆ
+N‚ˆÚ]Ù[‹œİX•\İ
+X\šÙ\[X\šÙ\ŠN‚ˆÛÛ˜XİÜš]Wİ^
+ˆÜšYÚ[˜[œ™\XÙJX\šÙ\‹”‘SSÕ‘QÔÒT‘QĞÓÓ•PÕŠKˆ[˜ÛÙ[™ÏH]‹N‹ˆ™]Û[™OH—ˆ‹ˆ
+BˆÙ[‹˜\ÜÙ\YJˆ[JÛÙKœİ\İÚ]
+”ÒT‘QĞÓÓ•PÕŠH›ÜˆÛÙH[ˆÙ[‹˜ÛÙ\Ê
+JBˆ
+BˆÛÛ˜XİÜš]Wİ^
+ÜšYÚ[˜[[˜ÛÙ[™ÏH]‹N‹™]Û[™OH—ˆŠB‚ˆYˆ\İØÛÜÙWÚ\ÜİYWÚ[™Ù™—Ú\×Ü™\]Z\™YØY\—Ù[]™\JÙ[ŠHOˆ›Û™N‚ˆYÙ[HÙ[‹œ™\ÈÈ‹™Ú]XˆˆÈ˜YÙ[ÈˆÈ™[X™YYY]™[Ü\‹˜YÙ[›Y‚ˆÜšYÚ[˜[HYÙ[œ™XYİ^
+[˜ÛÙ[™ÏH]‹NŠBˆYÙ[Üš]Wİ^
+ˆÜšYÚ[˜[œ™\XÙJˆºeëºh¦9mìº)èùa¬ÈÈÛÜÙH\ÜİYH‹ˆ”‘SSÕ‘QĞÓÔÑWÒTÔÕQWÒS‘Ñ‘ˆ‹ˆ
+Kˆ[˜ÛÙ[™ÏH]‹N‹ˆ™]Û[™OH—ˆ‹ˆ
+BˆÙ[‹˜\ÜÙ\[Š’S‘Ñ‘—ĞÓÔÑWÒTÔÕQH‹Ù[‹˜ÛÙ\Ê
+JB‚ˆ›ÜˆX\šÙ\ˆ[ˆ
+ˆ”™XÚXÚÈ‹ˆœ™\Z\ˆ‹ˆœÙ[XİYÚ][]™\H‹ˆ˜ÛX\ˆ\ÜİYK[]™[İ]H‹ˆ™œ™\Ú\ÜİYHS•RÑH‹ˆ›İ\Ú\ÙH™]\›ˆ“ĞÒÑQ‹ˆ“™^Xİ[Ûˆ‹ˆ
+N‚ˆÚ]Ù[‹œİX•\İ
+›Û\ÛX\šÙ\[X\šÙ\ŠN‚ˆYÙ[Üš]Wİ^
+ˆÜšYÚ[˜[œ™\XÙJˆX\šÙ\‹ˆ”‘SSÕ‘QĞÓÔÑWÒTÔÕQWĞÓÓ•PÕ‹ˆ
+Kˆ[˜ÛÙ[™ÏH]‹N‹ˆ™]Û[™OH—ˆ‹ˆ
+BˆÙ[‹˜\ÜÙ\[Š’S‘Ñ‘—ĞÓÔÑWÒTÔÕQH‹Ù[‹˜ÛÙ\Ê
+JBˆYÙ[Üš]Wİ^
+ÜšYÚ[˜[[˜ÛÙ[™ÏH]‹N‹™]Û[™OH—ˆŠB‚ˆYˆ\İÛX[›Ü›YYØYÙ[ŞX[[Ú\×Ü™Z™XİY
+Ù[ŠHOˆ›Û™N‚ˆÚ][˜ÛÜYš[Jˆ’VT‘TÈÈ›™YØ]]™HˆÈ›X[›Ü›YYXYÙ[˜YÙ[›Y‹ˆÙ[‹œ™\ÈÈ‹™Ú]XˆˆÈ˜YÙ[ÈˆÈ™[X™YYY]™[Ü\‹˜YÙ[›Y‹ˆ
+BˆÙ[‹˜\ÜÙ\[Š‘”“Ó•PUT—ÖPSS‹Ù[‹˜ÛÙ\Ê
+JB‚ˆYˆ\İÛZ\ÜÚ[™×ÜÚÚ[Ø[™Üİ[WÜ›Û\Ü™Y™\™[˜ÙWØ\™WÜ™Z™XİY
+Ù[ŠHOˆ›Û™N‚ˆÚÚ[HÙ[‹œ™\ÈÈ‹™Ú]XˆˆÈœÚÚ[ÈˆÈ›Z\Ü˜K\š\ÚË\™]šY]ÈˆÈ”ÒÒS›Y‚ˆÚÚ[[›[šÊ
+Bˆ›Û\HÙ[‹œ™\ÈÈ‹™Ú]XˆˆÈœ›Û\ÈˆÈ›Z\Ü˜K\™]šY]Ëœ›Û\›Y‚ˆ›Û\Üš]Wİ^
+ˆ›Û\œ™XYİ^
+[˜ÛÙ[™ÏH]‹NŠKœ™\XÙJˆ‹‹‹ÜÚÚ[ËÛZ\Ü˜K\š\ÚË\™]šY]ËÔÒÒS›Y‹ˆ‹‹‹ÜÚÚ[ËÜ™[˜[YY\™]šY]ËÔÒÒS›Y‹ˆ
+Kˆ[˜ÛÙ[™ÏH]‹N‹ˆ™]Û[™OH—ˆ‹ˆ
+BˆÛÙ\ÈHÙ[‹˜ÛÙ\Ê
+BˆÙ[‹˜\ÜÙ\[Š”ÒÒSÔÑU‹ÛÙ\ÊBˆÙ[‹˜\ÜÙ\[Š”“ÓTÔÒÒS‹ÛÙ\ÊBˆÙ[‹˜\ÜÙ\[Š“S’×ÓRTÔÒS‘È‹ÛÙ\ÊB‚ˆYˆ\İÛZ\ÜÚ[™×Ø[˜[^™WØY×Ü›Û\Ú\×Ü™Z™XİY
+Ù[ŠHOˆ›Û™N‚ˆ›Û\HÙ[‹œ™\ÈÈ‹™Ú]XˆˆÈœ›Û\ÈˆÈ˜[˜[^™KXYËœ›Û\›Y‚ˆ›Û\[›[šÊ
+BˆÙ[‹˜\ÜÙ\[Š”“ÓTÔÑU‹Ù[‹˜ÛÙ\Ê
+JB‚ˆYˆ\İØY×Ü›Û\Û]\İÜ›İ]Wİ×ØY×Ü™\ÛÛ™\ŠÙ[ŠHOˆ›Û™N‚ˆ›Û\HÙ[‹œ™\ÈÈ‹™Ú]XˆˆÈœ›Û\ÈˆÈ˜[˜[^™KXYËœ›Û\›Y‚ˆ›Û\Üš]Wİ^
+ˆ›Û\œ™XYİ^
+[˜ÛÙ[™ÏH]‹NŠKœ™\XÙJˆ˜YÙ[ˆYÔ™\ÛÛ™\ˆ‹ˆ˜YÙ[ˆ]X[]T™]šY]Ù\ˆ‹ˆ
+Kˆ[˜ÛÙ[™ÏH]‹N‹ˆ™]Û[™OH—ˆ‹ˆ
+BˆÙ[‹˜\ÜÙ\[Š”“ÓTĞQÑS•‹Ù[‹˜ÛÙ\Ê
+JB‚ˆYˆ\İÛZ\ÜÚ[™×Ü™\]Z\™YÜÚÚ[ÜØÜš\Ú\×Ü™Z™XİY
+Ù[ŠHOˆ›Û™N‚ˆØÜš\H
+ˆÙ[‹œ™\ÂˆÈ‹™Ú]Xˆ‚ˆÈœÚÚ[È‚ˆÈ›Z\Ü˜K\š\ÚË\™]šY]È‚ˆÈœØÜš\È‚ˆÈ››Ü›X[^™WÜØ\šY‹œH‚ˆ
+BˆØÜš\[›[šÊ
+BˆÙ[‹˜\ÜÙ\[Š”ÒÒSÔĞÔ’TÔÑU‹Ù[‹˜ÛÙ\Ê
+JB‚ˆYˆ\İÛÙ×Ø[˜[\Ú\×Ûİ]]ØÛÛ˜XİÚ\×Ü™\]Z\™Y
+Ù[ŠHOˆ›Û™N‚ˆÚÚ[H
+ˆÙ[‹œ™\ÂˆÈ‹™Ú]Xˆ‚ˆÈœÚÚ[È‚ˆÈ™š\›]Ø\™K[ÙËX[˜[\Ú\È‚ˆÈ”ÒÒS›Y‚ˆ
+BˆÜšYÚ[˜[HÚÚ[œ™XYİ^
+[˜ÛÙ[™ÏH]‹NŠBˆ›ÜˆX\šÙ\ˆ[ˆ
+ˆ‘ÕRQWÔÖSTÓTÈ‹ˆÓÓ‘’T“WÑT‘PÕSÓˆ‹ˆ•\ØYÙHŞ[\ÛH]Y\İ[ÛœÈ‹ˆ•\ØYÙHŞ[\ÛH›Ùš[H‹ˆ‘\™Xİ[ÛˆÛÛ™š\›X][Ûˆ‹ˆ’QS•Q–WÔ“Ğ“SH‹ˆ‘U’QSÑWĞÒPÒÈ‹ˆUĞRUÑU’QSÑH‹ˆ“›Ü›X[^™Y]™[È‹ˆ
+N‚ˆÚ]Ù[‹œİX•\İ
+X\šÙ\[X\šÙ\ŠN‚ˆÚÚ[Üš]Wİ^
+ˆÜšYÚ[˜[œ™\XÙJX\šÙ\‹”‘SSÕ‘QÔ‘TURT‘QĞ‘RU’SÔˆŠKˆ[˜ÛÙ[™ÏH]‹N‹ˆ™]Û[™OH—ˆ‹ˆ
+BˆÙ[‹˜\ÜÙ\[Š”ÒÒSĞ“ÑWĞÓÓ•PÕ‹Ù[‹˜ÛÙ\Ê
+JBˆÚÚ[Üš]Wİ^
+ÜšYÚ[˜[[˜ÛÙ[™ÏH]‹N‹™]Û[™OH—ˆŠB‚ˆYˆ\İÚ[˜[YÜ›Ú™XİÜ›Ùš[WÚ\×Ü™Z™XİY
+Ù[ŠHOˆ›Û™N‚ˆÚ][˜ÛÜYš[Jˆ’VT‘TÈÈ›™YØ]]™HˆÈš[˜[Y\›Ùš[K[[‹ˆÙ[‹œ™\ÈÈ‹™Ú]XˆˆÈ™[X™YY\›Ú™Xİ[[‹ˆ
+BˆÙ[‹˜\ÜÙ\[Š”“Ñ’SWÔĞÒSPH‹Ù[‹˜ÛÙ\Ê
+JB‚ˆYˆ\İØÜ›—Ú\×Ü™Z™XİY
+Ù[ŠHOˆ›Û™N‚ˆ™XYYHHÙ[‹œ™\ÈÈ”‘PQQK›Y‚ˆ^H™XYYKœ™XYİ^
+[˜ÛÙ[™ÏH]‹NŠBˆ™XYYKÜš]WØ]\Ê^œ™\XÙJ——ˆ‹—ˆŠKœ™\XÙJ—ˆ‹——ˆŠK™[˜ÛÙJ]‹NŠJBˆÙ[‹˜\ÜÙ\[Š•VÓˆ‹Ù[‹˜ÛÙ\Ê
+JB‚ˆYˆ\İÛZ\ÜÚ[™×Øš[[™İX[ÜÙXİ[Û—Ú\×Ü™Z™XİY
+Ù[ŠHOˆ›Û™N‚ˆÙ[‹š[œİ[Û™YØ]]™WÛX\šÙİÛŠ˜œ›ÚÙ[‹Xš[[™İX[›YŠBˆÙ[‹˜\ÜÙ\[Š’SS‘ÕPSÔÑPÕSÓ”È‹Ù[‹˜ÛÙ\Ê
+JB‚ˆYˆ\İÜ›Ú™XİÛX\šÙİÛ—Ü™\]Z\™\×Øš[[™İX[ÜÙXİ[ÛœÊÙ[ŠHOˆ›Û™N‚ˆÚ][˜ÛÜYš[Jˆ’VT‘TÈÈ›™YØ]]™HˆÈ˜œ›ÚÙ[‹Xš[[™İX[›Y‹ˆÙ[‹œ™\ÈÈ‹œ›Ú™XİˆÈœ[\ÈˆÈ˜œ›ÚÙ[‹Xš[[™İX[›Y‹ˆ
+BˆÙ[‹˜\ÜÙ\[Š’SS‘ÕPSÔÑPÕSÓ”È‹Ù[‹˜ÛÙ\Ê
+JB‚ˆYˆ\İİ[œ™\ÛÛ™YİÙ×ÜŞ[˜×Ú[—Ü›ÜÙWÚ\×Ü™Z™XİY
+Ù[ŠHOˆ›Û™N‚ˆÙ[‹š[œİ[Û™YØ]]™WÛX\šÙİÛŠÙË\Ş[˜Ë›YŠBˆÙ[‹˜\ÜÙ\[Š•Ñ×ÔÖSÈ‹Ù[‹˜ÛÙ\Ê
+JB‚ˆYˆ\İØœ›ÚÙ[—ÛØØ[ÛX\šÙİÛ—Û[š×Ú\×Ü™Z™XİY
+Ù[ŠHOˆ›Û™N‚ˆÙ[‹š[œİ[Û™YØ]]™WÛX\šÙİÛŠ˜œ›ÚÙ[‹[[šË›YŠBˆÙ[‹˜\ÜÙ\[Š“S’×ÓRTÔÒS‘È‹Ù[‹˜ÛÙ\Ê
+JB‚ˆYˆ\İİ˜[YÛØØ[ÛX\šÙİÛ—Ø[˜ÚÜœ×Ø\™WØXØÙ\Y
+Ù[ŠHOˆ›Û™N‚ˆØÜÈHÙ[‹œ™\ÈÈ™ØÜÈ‚ˆÚ][˜ÛÜYš[Jˆ’VT‘TÈÈ›X\šÙİÛˆˆÈ˜[˜ÚÜ‹]\™Ù]›Y‹ˆØÜÈÈ˜[˜ÚÜ‹]\™Ù]›Y‹ˆ
+BˆÚ][˜ÛÜYš[Jˆ’VT‘TÈÈ›X\šÙİÛˆˆÈ˜[˜ÚÜ‹[[šÜË]˜[Y›Y‹ˆØÜÈÈ˜[˜ÚÜ‹[[šÜË]˜[Y›Y‹ˆ
+BˆÙ[‹˜\ÜÙ\\]X[
+×KÙ[‹™XYÛ›ÜİXÜÊ
+JB‚ˆYˆ\İÛZ\ÜÚ[™×ÛØØ[ÛX\šÙİÛ—Ø[˜ÚÜ—Ú\×Ü™Z™XİY
+Ù[ŠHOˆ›Û™N‚ˆØÜÈHÙ[‹œ™\ÈÈ™ØÜÈ‚ˆÚ][˜ÛÜYš[Jˆ’VT‘TÈÈ›X\šÙİÛˆˆÈ˜[˜ÚÜ‹]\™Ù]›Y‹ˆØÜÈÈ˜[˜ÚÜ‹]\™Ù]›Y‹ˆ
+BˆÙ[‹š[œİ[Û™YØ]]™WÛX\šÙİÛŠ˜œ›ÚÙ[‹X[˜ÚÜ‹›YŠBˆÙ[‹˜\ÜÙ\[Š“S’×ĞSÒÔ—ÓRTÔÒS‘È‹Ù[‹˜ÛÙ\Ê
+JB‚ˆYˆ\İÙØİ[Y[YİÙ×ÜŞ[˜×Ú[œÚYWØÛÙWÚ\×Ø[İÙY
+Ù[ŠHOˆ›Û™N‚ˆ™XYYHHÙ[‹œ™\ÈÈ”‘PQQK›Y‚ˆ™XYYKÜš]Wİ^
+ˆ™XYYKœ™XYİ^
+[˜ÛÙ[™ÏH]‹NŠBˆ
+È—KKHHÛXŞHÚÙ[ˆ\È[[[Û˜[H][İYˆÑÊŞ[˜ÊXˆKO—ˆ‹ˆ[˜ÛÙ[™ÏH]‹N‹ˆ™]Û[™OH—ˆ‹ˆ
+BˆÙ[‹˜\ÜÙ\›İ[Š•Ñ×ÔÖSÈ‹Ù[‹˜ÛÙ\Ê
+JB‚‚šYˆ×Û˜[YW×ÈOH—×ÛXZ[—×È‚ˆ[š]\İ›XZ[Š
+B
