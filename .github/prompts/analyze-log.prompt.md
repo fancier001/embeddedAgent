@@ -1,6 +1,6 @@
 ---
 name: analyze-log
-description: 分析嵌入式运行、串口、崩溃或异常日志 / Analyze embedded runtime, serial, crash, or exception logs
+description: Analyze embedded runtime, serial, crash, or exception logs / 分析嵌入式运行、串口、崩溃或异常日志
 agent: BugResolver
 argument-hint: 日志或 dump/ELF/MAP、是否修复及 Git Delivery / Logs or dump/ELF/MAP, fix authorization, and Git Delivery
 ---

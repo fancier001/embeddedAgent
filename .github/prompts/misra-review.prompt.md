@@ -1,6 +1,6 @@
 ---
 name: misra-review
-description: 对当前改动或指定目标执行 MISRA 风险筛查 / Screen current changes or a selected target for MISRA risks
+description: Screen current changes or a selected target for MISRA risks / 对当前改动或指定目标执行 MISRA 风险筛查
 agent: QualityReviewer
 argument-hint: 文件、目录或提交；留空评审当前 Git 改动 / File, directory, or commit; leave empty for current Git changes
 ---

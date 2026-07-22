@@ -1,6 +1,6 @@
 ---
 name: implement-feature
-description: 实现嵌入式应用逻辑、服务或状态机功能 / Implement embedded application logic, services, or state-machine features
+description: Implement embedded application logic, services, or state-machine features / 实现嵌入式应用逻辑、服务或状态机功能
 agent: Orchestrator
 argument-hint: 描述业务规则、事件、状态、错误恢复与验收条件 / Describe business rules, events, states, recovery, and acceptance criteria
 ---

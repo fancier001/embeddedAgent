@@ -421,4 +421,1081 @@ def _validate_policy(policy: Mapping[str, Any], project_dir: Path) -> None:
 
 
 def resolve_rules(
-    ro÷Î:¶‰žËkºwµçY¥¹•ÉÁÉ¥¹ÐèÍÑÈð9½¹”€ô9½¹”°(€€€•áÁ•Ñ•‘}™¥¹•ÉÁÉ¥¹ÐèÍÑÈð9½¹”€ô9½¹”°(€€€•áÁ•Ñ•‘}½µµ¥ÐèÍÑÈð9½¹”€ô9½¹”°(¤€´ø5…ÁÁ¥¹mÍÑÈ°¹åtè(€€€É½½Ñ}Á…Ñ €ô}¹½Éµ…±¥é•‘}É½½Ð¡É½½Ð¤(€€€±½…‘•€ô±½…‘}µ…¹¥™•ÍÐ¡É½½Ñ}Á…Ñ ¤(€€€¥˜±½…‘•¥Ì9½¹”è(€€€€€€€É•ÑÕÉ¸}©Í½¹}É•ÍÕ±Ð ‰9=Q}=9%UIˆ°½Á•É…Ñ¥½¸õ½Á•É…Ñ¥½¸°É•…Í½¹Ìõmt¤(€€€±½…‘•‘}Á½±¥ä€ô±½…‘}Á½±¥ä¡É½½Ñ}Á…Ñ °±½…‘•¤(€€€…ÍÍ•ÉÐ±½…‘•‘}Á½±¥ä¥Ì¹½Ð9½¹”(€€€Á½±¥å}Á…Ñ °Á½±¥ä€ô±½…‘•‘}Á½±¥ä(€€€…ÕÑ½µ…Ñ¥½¸€ôÁ½±¥ä¹•Ð ‰…ÕÑ½µ…Ñ¥½¸ˆ°íô¤(€€€Í…™•Ñä€ôÁ½±¥ä¹•Ð ‰Í…™•Ñäˆ°íô¤(€€€É•…Í½¹Ìè±¥ÍÑmÍÑÉt€ômt(€€€Á½±¥å}É•±…Ñ¥Ù”€ôÁ½±¥å}Á…Ñ ¹É•±…Ñ¥Ù•}Ñ¼¡É½½Ñ}Á…Ñ ¤¹…Í}Á½Í¥à ¤(€€€¥˜Í…™•Ñä¹•Ð ‰É•ÅÕ¥É•}Ñ…Í­}…ÕÑ¡½É¥é…Ñ¥½¸ˆ¤¥Ì¹½ÐQÉÕ”è(€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ ‰Á½±¥äµÕÍÐÉ•ÅÕ¥É”ÕÉÉ•¹ÐQ…Í¬	É¥•˜…ÕÑ¡½É¥é…Ñ¥½¸ˆ¤(€€€¥˜Í…™•Ñä¹•Ð ‰•áÁ±¥¥Ñ}ÍÑ…¥¹œˆ¤¥Ì¹½ÐQÉÕ”è(€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ ‰Á½±¥äµÕÍÐÉ•ÅÕ¥É”•áÁ±¥¥ÐÍÑ…¥¹œˆ¤(€€€¥˜Í…™•Ñä¹•Ð ‰…±±½Ý}™½É•}ÁÕÍ ˆ¤¥Ì¹½Ð…±Í”è(€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ ‰Á½±¥äµÕÍÐ™½É‰¥™½É”ÁÕÍ ˆ¤(€€€¥˜‘•±¥Ù•Éä¹½Ð¥¸€ ‰½µµ¥Ðˆ°€‰½µµ¥Ðµ…¹µÁÕÍ ˆ°€‰…ÕÑ¼ˆ¤è(€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ ‰¥Ð•±¥Ù•Éä‘½•Ì¹½Ð…ÕÑ¡½É¥é”¥ÐÝÉ¥Ñ•Ìˆ¤((€€€É•Á½Í¥Ñ½Éä€ô}¥Ñ}É•Á½Í¥Ñ½Éä¡É½½Ñ}Á…Ñ ¤(€€€¡…¹•Ì€ô}¡…¹•‘}Á…Ñ¡Ì¡É½½Ñ}Á…Ñ ¤(€€€¡…¹•‘}½¹ÑÉ½±}Á…Ñ¡Ì€ôì(€€€€€€€€ˆ¹ÁÉ½©•Ð½ÁÉ½©•Ð¹åµ°ˆ°(€€€€€€€Á½±¥å}É•±…Ñ¥Ù”°(€€€ô€˜ì(€€€€€€€€©¡…¹•Íl‰Õ¹ÍÑ…•‰t°(€€€€€€€€©¡…¹•Íl‰ÍÑ…•‰t°(€€€€€€€€©¡…¹•Íl‰Õ¹ÑÉ…­•‰t°(€€€ô(€€€¥˜¡…¹•‘}½¹ÑÉ½±}Á…Ñ¡Ìè(€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ (€€€€€€€€€€€€‰Õ¹½µµ¥ÑÑ•‘•±¥Ù•Éä½¹ÑÉ½±Ì…¹¹½Ð…ÕÑ¡½É¥é”Ñ¡¥ÌÑ…Í¬è€ˆ(€€€€€€€€€€€€¬€ˆ°€ˆ¹©½¥¸¡Í½ÉÑ•¡¡…¹•‘}½¹ÑÉ½±}Á…Ñ¡Ì¤¤(€€€€€€€€¤(€€€¹½Éµ…±¥é•‘}Á…Ñ¡Ìè±¥ÍÑmÍÑÉt€ômt(€€€µ•ÍÍ…•}É•ÍÕ±Ðè5…ÁÁ¥¹mÍÑÈ°¹åtð9½¹”€ô9½¹”(€€€ÁÕÍ¡}Ñ…É•Ðè5…ÁÁ¥¹mÍÑÈ°¹åtð9½¹”€ô9½¹”(€€€½ÕÑ½¥¹}½µµ¥ÑÌè±¥ÍÑmÍÑÉt€ômt(€€€½ÕÑ½¥¹}Á…Ñ¡Ìè±¥ÍÑmÍÑÉt€ômt(€€€½µµ¥Ñ}½¹Ñ•¹Ðè5…ÁÁ¥¹mÍÑÈ°¹åtð9½¹”€ô9½¹”((€€€¥˜½Á•É…Ñ¥½¸€ôô€‰…ÕÑ¼ˆè(€€€€€€€¥˜‘•±¥Ù•Éä€„ô€‰…ÕÑ¼ˆè(€€€€€€€€€€€É…¥Í”A½±¥å%¹ÁÕÑÉÉ½È ‰…ÕÑ¼½Á•É…Ñ¥½¸É•ÅÕ¥É•Ì€´µ‘•±¥Ù•Éä…ÕÑ¼ˆ¤(€€€€€€€…ÑÕ…°€ôÍ•Ð¡¡…¹•Íl‰Õ¹ÍÑ…•‰t¤ðÍ•Ð¡¡…¹•Íl‰ÍÑ…•‰t¤ðÍ•Ð (€€€€€€€€€€€¡…¹•Íl‰Õ¹ÑÉ…­•‰t(€€€€€€€€¤(€€€€€€€¥˜¹½Ð…ÑÕ…°è(€€€€€€€€€€€É•ÑÕÉ¸}©Í½¹}É•ÍÕ±Ð (€€€€€€€€€€€€€€€€‰AMLˆ°(€€€€€€€€€€€€€€€½Á•É…Ñ¥½¸õ½Á•É…Ñ¥½¸°(€€€€€€€€€€€€€€€‘•±¥Ù•Éäõ‘•±¥Ù•Éä°(€€€€€€€€€€€€€€€‘•¥Í¥½¸õ%M%=9}9=}1%YId°(€€€€€€€€€€€€€€€‘•¥Í¥½¹}É•…Í½¹Ìõmt°(€€€€€€€€€€€€€€€Á½±¥äõÁ½±¥å}É•±…Ñ¥Ù”°(€€€€€€€€€€€€€€€É•Á½Í¥Ñ½Éäõì(€€€€€€€€€€€€€€€€€€€€‰É½½ÐˆèÉ•Á½Í¥Ñ½Éål‰É½½Ð‰t¹…Í}Á½Í¥à ¤°(€€€€€€€€€€€€€€€€€€€€‰¥Ñ}‘¥ÈˆèÉ•Á½Í¥Ñ½Éål‰¥Ñ}‘¥È‰t¹…Í}Á½Í¥à ¤°(€€€€€€€€€€€€€€€€€€€€‰¥Ñ}½µµ½¹}‘¥ÈˆèÉ•Á½Í¥Ñ½Éål‰¥Ñ}½µµ½¹}‘¥È‰t¹…Í}Á½Í¥à ¤°(€€€€€€€€€€€€€€€€€€€€‰ÕÉÉ•¹Ñ}‰É…¹ ˆèÉ•Á½Í¥Ñ½Éål‰‰É…¹ ‰t°(€€€€€€€€€€€€€€€ô°(€€€€€€€€€€€€€€€Á…Ñ¡Ìõmt°(€€€€€€€€€€€€€€€¡…¹•Ìõ¡…¹•Ì°(€€€€€€€€€€€€€€€µ•ÍÍ…”õ9½¹”°(€€€€€€€€€€€€€€€ÁÕÍ¡}Ñ…É•Ðõ9½¹”°(€€€€€€€€€€€€€€€¡•­Ìõì‰½µµ¥Ðˆèmt°€‰ÁÕÍ ˆèmuô°(€€€€€€€€€€€€¤(€€€€€€€¥˜µ•ÍÍ…•}™¥±”¥Ì9½¹”è(€€€€€€€€€€€É…¥Í”A½±¥å%¹ÁÕÑÉÉ½È (€€€€€€€€€€€€€€€€‰…ÕÑ¼½Á•É…Ñ¥½¸É•ÅÕ¥É•Ì€´µµ•ÍÍ…”µ™¥±”Ý¡•¸¡…¹•Ì•á¥ÍÐè€ˆ(€€€€€€€€€€€€€€€€¬€ˆ°€ˆ¹©½¥¸¡Í½ÉÑ•¡…ÑÕ…°¤¤(€€€€€€€€€€€€¤(€€€€€€€¹½Éµ…±¥é•‘}Á…Ñ¡Ì€ôm}É•Á½Í¥Ñ½Éå}Á…Ñ ¡Á…Ñ ¤™½ÈÁ…Ñ ¥¸Á…Ñ¡Ít(€€€€€€€¥˜¹½Ð¹½Éµ…±¥é•‘}Á…Ñ¡Ìè(€€€€€€€€€€€É…¥Í”A½±¥å%¹ÁÕÑÉÉ½È ‰…ÕÑ¼½Á•É…Ñ¥½¸É•ÅÕ¥É•Ì…Ð±•…ÍÐ½¹”€´µÁ…Ñ Ý¡•¸¡…¹•Ì•á¥ÍÐˆ¤(€€€€€€€¥˜•áÁ•Ñ•‘}½¹Ñ•¹Ñ}™¥¹•ÉÁÉ¥¹Ð¥Ì¹½Ð9½¹”…¹¹½ÐÉ”¹™Õ±±µ…Ñ  (€€€€€€€€€€€È‰lÀ´å„µ™µuìØÑôˆ°•áÁ•Ñ•‘}½¹Ñ•¹Ñ}™¥¹•ÉÁÉ¥¹Ð(€€€€€€€€¤è(€€€€€€€€€€€É…¥Í”A½±¥å%¹ÁÕÑÉÉ½È (€€€€€€€€€€€€€€€€ˆ´µ•áÁ•Ñ•µ½¹Ñ•¹Ðµ™¥¹•ÉÁÉ¥¹ÐµÕÍÐ‰”„€ØÐµ¡…É…Ñ•È¡•á…‘•¥µ…°‘¥•ÍÐˆ(€€€€€€€€€€€€¤(€€€€€€€µ•ÍÍ…•}É•ÍÕ±Ð€ôÙ…±¥‘…Ñ•}µ•ÍÍ…”¡É½½Ñ}Á…Ñ °µ•ÍÍ…•}™¥±”¤(€€€€€€€¥˜µ•ÍÍ…•}É•ÍÕ±Ñl‰ÍÑ…ÑÕÌ‰t€„ô€‰AMLˆè(€€€€€€€€€€€É•ÑÕÉ¸}©Í½¹}É•ÍÕ±Ð (€€€€€€€€€€€€€€€€‰	1=-ˆ°(€€€€€€€€€€€€€€€½Á•É…Ñ¥½¸õ½Á•É…Ñ¥½¸°(€€€€€€€€€€€€€€€‘•±¥Ù•Éäõ‘•±¥Ù•Éä°(€€€€€€€€€€€€€€€‘•¥Í¥½¸õ9½¹”°(€€€€€€€€€€€€€€€É•…Í½¹Ìõl‰½µµ¥Ðµ•ÍÍ…”Ù…±¥‘…Ñ¥½¸™…¥±•‰t°(€€€€€€€€€€€€€€€Á½±¥äõÁ½±¥å}É•±…Ñ¥Ù”°(€€€€€€€€€€€€€€€É•Á½Í¥Ñ½Éäõì(€€€€€€€€€€€€€€€€€€€€‰É½½ÐˆèÉ•Á½Í¥Ñ½Éål‰É½½Ð‰t¹…Í}Á½Í¥à ¤°(€€€€€€€€€€€€€€€€€€€€‰¥Ñ}‘¥ÈˆèÉ•Á½Í¥Ñ½Éål‰¥Ñ}‘¥È‰t¹…Í}Á½Í¥à ¤°(€€€€€€€€€€€€€€€€€€€€‰¥Ñ}½µµ½¹}‘¥ÈˆèÉ•Á½Í¥Ñ½Éål‰¥Ñ}½µµ½¹}‘¥È‰t¹…Í}Á½Í¥à ¤°(€€€€€€€€€€€€€€€€€€€€‰ÕÉÉ•¹Ñ}‰É…¹ ˆèÉ•Á½Í¥Ñ½Éål‰‰É…¹ ‰t°(€€€€€€€€€€€€€€€ô°(€€€€€€€€€€€€€€€Á…Ñ¡Ìõ¹½Éµ…±¥é•‘}Á…Ñ¡Ì°(€€€€€€€€€€€€€€€¡…¹•Ìõ¡…¹•Ì°(€€€€€€€€€€€€€€€µ•ÍÍ…”õµ•ÍÍ…•}É•ÍÕ±Ð°(€€€€€€€€€€€€€€€ÁÕÍ¡}Ñ…É•Ðõ9½¹”°(€€€€€€€€€€€€€€€¡•­Ìõì‰½µµ¥Ðˆèmt°€‰ÁÕÍ ˆèmuô°(€€€€€€€€€€€€¤(€€€€€€€½µµ¥Ñ}½¹Ñ•¹Ð€ô}½µµ¥Ñ}½¹Ñ•¹Ð¡É½½Ñ}Á…Ñ °¹½Éµ…±¥é•‘}Á…Ñ¡Ì°¡…¹•Ì¤(€€€€€€€ÕÉÉ•¹Ñ}½¹Ñ•¹Ñ}™¥¹•ÉÁÉ¥¹Ð€ôÍÑÈ¡½µµ¥Ñ}½¹Ñ•¹Ñl‰™¥¹•ÉÁÉ¥¹Ð‰t¤(€€€€€€€¥˜•áÁ•Ñ•‘}½¹Ñ•¹Ñ}™¥¹•ÉÁÉ¥¹Ð¥Ì9½¹”è(€€€€€€€€€€€½¹Ñ•¹Ñ}½¹™¥Éµ…Ñ¥½¹}ÍÑ…ÑÕÌ€ô€‰A9%9ˆ(€€€€€€€•±¥˜•áÁ•Ñ•‘}½¹Ñ•¹Ñ}™¥¹•ÉÁÉ¥¹Ð¹±½Ý•È ¤€„ôÕÉÉ•¹Ñ}½¹Ñ•¹Ñ}™¥¹•ÉÁÉ¥¹Ðè(€€€€€€€€€€€½¹Ñ•¹Ñ}½¹™¥Éµ…Ñ¥½¹}ÍÑ…ÑÕÌ€ô€‰MQ1ˆ(€€€€€€€•±Í”è(€€€€€€€€€€€½¹Ñ•¹Ñ}½¹™¥Éµ…Ñ¥½¹}ÍÑ…ÑÕÌ€ô€‰=9%I5ˆ((€€€€€€€‘•¥Í¥½¹}É•…Í½¹Ì€ô±¥ÍÐ¡É•…Í½¹Ì¤(€€€€€€€¥˜…ÕÑ½µ…Ñ¥½¸¹•Ð ‰½µµ¥Ðˆ¤¥Ì¹½ÐQÉÕ”è(€€€€€€€€€€€‘•¥Í¥½¹}É•…Í½¹Ì¹…ÁÁ•¹ ‰…ÕÑ½µ…Ñ¥Œ½µµ¥Ð¥Ì‘¥Í…‰±•ˆ¤(€€€€€€€¥˜…ÕÑ½µ…Ñ¥½¸¹•Ð ‰ÁÕÍ ˆ¤¥Ì¹½ÐQÉÕ”è(€€€€€€€€€€€‘•¥Í¥½¹}É•…Í½¹Ì¹…ÁÁ•¹ ‰…ÕÑ½µ…Ñ¥ŒÁÕÍ ¥Ì‘¥Í…‰±•ˆ¤(€€€€€€€É•ÅÕ•ÍÑ•€ôÍ•Ð¡¹½Éµ…±¥é•‘}Á…Ñ¡Ì¤(€€€€€€€µ¥ÍÍ¥¹œ€ôÍ½ÉÑ•¡É•ÅÕ•ÍÑ•€´…ÑÕ…°¤(€€€€€€€•áÑÉ„€ôÍ½ÉÑ•¡…ÑÕ…°€´É•ÅÕ•ÍÑ•¤(€€€€€€€¥˜µ¥ÍÍ¥¹œè(€€€€€€€€€€€‘•¥Í¥½¹}É•…Í½¹Ì¹…ÁÁ•¹ (€€€€€€€€€€€€€€€€‰É•ÅÕ•ÍÑ•Á…Ñ¡Ì¡…Ù”¹¼ÕÉÉ•¹Ð¡…¹•Ìè€ˆ€¬€ˆ°€ˆ¹©½¥¸¡µ¥ÍÍ¥¹œ¤(€€€€€€€€€€€€¤(€€€€€€€¥˜•áÑÉ„è(€€€€€€€€€€€‘•¥Í¥½¹}É•…Í½¹Ì¹…ÁÁ•¹ (€€€€€€€€€€€€€€€€‰ÕÉÉ•¹Ð¡…¹•Ì…É”½ÕÑÍ¥‘”…ÕÑ¼‘•±¥Ù•ÉäÍ½Á”è€ˆ€¬€ˆ°€ˆ¹©½¥¸¡•áÑÉ„¤(€€€€€€€€€€€€¤(€€€€€€€¥˜¡…¹•Íl‰ÍÑ…•‰tè(€€€€€€€€€€€‘•¥Í¥½¹}É•…Í½¹Ì¹…ÁÁ•¹ (€€€€€€€€€€€€€€€€‰¥¹‘•àµÕÍÐ‰”•µÁÑä‰•™½É”…ÕÑ¼‘•±¥Ù•Éäè€ˆ(€€€€€€€€€€€€€€€€¬€ˆ°€ˆ¹©½¥¸¡¡…¹•Íl‰ÍÑ…•‰t¤(€€€€€€€€€€€€¤(€€€€€€€‘•¥Í¥½¹}É•…Í½¹Ì¹•áÑ•¹¡}Á…Ñ¡}Á½±¥å}É•…Í½¹Ì¡¹½Éµ…±¥é•‘}Á…Ñ¡Ì°Á½±¥ä¤¤(€€€€€€€ÁÕÍ¡}Ñ…É•Ð°ÁÕÍ¡}É•…Í½¹Ì€ô}…ÕÑ½}ÁÕÍ¡}•±¥¥‰¥±¥Ñä (€€€€€€€€€€€É½½Ñ}Á…Ñ °É•Á½Í¥Ñ½Éä°Á½±¥ä(€€€€€€€€¤(€€€€€€€‘•¥Í¥½¹}É•…Í½¹Ì¹•áÑ•¹¡ÁÕÍ¡}É•…Í½¹Ì¤(€€€€€€€¥˜‘•¥Í¥½¹}É•…Í½¹Ìè(€€€€€€€€€€€‘•¥Í¥½¸€ô%M%=9}5MM}=91d(€€€€€€€•±¥˜½¹Ñ•¹Ñ}½¹™¥Éµ…Ñ¥½¹}ÍÑ…ÑÕÌ€„ô€‰=9%I5ˆè(€€€€€€€€€€€‘•¥Í¥½¸€ô%M%=9}=9%I5}UQ=}=9Q9P(€€€€€€€•±Í”è(€€€€€€€€€€€‘•¥Í¥½¸€ô%M%=9}UQ=}UA1=(€€€€€€€É•ÑÕÉ¸}©Í½¹}É•ÍÕ±Ð (€€€€€€€€€€€€‰AMLˆ°(€€€€€€€€€€€½Á•É…Ñ¥½¸õ½Á•É…Ñ¥½¸°(€€€€€€€€€€€‘•±¥Ù•Éäõ‘•±¥Ù•Éä°(€€€€€€€€€€€‘•¥Í¥½¸õ‘•¥Í¥½¸°(€€€€€€€€€€€‘•¥Í¥½¹}É•…Í½¹Ìõ‘•¥Í¥½¹}É•…Í½¹Ì°(€€€€€€€€€€€Á½±¥äõÁ½±¥å}É•±…Ñ¥Ù”°(€€€€€€€€€€€É•Á½Í¥Ñ½Éäõì(€€€€€€€€€€€€€€€€‰É½½ÐˆèÉ•Á½Í¥Ñ½Éål‰É½½Ð‰t¹…Í}Á½Í¥à ¤°(€€€€€€€€€€€€€€€€‰¥Ñ}‘¥ÈˆèÉ•Á½Í¥Ñ½Éål‰¥Ñ}‘¥È‰t¹…Í}Á½Í¥à ¤°(€€€€€€€€€€€€€€€€‰¥Ñ}½µµ½¹}‘¥ÈˆèÉ•Á½Í¥Ñ½Éål‰¥Ñ}½µµ½¹}‘¥È‰t¹…Í}Á½Í¥à ¤°(€€€€€€€€€€€€€€€€‰ÕÉÉ•¹Ñ}‰É…¹ ˆèÉ•Á½Í¥Ñ½Éål‰‰É…¹ ‰t°(€€€€€€€€€€€ô°(€€€€€€€€€€€Á…Ñ¡Ìõ¹½Éµ…±¥é•‘}Á…Ñ¡Ì°(€€€€€€€€€€€¡…¹•Ìõ¡…¹•Ì°(€€€€€€€€€€€µ•ÍÍ…”õµ•ÍÍ…•}É•ÍÕ±Ð°(€€€€€€€€€€€½µµ¥Ñ}½¹Ñ•¹Ðõ½µµ¥Ñ}½¹Ñ•¹Ð°(€€€€€€€€€€€½¹Ñ•¹Ñ}½¹™¥Éµ…Ñ¥½¸õì(€€€€€€€€€€€€€€€€‰É•ÅÕ¥É•ˆèQÉÕ”°(€€€€€€€€€€€€€€€€‰ÍÑ…ÑÕÌˆè½¹Ñ•¹Ñ}½¹™¥Éµ…Ñ¥½¹}ÍÑ…ÑÕÌ°(€€€€€€€€€€€€€€€€‰•áÁ•Ñ•‘}™¥¹•ÉÁÉ¥¹Ðˆè•áÁ•Ñ•‘}½¹Ñ•¹Ñ}™¥¹•ÉÁÉ¥¹Ð°(€€€€€€€€€€€€€€€€‰ÕÉÉ•¹Ñ}™¥¹•ÉÁÉ¥¹ÐˆèÕÉÉ•¹Ñ}½¹Ñ•¹Ñ}™¥¹•ÉÁÉ¥¹Ð°(€€€€€€€€€€€ô°(€€€€€€€€€€€ÁÕÍ¡}Ñ…É•ÐõÁÕÍ¡}Ñ…É•Ð°(€€€€€€€€€€€¡•­Ìõì(€€€€€€€€€€€€€€€€‰½µµ¥ÐˆèÁ½±¥ä¹•Ð ‰½µµ¥Ðˆ°íô¤¹•Ð ‰¡•­Ìˆ°mt¤°(€€€€€€€€€€€€€€€€‰ÁÕÍ ˆèÁ½±¥ä¹•Ð ‰ÁÕÍ ˆ°íô¤¹•Ð ‰¡•­Ìˆ°mt¤°(€€€€€€€€€€€ô°(€€€€€€€€¤((€€€¥˜½Á•É…Ñ¥½¸€ôô€‰½µµ¥Ðˆè(€€€€€€€¥˜‘•±¥Ù•Éä€ôô€‰…ÕÑ¼ˆè(€€€€€€€€€€€¥˜…ÕÑ½µ…Ñ¥½¸¹•Ð ‰½µµ¥Ðˆ¤¥Ì¹½ÐQÉÕ”è(€€€€€€€€€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ ‰…ÕÑ½µ…Ñ¥Œ½µµ¥Ð¥Ì‘¥Í…‰±•™½È…ÕÑ¼‘•±¥Ù•Éäˆ¤(€€€€€€€€€€€¥˜…ÕÑ½µ…Ñ¥½¸¹•Ð ‰ÁÕÍ ˆ¤¥Ì¹½ÐQÉÕ”è(€€€€€€€€€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ ‰…ÕÑ½µ…Ñ¥ŒÁÕÍ ¥Ì‘¥Í…‰±•™½È…ÕÑ¼‘•±¥Ù•Éäˆ¤(€€€€€€€¥˜µ•ÍÍ…•}™¥±”¥Ì9½¹”è(€€€€€€€€€€€É…¥Í”A½±¥å%¹ÁÕÑÉÉ½È ‰½µµ¥Ð½Á•É…Ñ¥½¸É•ÅÕ¥É•Ì€´µµ•ÍÍ…”µ™¥±”ˆ¤(€€€€€€€µ•ÍÍ…•}É•ÍÕ±Ð€ôÙ…±¥‘…Ñ•}µ•ÍÍ…”¡É½½Ñ}Á…Ñ °µ•ÍÍ…•}™¥±”¤(€€€€€€€¥˜µ•ÍÍ…•}É•ÍÕ±Ñl‰ÍÑ…ÑÕÌ‰t€„ô€‰AMLˆè(€€€€€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ ‰½µµ¥Ðµ•ÍÍ…”Ù…±¥‘…Ñ¥½¸™…¥±•ˆ¤(€€€€€€€¹½Éµ…±¥é•‘}Á…Ñ¡Ì€ôm}É•Á½Í¥Ñ½Éå}Á…Ñ ¡Á…Ñ ¤™½ÈÁ…Ñ ¥¸Á…Ñ¡Ít(€€€€€€€¥˜¹½Ð¹½Éµ…±¥é•‘}Á…Ñ¡Ìè(€€€€€€€€€€€É…¥Í”A½±¥å%¹ÁÕÑÉÉ½È ‰½µµ¥Ð½Á•É…Ñ¥½¸É•ÅÕ¥É•Ì…Ð±•…ÍÐ½¹”€´µÁ…Ñ ˆ¤(€€€€€€€É•…Í½¹Ì¹•áÑ•¹¡}Á…Ñ¡}Á½±¥å}É•…Í½¹Ì¡¹½Éµ…±¥é•‘}Á…Ñ¡Ì°Á½±¥ä¤¤(€€€€€€€…ÑÕ…°€ôÍ•Ð¡¡…¹•Íl‰Õ¹ÍÑ…•‰t¤ðÍ•Ð¡¡…¹•Íl‰ÍÑ…•‰t¤ðÍ•Ð¡¡…¹•Íl‰Õ¹ÑÉ…­•‰t¤(€€€€€€€µ¥ÍÍ¥¹œ€ôÍ½ÉÑ•¡Í•Ð¡¹½Éµ…±¥é•‘}Á…Ñ¡Ì¤€´…ÑÕ…°¤(€€€€€€€¥˜µ¥ÍÍ¥¹œè(€€€€€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ ‰É•ÅÕ•ÍÑ•Á…Ñ¡Ì¡…Ù”¹¼ÕÉÉ•¹Ð¡…¹•Ìè€ˆ€¬€ˆ°€ˆ¹©½¥¸¡µ¥ÍÍ¥¹œ¤¤(€€€€€€€½ÕÑÍ¥‘•}ÍÑ…•€ôÍ½ÉÑ•¡Í•Ð¡¡…¹•Íl‰ÍÑ…•‰t¤€´Í•Ð¡¹½Éµ…±¥é•‘}Á…Ñ¡Ì¤¤(€€€€€€€¥˜½ÕÑÍ¥‘•}ÍÑ…•è(€€€€€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ ‰ÍÑ…•Á…Ñ¡Ì…É”½ÕÑÍ¥‘”‘•±¥Ù•ÉäÍ½Á”è€ˆ€¬€ˆ°€ˆ¹©½¥¸¡½ÕÑÍ¥‘•}ÍÑ…•¤¤(€€€€€€€½µµ¥Ñ}½¹Ñ•¹Ð€ô}½µµ¥Ñ}½¹Ñ•¹Ð¡É½½Ñ}Á…Ñ °¹½Éµ…±¥é•‘}Á…Ñ¡Ì°¡…¹•Ì¤(€€€€€€€¡•­Ì€ôÁ½±¥ä¹•Ð ‰½µµ¥Ðˆ°íô¤¹•Ð ‰¡•­Ìˆ°mt¤(€€€•±¥˜½Á•É…Ñ¥½¸€ôô€‰ÁÕÍ ˆè(€€€€€€€¥˜‘•±¥Ù•Éä¹½Ð¥¸€ ‰½µµ¥Ðµ…¹µÁÕÍ ˆ°€‰…ÕÑ¼ˆ¤è(€€€€€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ ‰¥Ð•±¥Ù•Éä‘½•Ì¹½Ð…ÕÑ¡½É¥é”ÁÕÍ ˆ¤(€€€€€€€¥˜‘•±¥Ù•Éä€ôô€‰…ÕÑ¼ˆ…¹…ÕÑ½µ…Ñ¥½¸¹•Ð ‰ÁÕÍ ˆ¤¥Ì¹½ÐQÉÕ”è(€€€€€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ ‰…ÕÑ½µ…Ñ¥ŒÁÕÍ ¥Ì‘¥Í…‰±•™½È…ÕÑ¼‘•±¥Ù•Éäˆ¤(€€€€€€€ÁÕÍ¡}Ñ…É•Ð€ôÉ•Í½±Ù•}ÁÕÍ¡}Ñ…É•Ð¡É½½Ñ}Á…Ñ ¤(€€€€€€€É•…Í½¹Ì¹•áÑ•¹ (€€€€€€€€€€€}‰É…¹¡}Á½±¥å}É•…Í½¹Ì (€€€€€€€€€€€€€€€ÁÕÍ¡}Ñ…É•Ñl‰ÕÉÉ•¹Ñ}‰É…¹ ‰t°ÁÕÍ¡}Ñ…É•Ñl‰Ñ…É•Ñ}‰É…¹ ‰t°Á½±¥ä(€€€€€€€€€€€€¤(€€€€€€€€¤(€€€€€€€¥˜•áÁ•Ñ•‘}™¥¹•ÉÁÉ¥¹Ð…¹ÁÕÍ¡}Ñ…É•Ñl‰™¥¹•ÉÁÉ¥¹Ð‰t€„ô•áÁ•Ñ•‘}™¥¹•ÉÁÉ¥¹Ðè(€€€€€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ ‰±½…°€¹¥ÐÁÕÍ Ñ…É•Ð¡…¹•…™Ñ•ÈÁÉ•™±¥¡Ðˆ¤(€€€€€€€¥˜‘•±¥Ù•Éä€ôô€‰…ÕÑ¼ˆ…¹¹½Ð•áÁ•Ñ•‘}™¥¹•ÉÁÉ¥¹Ðè(€€€€€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ ‰…ÕÑ¼ÁÕÍ É•ÅÕ¥É•ÌÑ¡”½É¥¥¹…°ÁÉ•™±¥¡Ð™¥¹•ÉÁÉ¥¹Ðˆ¤(€€€€€€€¥˜‘•±¥Ù•Éä€ôô€‰…ÕÑ¼ˆ…¹¹½Ð•áÁ•Ñ•‘}½µµ¥Ðè(€€€€€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ ‰…ÕÑ¼ÁÕÍ É•ÅÕ¥É•ÌÑ¡”¹•Ý±äÉ•…Ñ•½µµ¥ÐM!ˆ¤(€€€€€€€¥˜•áÁ•Ñ•‘}½µµ¥Ð…¹¹½ÐÉ”¹™Õ±±µ…Ñ ¡È‰lÀ´å„µ™µuìÐÀ°ØÑôˆ°•áÁ•Ñ•‘}½µµ¥Ð¤è(€€€€€€€€€€€É…¥Í”A½±¥å%¹ÁÕÑÉÉ½È ˆ´µ•áÁ•Ñ•µ½µµ¥ÐµÕÍÐ‰”„™Õ±°¡•á…‘•¥µ…°½µµ¥ÐM!ˆ¤(€€€€€€€¥˜¡…¹•Íl‰ÍÑ…•‰tè(€€€€€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ ‰ÍÑ…•¡…¹•ÌÉ•µ…¥¸‰•™½É”ÁÕÍ è€ˆ€¬€ˆ°€ˆ¹©½¥¸¡¡…¹•Íl‰ÍÑ…•‰t¤¤(€€€€€€€€€€€É•…Í½¹Ì¹•áÑ•¹¡}Á…Ñ¡}Á½±¥å}É•…Í½¹Ì¡¡…¹•Íl‰ÍÑ…•‰t°Á½±¥ä¤¤(€€€€€€€ÕÁÍÑÉ•…´€ôÁÕÍ¡}Ñ…É•Ñl‰ÑÉ…­¥¹}É•˜‰t(€€€€€€€Ù•É¥™ä€ô}¥Ð (€€€€€€€€€€€É½½Ñ}Á…Ñ °(€€€€€€€€€€€€‰É•ØµÁ…ÉÍ”ˆ°(€€€€€€€€€€€€ˆ´µÙ•É¥™äˆ°(€€€€€€€€€€€€ˆ´µÅÕ¥•Ðˆ°(€€€€€€€€€€€ÕÁÍÑÉ•…´°(€€€€€€€€€€€…±±½Ý•‘}½‘•Ìô À°€Ä¤°(€€€€€€€€¤(€€€€€€€¥˜Ù•É¥™ä¹É•ÑÕÉ¹½‘”€„ô€Àè(€€€€€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ ‰½¹™¥ÕÉ•ÕÁÍÑÉ•…´ÑÉ…­¥¹œÉ•˜¥ÌÕ¹…Ù…¥±…‰±”±½…±±äˆ¤(€€€€€€€•±Í”è(€€€€€€€€€€€½ÕÑ½¥¹}½µµ¥ÑÌ€ôl(€€€€€€€€€€€€€€€±¥¹”(€€€€€€€€€€€€€€€™½È±¥¹”¥¸}¥Ð¡É½½Ñ}Á…Ñ °€‰É•Øµ±¥ÍÐˆ°€ˆ´µÉ•Ù•ÉÍ”ˆ°˜‰íÕÁÍÑÉ•…µô¸¹!ˆ¤¹ÍÑ‘½ÕÐ¹ÍÁ±¥Ñ±¥¹•Ì ¤(€€€€€€€€€€€€€€€¥˜±¥¹”(€€€€€€€€€€€t(€€€€€€€€€€€¥˜¹½Ð½ÕÑ½¥¹}½µµ¥ÑÌè(€€€€€€€€€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ ‰Ñ¡•É”…É”¹¼½ÕÑ½¥¹œ½µµ¥ÑÌˆ¤(€€€€€€€€€€€¥˜‘•±¥Ù•Éä€ôô€‰…ÕÑ¼ˆ…¹•áÁ•Ñ•‘}½µµ¥Ð…¹½ÕÑ½¥¹}½µµ¥ÑÌ€„ôl(€€€€€€€€€€€€€€€•áÁ•Ñ•‘}½µµ¥Ð¹±½Ý•È ¤(€€€€€€€€€€€tè(€€€€€€€€€€€€€€€É•…Í½¹Ì¹…ÁÁ•¹ (€€€€€€€€€€€€€€€€€€€€‰…ÕÑ¼ÁÕÍ ½ÕÑ½¥¹œ½µµ¥ÑÌµÕÍÐ½¹Ñ…¥¸½¹±äÑ¡”¹•Ý±äÉ•…Ñ•½µµ¥Ðˆ(€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€½ÕÑ½¥¹}Á…Ñ¡Ì€ô}¹Õ±}Á…Ñ¡Ì (€€€€€€€€€€€€€€€}¥Ð¡É½½Ñ}Á…Ñ °€‰‘¥™˜ˆ°€ˆ´µ¹…µ”µ½¹±äˆ°€ˆµèˆ°˜‰íÕÁÍÑÉ•…µô¸¹!ˆ¤¹ÍÑ‘½ÕÐ(€€€€€€€€€€€€¤(€€€€€€€€€€€É•…Í½¹Ì¹•áÑ•¹¡}Á…Ñ¡}Á½±¥å}É•…Í½¹Ì¡½ÕÑ½¥¹}Á…Ñ¡Ì°Á½±¥ä¤¤(€€€€€€€¡•­Ì€ôÁ½±¥ä¹•Ð ‰ÁÕÍ ˆ°íô¤¹•Ð ‰¡•­Ìˆ°mt¤(€€€•±Í”è(€€€€€€€É…¥Í”A½±¥å%¹ÁÕÑÉÉ½È ‰½Á•É…Ñ¥½¸µÕÍÐ‰”…ÕÑ¼°½µµ¥Ð°½ÈÁÕÍ ˆ¤((€€€É•ÑÕÉ¸}©Í½¹}É•ÍÕ±Ð (€€€€€€€€‰AMLˆ¥˜¹½ÐÉ•…Í½¹Ì•±Í”€‰	1=-ˆ°(€€€€€€€½Á•É…Ñ¥½¸õ½Á•É…Ñ¥½¸°(€€€€€€€‘•±¥Ù•Éäõ‘•±¥Ù•Éä°(€€€€€€€É•…Í½¹ÌõÉ•…Í½¹Ì°(€€€€€€€Á½±¥äõÁ½±¥å}É•±…Ñ¥Ù”°(€€€€€€€É•Á½Í¥Ñ½Éäõì(€€€€€€€€€€€€‰É½½ÐˆèÉ•Á½Í¥Ñ½Éål‰É½½Ð‰t¹…Í}Á½Í¥à ¤°(€€€€€€€€€€€€‰¥Ñ}‘¥ÈˆèÉ•Á½Í¥Ñ½Éål‰¥Ñ}‘¥È‰t¹…Í}Á½Í¥à ¤°(€€€€€€€€€€€€‰¥Ñ}½µµ½¹}‘¥ÈˆèÉ•Á½Í¥Ñ½Éål‰¥Ñ}½µµ½¹}‘¥È‰t¹…Í}Á½Í¥à ¤°(€€€€€€€€€€€€‰ÕÉÉ•¹Ñ}‰É…¹ ˆèÉ•Á½Í¥Ñ½Éål‰‰É…¹ ‰t°(€€€€€€€ô°(€€€€€€€Á…Ñ¡Ìõ¹½Éµ…±¥é•‘}Á…Ñ¡Ì°(€€€€€€€¡…¹•Ìõ¡…¹•Ì°(€€€€€€€µ•ÍÍ…”õµ•ÍÍ…•}É•ÍÕ±Ð°(€€€€€€€ÁÕÍ¡}Ñ…É•ÐõÁÕÍ¡}Ñ…É•Ð°(€€€€€€€½ÕÑ½¥¹}½µµ¥ÑÌõ½ÕÑ½¥¹}½µµ¥ÑÌ°(€€€€€€€½ÕÑ½¥¹}Á…Ñ¡Ìõ½ÕÑ½¥¹}Á…Ñ¡Ì°(€€€€€€€½µµ¥Ñ}½¹Ñ•¹Ðõ½µµ¥Ñ}½¹Ñ•¹Ð°(€€€€€€€¡•­Ìõ¡•­Ì°(€€€€¤(()‘•˜}‰Õ¥±‘}Á…ÉÍ•È ¤€´ø…ÉÁ…ÉÍ”¹ÉÕµ•¹ÑA…ÉÍ•Èè(€€€Á…ÉÍ•È€ô…ÉÁ…ÉÍ”¹ÉÕµ•¹ÑA…ÉÍ•È¡‘•ÍÉ¥ÁÑ¥½¸õ}}‘½}|¤(€€€ÍÕ‰Á…ÉÍ•ÉÌ€ôÁ…ÉÍ•È¹…‘‘}ÍÕ‰Á…ÉÍ•ÉÌ¡‘•ÍÐô‰½µµ…¹ˆ°É•ÅÕ¥É•õQÉÕ”¤((€€€ÉÕ±•Ì€ôÍÕ‰Á…ÉÍ•ÉÌ¹…‘‘}Á…ÉÍ•È ‰ÉÕ±•Ìˆ°¡•±Àô‰É•Í½±Ù”…ÁÁ±¥…‰±”ÁÉ½©•ÐÉÕ±•Ìˆ¤(€€€ÉÕ±•Ì¹…‘‘}…ÉÕµ•¹Ð ˆ´µÉ½½Ðˆ°ÑåÁ”õA…Ñ °‘•™…Õ±ÐõA…Ñ ¹Ý ¤¤(€€€Í•±•Ñ¥½¸€ôÉÕ±•Ì¹…‘‘}µÕÑÕ…±±å}•á±ÕÍ¥Ù•}É½ÕÀ¡É•ÅÕ¥É•õQÉÕ”¤(€€€Í•±•Ñ¥½¸¹…‘‘}…ÉÕµ•¹Ð ˆ´µÁ…Ñ ˆ°…Ñ¥½¸ô‰…ÁÁ•¹ˆ°‘•ÍÐô‰Á…Ñ¡Ìˆ¤(€€€Í•±•Ñ¥½¸¹…‘‘}…ÉÕµ•¹Ð ˆ´µ…±°ˆ°…Ñ¥½¸ô‰ÍÑ½É•}ÑÉÕ”ˆ¤((€€€µ•ÍÍ…”€ôÍÕ‰Á…ÉÍ•ÉÌ¹…‘‘}Á…ÉÍ•È ‰µ•ÍÍ…”ˆ°¡•±Àô‰Ù…±¥‘…Ñ”½¹”½µÁ±•Ñ•½µµ¥Ðµ•ÍÍ…”ˆ¤(€€€µ•ÍÍ…”¹…‘‘}…ÉÕµ•¹Ð ˆ´µÉ½½Ðˆ°ÑåÁ”õA…Ñ °‘•™…Õ±ÐõA…Ñ ¹Ý ¤¤(€€€µ•ÍÍ…”¹…‘‘}…ÉÕµ•¹Ð ˆ´µ™¥±”ˆ°ÑåÁ”õA…Ñ °É•ÅÕ¥É•õQÉÕ”°‘•ÍÐô‰µ•ÍÍ…•}™¥±”ˆ¤((€€€Á±…¸€ôÍÕ‰Á…ÉÍ•ÉÌ¹…‘‘}Á…ÉÍ•È ‰¥ÐµÁ±…¸ˆ°¡•±Àô‰Á•É™½É´É•…µ½¹±ä¥Ð‘•±¥Ù•ÉäÁÉ•™±¥¡Ðˆ¤(€€€Á±…¸¹…‘‘}…ÉÕµ•¹Ð ˆ´µÉ½½Ðˆ°ÑåÁ”õA…Ñ °‘•™…Õ±ÐõA…Ñ ¹Ý ¤¤(€€€Á±…¸¹…‘‘}…ÉÕµ•¹Ð ˆ´µ½Á•É…Ñ¥½¸ˆ°¡½¥•Ìô ‰…ÕÑ¼ˆ°€‰½µµ¥Ðˆ°€‰ÁÕÍ ˆ¤°É•ÅÕ¥É•õQÉÕ”¤(€€€Á±…¸¹…‘‘}…ÉÕµ•¹Ð (€€€€€€€€ˆ´µ‘•±¥Ù•Éäˆ°¡½¥•Ìô ‰½µµ¥Ðˆ°€‰½µµ¥Ðµ…¹µÁÕÍ ˆ°€‰…ÕÑ¼ˆ¤°É•ÅÕ¥É•õQÉÕ”(€€€€¤(€€€Á±…¸¹…‘‘}…ÉÕµ•¹Ð ˆ´µÁ…Ñ ˆ°…Ñ¥½¸ô‰…ÁÁ•¹ˆ°‘•ÍÐô‰Á…Ñ¡Ìˆ°‘•™…Õ±Ðõmt¤(€€€Á±…¸¹…‘‘}…ÉÕµ•¹Ð ˆ´µµ•ÍÍ…”µ™¥±”ˆ°ÑåÁ”õA…Ñ ¤(€€€Á±…¸¹…‘‘}…ÉÕµ•¹Ð ˆ´µ•áÁ•Ñ•µ½¹Ñ•¹Ðµ™¥¹•ÉÁÉ¥¹Ðˆ¤(€€€Á±…¸¹…‘‘}…ÉÕµ•¹Ð ˆ´µ•áÁ•Ñ•µ™¥¹•ÉÁÉ¥¹Ðˆ¤(€€€Á±…¸¹…‘‘}…ÉÕµ•¹Ð ˆ´µ•áÁ•Ñ•µ½µµ¥Ðˆ¤(€€€É•ÑÕÉ¸Á…ÉÍ•È(()‘•˜µ…¥¸¡…ÉØèM•ÅÕ•¹•mÍÑÉtð9½¹”€ô9½¹”¤€´ø¥¹Ðè(€€€…ÉÌ€ô}‰Õ¥±‘}Á…ÉÍ•È ¤¹Á…ÉÍ•}…ÉÌ¡…ÉØ¤(€€€ÑÉäè(€€€€€€€¥˜…ÉÌ¹½µµ…¹€ôô€‰ÉÕ±•Ìˆè(€€€€€€€€€€€É•ÍÕ±Ð€ôÉ•Í½±Ù•}ÉÕ±•Ì¡…ÉÌ¹É½½Ð°…ÉÌ¹Á…Ñ¡Ì½Èmt°¥¹±Õ‘•}…±°õ…ÉÌ¹…±°¤(€€€€€€€•±¥˜…ÉÌ¹½µµ…¹€ôô€‰µ•ÍÍ…”ˆè(€€€€€€€€€€€É•ÍÕ±Ð€ôÙ…±¥‘…Ñ•}µ•ÍÍ…”¡…ÉÌ¹É½½Ð°…ÉÌ¹µ•ÍÍ…•}™¥±”¤(€€€€€€€•±Í”è(€€€€€€€€€€€É•ÍÕ±Ð€ô¥Ñ}Á±…¸ (€€€€€€€€€€€€€€€…ÉÌ¹É½½Ð°(€€€€€€€€€€€€€€€½Á•É…Ñ¥½¸õ…ÉÌ¹½Á•É…Ñ¥½¸°(€€€€€€€€€€€€€€€‘•±¥Ù•Éäõ…ÉÌ¹‘•±¥Ù•Éä°(€€€€€€€€€€€€€€€Á…Ñ¡Ìõ…ÉÌ¹Á…Ñ¡Ì°(€€€€€€€€€€€€€€€µ•ÍÍ…•}™¥±”õ…ÉÌ¹µ•ÍÍ…•}™¥±”°(€€€€€€€€€€€€€€€•áÁ•Ñ•‘}½¹Ñ•¹Ñ}™¥¹•ÉÁÉ¥¹Ðõ…ÉÌ¹•áÁ•Ñ•‘}½¹Ñ•¹Ñ}™¥¹•ÉÁÉ¥¹Ð°(€€€€€€€€€€€€€€€•áÁ•Ñ•‘}™¥¹•ÉÁÉ¥¹Ðõ…ÉÌ¹•áÁ•Ñ•‘}™¥¹•ÉÁÉ¥¹Ð°(€€€€€€€€€€€€€€€•áÁ•Ñ•‘}½µµ¥Ðõ…ÉÌ¹•áÁ•Ñ•‘}½µµ¥Ð°(€€€€€€€€€€€€¤(€€€•á•ÁÐA½±¥å%¹ÁÕÑÉÉ½È…Ì•áŒè(€€€€€€€ÁÉ¥¹Ð¡©Í½¸¹‘ÕµÁÌ¡}©Í½¹}É•ÍÕ±Ð ‰%9Y1%ˆ°•ÉÉ½ÈõÍÑÈ¡•áŒ¤¤°•¹ÍÕÉ•}…Í¥¤õ…±Í”¤¤(€€€€€€€É•ÑÕÉ¸a%Q}%9AUP(€€€•á•ÁÐ¥ÑI•…‘ÉÉ½È…Ì•áŒè(€€€€€€€ÁÉ¥¹Ð¡©Í½¸¹‘ÕµÁÌ¡}©Í½¹}É•ÍÕ±Ð ‰	1=-ˆ°É•…Í½¹ÌõmÍÑÈ¡•áŒ¥t¤°•¹ÍÕÉ•}…Í¥¤õ…±Í”¤¤(€€€€€€€É•ÑÕÉ¸a%Q}aQI90(€€€ÁÉ¥¹Ð¡©Í½¸¹‘ÕµÁÌ¡É•ÍÕ±Ð°•¹ÍÕÉ•}…Í¥¤õ…±Í”°¥¹‘•¹ÐôÈ¤¤(€€€É•ÑÕÉ¸a%Q}	1=-¥˜É•ÍÕ±Ñl‰ÍÑ…ÑÕÌ‰t€ôô€‰	1=-ˆ•±Í”€À(()¥˜}}¹…µ•}|€ôô€‰}}µ…¥¹}|ˆè(€€€É…¥Í”MåÍÑ•µá¥Ð¡µ…¥¸ ¤¤
+    root: Path | str, task_paths: Sequence[str], *, include_all: bool = False
+) -> Mapping[str, Any]:
+    root_path = _normalized_root(root)
+    loaded = load_manifest(root_path)
+    if loaded is None:
+        return _json_result(
+            "NOT_CONFIGURED", task_paths=[], all=include_all, rules=[], git_policy=None
+        )
+    manifest_path, manifest = loaded
+    load_policy(root_path, loaded)
+    normalized_paths = [] if include_all else [_repository_path(path) for path in task_paths]
+    if not include_all and not normalized_paths:
+        raise PolicyInputError("provide at least one task path or use --all")
+
+    resolved: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+    for index, entry in enumerate(manifest["rules"]):
+        if not isinstance(entry, dict):
+            raise PolicyInputError(f"rules[{index}] must be a mapping")
+        rule_id = entry.get("id")
+        reference = entry.get("path")
+        patterns = entry.get("applies_to")
+        required = entry.get("required")
+        if not isinstance(rule_id, str) or not rule_id:
+            raise PolicyInputError(f"rules[{index}].id is invalid")
+        if rule_id in seen_ids:
+            raise PolicyInputError(f"duplicate rule id: {rule_id}")
+        seen_ids.add(rule_id)
+        if not isinstance(patterns, list) or not patterns or not all(
+            isinstance(pattern, str) and pattern for pattern in patterns
+        ):
+            raise PolicyInputError(
+                f"rules[{index}].applies_to must be a non-empty string list"
+            )
+        normalized_patterns = [_repository_path(pattern) for pattern in patterns]
+        if not isinstance(required, bool):
+            raise PolicyInputError(f"rules[{index}].required is invalid")
+        matched = (
+            normalized_patterns
+            if include_all
+            else [
+                pattern
+                for pattern in normalized_patterns
+                if any(_matches(path, pattern) for path in normalized_paths)
+            ]
+        )
+        if not matched:
+            continue
+        rule_path = _project_file(manifest_path.parent, reference)
+        if not rule_path.is_file():
+            if required:
+                raise PolicyInputError(f"required rule is missing: {reference}")
+            continue
+        resolved.append(
+            {
+                "id": rule_id,
+                "path": rule_path.relative_to(root_path).as_posix(),
+                "required": required,
+                "matched_patterns": matched,
+            }
+        )
+    policy_path = _project_file(manifest_path.parent, manifest["git_policy"])
+    return _json_result(
+        "PASS",
+        task_paths=normalized_paths,
+        all=include_all,
+        rules=resolved,
+        git_policy=policy_path.relative_to(root_path).as_posix(),
+    )
+
+
+def _message_entries(text: str) -> tuple[dict[str, str], list[ParsedField], list[dict[str, Any]]]:
+    lines = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    errors: list[dict[str, Any]] = []
+    first = next((index for index, line in enumerate(lines) if line.strip()), None)
+    if first is None:
+        return {}, [], [{"code": "EMPTY_MESSAGE", "line": 1, "message": "message is empty"}]
+    subject_match = SUBJECT_PATTERN.fullmatch(lines[first].strip())
+    subject: dict[str, str] = {}
+    if subject_match is None:
+        errors.append(
+            {
+                "code": "SUBJECT_FORMAT",
+                "line": first + 1,
+                "message": "subject must be <Project><Function block>: <Summary>",
+            }
+        )
+    else:
+        subject = {
+            "project": subject_match.group(1).strip(),
+            "function_block": subject_match.group(2).strip(),
+            "summary": subject_match.group(3).strip(),
+        }
+
+    mutable: list[dict[str, Any]] = []
+    current: dict[str, Any] | None = None
+    for index in range(first + 1, len(lines)):
+        raw = lines[index]
+        stripped = raw.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if stripped == TEST_MARKER:
+            current = {"name": TEST_MARKER, "value": "", "details": [], "line": index + 1}
+            mutable.append(current)
+            continue
+        match = FIELD_PATTERN.fullmatch(stripped)
+        if match is not None:
+            current = {
+                "name": match.group(1),
+                "value": match.group(2).strip(),
+                "details": [],
+                "line": index + 1,
+            }
+            mutable.append(current)
+            continue
+        if raw[:1].isspace() and current is not None and current["name"] != TEST_MARKER:
+            current["details"].append(stripped)
+            continue
+        errors.append(
+            {
+                "code": "UNKNOWN_LINE",
+                "line": index + 1,
+                "message": f"unrecognized non-indented line: {stripped}",
+            }
+        )
+    entries = [
+        ParsedField(item["name"], item["value"], tuple(item["details"]), item["line"])
+        for item in mutable
+    ]
+    return subject, entries, errors
+
+
+def _field_map(entries: Sequence[ParsedField]) -> dict[str, list[ParsedField]]:
+    result: dict[str, list[ParsedField]] = {}
+    for entry in entries:
+        result.setdefault(entry.name, []).append(entry)
+    return result
+
+
+def _conditional_yn(
+    entry: ParsedField | None,
+    name: str,
+    errors: list[dict[str, Any]],
+    *,
+    y_requires_detail: bool,
+    n_requires_detail: bool,
+) -> None:
+    if entry is None:
+        return
+    match = re.fullmatch(r"([YN])(?:\s+(.*))?", entry.value.strip())
+    if match is None:
+        errors.append(
+            {
+                "code": "YN_VALUE",
+                "line": entry.line,
+                "message": f"{name} must start with Y or N",
+            }
+        )
+        return
+    value = match.group(1).upper()
+    details = [match.group(2) or "", *entry.details]
+    has_detail = bool("\n".join(details).strip())
+    if value == "Y" and y_requires_detail and not has_detail:
+        errors.append(
+            {
+                "code": "DETAIL_REQUIRED",
+                "line": entry.line,
+                "message": f"{name}=Y requires steps",
+            }
+        )
+    if value == "N" and n_requires_detail and not has_detail:
+        errors.append(
+            {
+                "code": "RATIONALE_REQUIRED",
+                "line": entry.line,
+                "message": f"{name}=N requires a rationale",
+            }
+        )
+
+
+def validate_message(root: Path | str, message_path: Path | str) -> Mapping[str, Any]:
+    root_path = _normalized_root(root)
+    loaded = load_manifest(root_path)
+    if loaded is None:
+        return _json_result("NOT_CONFIGURED", errors=[], subject={})
+    manifest_path, manifest = loaded
+    loaded_policy = load_policy(root_path, loaded)
+    assert loaded_policy is not None
+    policy_path, policy = loaded_policy
+    message_file = Path(message_path).resolve()
+    if not message_file.is_file():
+        raise PolicyInputError(f"message file is missing: {message_file}")
+    try:
+        text = message_file.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as exc:
+        raise PolicyInputError(f"cannot read message file: {exc}") from exc
+
+    subject, entries, errors = _message_entries(text)
+    names = [entry.name for entry in entries]
+    jira_count = names.count("Jira ID")
+    collapsed = [name for name in names if name != "Jira ID"]
+    expected = [*PRE_JIRA_FIELDS, *POST_JIRA_FIELDS]
+    if jira_count < 1:
+        errors.append({"code": "JIRA_REQUIRED", "line": 1, "message": "at least one Jira ID is required"})
+    if collapsed != expected:
+        errors.append(
+            {
+                "code": "FIELD_ORDER",
+                "line": 1,
+                "message": "fields are missing, unknown, duplicated, or out of order",
+            }
+        )
+    elif names[: len(PRE_JIRA_FIELDS)] != list(PRE_JIRA_FIELDS):
+        errors.append({"code": "FIELD_ORDER", "line": 1, "message": "Jira ID rows must follow Solution"})
+    else:
+        first_jira = len(PRE_JIRA_FIELDS)
+        if names[first_jira : first_jira + jira_count] != ["Jira ID"] * jira_count:
+            errors.append({"code": "FIELD_ORDER", "line": 1, "message": "Jira ID rows must be consecutive"})
+
+    fields = _field_map(entries)
+    singleton: dict[str, ParsedField | None] = {
+        name: values[0] if len(values) == 1 else None
+        for name, values in fields.items()
+        if name != "Jira ID"
+    }
+    project_config = manifest.get("project", {})
+    primary = project_config.get("primary") if isinstance(project_config, dict) else None
+    aliases = project_config.get("aliases", []) if isinstance(project_config, dict) else []
+    if subject:
+        for key, value in subject.items():
+            placeholder_values = {
+                "project": "Project",
+                "function_block": "Function block",
+                "summary": "Summary",
+            }
+            if (
+                not value
+                or PLACEHOLDER_PATTERN.search(value)
+                or value == placeholder_values[key]
+            ):
+                errors.append({"code": "SUBJECT_PLACEHOLDER", "line": 1, "message": f"subject {key} is empty or a placeholder"})
+        if isinstance(primary, str) and primary != "auto":
+            allowed_projects = {primary, *(item for item in aliases if isinstance(item, str))}
+            if subject.get("project") not in allowed_projects:
+                errors.append({"code": "PROJECT_MISMATCH", "line": 1, "message": "subject project is not configured in project.yml"})
+
+    required_fields = (
+        "Change Type",
+        "Change Reason",
+        "Root Cause",
+        "Solution",
+        "AI-Tool-Used",
+        "AI-Tool-Scenario",
+        "AI-Tool-Detail",
+        "Affected Function Name",
+        "Applicable Project",
+        "RN",
+        "RN description",
+        "Test-Proposal",
+        "Stress-Test",
+        "HW-Test",
+    )
+    for name in required_fields:
+        entry = singleton.get(name)
+        if entry is None:
+            continue
+        if not entry.detail_text or PLACEHOLDER_PATTERN.search(entry.detail_text):
+            errors.append({"code": "FIELD_VALUE", "line": entry.line, "message": f"{name} is empty or contains a placeholder"})
+
+    commit_policy = policy.get("commit", {}) if isinstance(policy, dict) else {}
+    change_types = commit_policy.get("change_types", []) if isinstance(commit_policy, dict) else []
+    change_entry = singleton.get("Change Type")
+    change_type = change_entry.value if change_entry else ""
+    if change_entry and change_type not in change_types:
+        errors.append({"code": "CHANGE_TYPE", "line": change_entry.line, "message": f"Change Type must be one of {change_types!r}"})
+    root_cause = singleton.get("Root Cause")
+    if root_cause:
+        if change_type == "bug fix" and root_cause.detail_text.upper() == "N/A":
+            errors.append({"code": "ROOT_CAUSE", "line": root_cause.line, "message": "bug fix requires a real Root Cause"})
+        if change_type == "new requirements" and root_cause.detail_text.upper() != "N/A":
+            errors.append({"code": "ROOT_CAUSE", "line": root_cause.line, "message": "new requirements must use N/A for Root Cause"})
+
+    jira_pattern = commit_policy.get("jira_pattern", "") if isinstance(commit_policy, dict) else ""
+    try:
+        compiled_jira = re.compile(jira_pattern)
+    except (re.error, TypeError) as exc:
+        raise PolicyInputError(f"invalid commit.jira_pattern: {exc}") from exc
+    for jira in fields.get("Jira ID", []):
+        if not compiled_jira.fullmatch(jira.value):
+            errors.append({"code": "JIRA_FORMAT", "line": jira.line, "message": f"invalid Jira ID: {jira.value!r}"})
+    jira_entries = fields.get("Jira ID", [])
+    for previous, current in zip(jira_entries, jira_entries[1:]):
+        if current.line != previous.line + 1:
+            errors.append(
+                {
+                    "code": "JIRA_CONTIGUOUS",
+                    "line": current.line,
+                    "message": "multiple Jira ID rows must be contiguous",
+                }
+            )
+
+    ai_used = singleton.get("AI-Tool-Used")
+    ai_scenario = singleton.get("AI-Tool-Scenario")
+    ai_detail = singleton.get("AI-Tool-Detail")
+    if ai_used and ai_used.value not in ("Y", "N"):
+        errors.append({"code": "AI_USED", "line": ai_used.line, "message": "AI-Tool-Used must be Y or N"})
+    elif ai_used and ai_scenario and ai_detail:
+        if ai_used.value == "N":
+            if ai_scenario.detail_text != "/" or ai_detail.detail_text != "/":
+                errors.append({"code": "AI_CONDITION", "line": ai_used.line, "message": "AI-Tool-Used=N requires Scenario and Detail to be /"})
+        else:
+            allowed_scenarios = commit_policy.get("ai_scenarios", [])
+            selected = ai_scenario.value.strip()
+            if selected not in allowed_scenarios:
+                errors.append({"code": "AI_SCENARIO", "line": ai_scenario.line, "message": f"invalid AI scenario: {selected!r}"})
+            if not ai_detail.detail_text or ai_detail.detail_text in ("N/A", "/"):
+                errors.append({"code": "AI_DETAIL", "line": ai_detail.line, "message": "AI-Tool-Used=Y requires usage detail"})
+
+    rn = singleton.get("RN")
+    rn_description = singleton.get("RN description")
+    if rn and rn.value not in ("Y", "N"):
+        errors.append({"code": "RN_VALUE", "line": rn.line, "message": "RN must be Y or N"})
+    elif rn and rn_description:
+        if rn.value == "Y" and rn_description.detail_text in ("", "N/A"):
+            errors.append({"code": "RN_DESCRIPTION", "line": rn_description.line, "message": "RN=Y requires RN description"})
+        if rn.value == "N" and rn_description.detail_text != "N/A":
+            errors.append({"code": "RN_DESCRIPTION", "line": rn_description.line, "message": "RN=N requires RN description to be N/A"})
+
+    _conditional_yn(singleton.get("Test-Proposal"), "Test-Proposal", errors, y_requires_detail=True, n_requires_detail=True)
+    _conditional_yn(singleton.get("Stress-Test"), "Stress-Test", errors, y_requires_detail=True, n_requires_detail=False)
+    _conditional_yn(singleton.get("HW-Test"), "HW-Test", errors, y_requires_detail=True, n_requires_detail=False)
+
+    template_ref = commit_policy.get("template") if isinstance(commit_policy, dict) else None
+    template_path = _project_file(manifest_path.parent, template_ref)
+    if not template_path.is_file():
+        raise PolicyInputError(f"commit template is missing: {template_ref}")
+    return _json_result(
+        "PASS" if not errors else "BLOCKED",
+        subject=subject,
+        jira_ids=[entry.value for entry in fields.get("Jira ID", [])],
+        errors=errors,
+        template=template_path.relative_to(root_path).as_posix(),
+        policy=policy_path.relative_to(root_path).as_posix(),
+    )
+
+
+def _git_environment() -> dict[str, str]:
+    environment = dict(os.environ)
+    for key in list(environment):
+        if key.startswith("GIT_CONFIG") or key in {
+            "GIT_DIR",
+            "GIT_WORK_TREE",
+            "GIT_COMMON_DIR",
+        }:
+            environment.pop(key, None)
+    return environment
+
+
+def _git(root: Path, *arguments: str, allowed_codes: tuple[int, ...] = (0,)) -> subprocess.CompletedProcess[str]:
+    completed: subprocess.CompletedProcess[str] | None = None
+    for _attempt in range(3):
+        completed = subprocess.run(
+            ["git", "-C", str(root), *arguments],
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            capture_output=True,
+            check=False,
+            env=_git_environment(),
+        )
+        if completed.returncode in allowed_codes:
+            return completed
+    assert completed is not None
+    detail = completed.stderr.strip() or completed.stdout.strip() or "Git read failed"
+    raise GitReadError(
+        f"git {' '.join(arguments)} exited {completed.returncode}: {detail}"
+    )
+
+
+def _same_path(left: Path, right: Path) -> bool:
+    return os.path.normcase(str(left.resolve())) == os.path.normcase(str(right.resolve()))
+
+
+def _git_repository(root: Path) -> dict[str, Any]:
+    top = Path(_git(root, "rev-parse", "--show-toplevel").stdout.strip()).resolve()
+    if not _same_path(top, root):
+        raise GitReadError(f"--root is not the current Git repository root: {top}")
+    git_dir_raw = _git(root, "rev-parse", "--git-dir").stdout.strip()
+    common_raw = _git(root, "rev-parse", "--git-common-dir").stdout.strip()
+    git_dir = (root / git_dir_raw).resolve() if not Path(git_dir_raw).is_absolute() else Path(git_dir_raw).resolve()
+    common_dir = (root / common_raw).resolve() if not Path(common_raw).is_absolute() else Path(common_raw).resolve()
+    if not git_dir.exists() or not common_dir.exists():
+        raise GitReadError("Git metadata directory is missing")
+    branch = _git(root, "symbolic-ref", "--quiet", "--short", "HEAD", allowed_codes=(0, 1)).stdout.strip()
+    if not branch:
+        raise GitReadError("detached HEAD is not eligible for automatic Git delivery")
+    return {
+        "root": top,
+        "git_dir": git_dir,
+        "git_common_dir": common_dir,
+        "branch": branch,
+    }
+
+
+def _local_config_values(root: Path, key: str) -> tuple[list[str], str | None]:
+    values_result = _git(
+        root,
+        "config",
+        "--local",
+        "--no-includes",
+        "--get-all",
+        key,
+        allowed_codes=(0, 1),
+    )
+    values = [line for line in values_result.stdout.splitlines() if line]
+    origin_result = _git(
+        root,
+        "config",
+        "--local",
+        "--no-includes",
+        "--show-origin",
+        "--get-all",
+        key,
+        allowed_codes=(0, 1),
+    )
+    origins = []
+    for line in origin_result.stdout.splitlines():
+        if not line:
+            continue
+        origins.append(line.split("\t", 1)[0].split(" ", 1)[0])
+    origin = origins[0] if origins and len(set(origins)) == 1 else None
+    return values, origin
+
+
+def _one_local_value(root: Path, key: str) -> tuple[str, str | None]:
+    values, origin = _local_config_values(root, key)
+    if len(values) != 1:
+        raise GitReadError(f"local Git config {key} must have exactly one value")
+    if origin is None:
+        raise GitReadError(f"local Git config {key} has no unique source evidence")
+    return values[0], origin
+
+
+def _redact_url(value: str) -> str:
+    if "://" in value:
+        try:
+            parsed = urlsplit(value)
+            hostname = parsed.hostname or ""
+            port = parsed.port
+        except ValueError:
+            scheme = value.split("://", 1)[0]
+            return f"{scheme}://***"
+        if port is not None:
+            hostname = f"{hostname}:{port}"
+        if parsed.username is not None or parsed.password is not None:
+            hostname = f"***@{hostname}"
+        query = "***" if parsed.query else ""
+        fragment = "***" if parsed.fragment else ""
+        return urlunsplit((parsed.scheme, hostname, parsed.path, query, fragment))
+    if re.match(r"^[^/@\s]+@[^:\s]+:.+$", value):
+        return "***@" + value.split("@", 1)[1]
+    return value
+
+
+def resolve_push_target(root: Path | str) -> Mapping[str, Any]:
+    root_path = _normalized_root(root)
+    repository = _git_repository(root_path)
+    branch = repository["branch"]
+    remote, remote_origin = _one_local_value(root_path, f"branch.{branch}.remote")
+    merge_ref, merge_origin = _one_local_value(root_path, f"branch.{branch}.merge")
+    if (
+        not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._/-]*", remote)
+        or ".." in remote
+        or "@{" in remote
+    ):
+        raise GitReadError("branch remote must name one configured remote")
+    if not merge_ref.startswith("refs/heads/") or merge_ref == "refs/heads/":
+        raise GitReadError("branch merge target must be one refs/heads/... ref")
+    if _git(root_path, "check-ref-format", merge_ref, allowed_codes=(0, 1)).returncode != 0:
+        raise GitReadError("branch merge target is not a valid Git ref")
+    push_urls, push_origin = _local_config_values(root_path, f"remote.{remote}.pushurl")
+    url_key = f"remote.{remote}.pushurl"
+    if not push_urls:
+        push_urls, push_origin = _local_config_values(root_path, f"remote.{remote}.url")
+        url_key = f"remote.{remote}.url"
+    if len(push_urls) != 1:
+        raise GitReadError(f"local Git config must provide exactly one {url_key}")
+    if push_origin is None:
+        raise GitReadError(f"local Git config {url_key} has no unique source evidence")
+    target_branch = merge_ref.removeprefix("refs/heads/")
+    tracking_ref = f"refs/remotes/{remote}/{target_branch}"
+    evidence = {
+        "root": repository["root"].as_posix(),
+        "git_dir": repository["git_dir"].as_posix(),
+        "git_common_dir": repository["git_common_dir"].as_posix(),
+        "current_branch": branch,
+        "remote": remote,
+        "push_url": _redact_url(push_urls[0]),
+        "target_ref": merge_ref,
+        "target_branch": target_branch,
+        "tracking_ref": tracking_ref,
+        "config_sources": {
+            f"branch.{branch}.remote": remote_origin,
+            f"branch.{branch}.merge": merge_origin,
+            url_key: push_origin,
+        },
+    }
+    fingerprint_source = copy.deepcopy(evidence)
+    fingerprint_source["push_url"] = push_urls[0]
+    fingerprint = hashlib.sha256(
+        json.dumps(fingerprint_source, sort_keys=True, ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+    return {**evidence, "fingerprint": fingerprint}
+
+
+def _nul_paths(output: str) -> list[str]:
+    return [_repository_path(item) for item in output.split("\0") if item]
+
+
+def _changed_paths(root: Path) -> dict[str, list[str]]:
+    unstaged = _nul_paths(_git(root, "diff", "--name-only", "-z").stdout)
+    staged = _nul_paths(_git(root, "diff", "--cached", "--name-only", "-z").stdout)
+    untracked = _nul_paths(
+        _git(root, "ls-files", "--others", "--exclude-standard", "-z").stdout
+    )
+    return {
+        "unstaged": sorted(set(unstaged)),
+        "staged": sorted(set(staged)),
+        "untracked": sorted(set(untracked)),
+    }
+
+
+def _path_policy_reasons(paths: Sequence[str], policy: Mapping[str, Any]) -> list[str]:
+    scope = policy.get("scope", {})
+    denied = scope.get("denied_paths", []) if isinstance(scope, dict) else []
+    reasons: list[str] = []
+    for path in paths:
+        if any(_matches(path, pattern) for pattern in denied):
+            reasons.append(f"path is denied: {path}")
+    return reasons
+
+
+def _path_change_statistics(
+    root: Path, path: str, states: Sequence[str]
+) -> dict[str, Any]:
+    """Summarize the current worktree version of one path relative to HEAD."""
+    candidate = root.joinpath(*path.split("/"))
+    if "untracked" in states:
+        if candidate.is_file() and not candidate.is_symlink():
+            added = 0
+            has_data = False
+            last_byte = b""
+            with candidate.open("rb") as stream:
+                while chunk := stream.read(1024 * 1024):
+                    if b"\0" in chunk:
+                        return {"added": None, "deleted": None, "binary": True}
+                    has_data = True
+                    added += chunk.count(b"\n")
+                    last_byte = chunk[-1:]
+            if has_data and last_byte != b"\n":
+                added += 1
+            return {
+                "added": added,
+                "deleted": 0,
+                "binary": False,
+            }
+        if candidate.is_symlink():
+            return {"added": 1, "deleted": 0, "binary": False}
+    result = _git(
+        root,
+        "diff",
+        "--numstat",
+        "HEAD",
+        "--",
+        path,
+        allowed_codes=(0, 128),
+    )
+    if result.returncode == 128:
+        if candidate.is_file() and not candidate.is_symlink():
+            data = candidate.read_bytes()
+            if b"\0" in data:
+                return {"added": None, "deleted": None, "binary": True}
+            return {
+                "added": len(data.decode("utf-8", errors="replace").splitlines()),
+                "deleted": 0,
+                "binary": False,
+            }
+        if candidate.is_symlink():
+            return {"added": 1, "deleted": 0, "binary": False}
+        return {"added": 0, "deleted": 0, "binary": False}
+
+    added = 0
+    deleted = 0
+    binary = False
+    for line in result.stdout.splitlines():
+        columns = line.split("\t", 2)
+        if len(columns) < 2:
+            continue
+        if columns[0] == "-" or columns[1] == "-":
+            binary = True
+            continue
+        try:
+            added += int(columns[0])
+            deleted += int(columns[1])
+        except ValueError:
+            continue
+    if binary:
+        return {"added": None, "deleted": None, "binary": True}
+    return {"added": added, "deleted": deleted, "binary": False}
+
+
+def _commit_content(
+    root: Path, paths: Sequence[str], changes: Mapping[str, Sequence[str]]
+) -> dict[str, Any]:
+    selected = set(paths)
+    all_changes = {
+        path
+        for state in ("staged", "unstaged", "untracked")
+        for path in changes.get(state, [])
+    }
+    digest = hashlib.sha256()
+    ordered = sorted(selected)
+    entries: list[dict[str, Any]] = []
+    for path in ordered:
+        states = [
+            state
+            for state in ("staged", "unstaged", "untracked")
+            if path in changes.get(state, [])
+        ]
+        entries.append(
+            {
+                "path": path,
+                "states": states,
+                **_path_change_statistics(root, path, states),
+            }
+        )
+        digest.update(path.encode("utf-8"))
+        digest.update(b"\0")
+        candidate = root.joinpath(*path.split("/"))
+        if candidate.is_symlink():
+            digest.update(b"SYMLINK\0")
+            digest.update(os.readlink(candidate).encode("utf-8", errors="surrogateescape"))
+        elif candidate.is_file():
+            digest.update(b"FILE\0")
+            digest.update(str(candidate.stat().st_mode & 0o111).encode("ascii"))
+            digest.update(b"\0")
+            with candidate.open("rb") as stream:
+                while chunk := stream.read(1024 * 1024):
+                    digest.update(chunk)
+        elif candidate.is_dir():
+            digest.update(b"DIRECTORY\0")
+            nested_head = _git(
+                candidate,
+                "rev-parse",
+                "--verify",
+                "HEAD",
+                allowed_codes=(0, 128),
+            )
+            digest.update(
+                nested_head.stdout.strip().encode("ascii", errors="replace")
+                if nested_head.returncode == 0
+                else b"NO_NESTED_HEAD"
+            )
+        else:
+            digest.update(b"MISSING")
+        digest.update(b"\0")
+    return {
+        "paths": sorted(selected),
+        "staged": sorted(selected & set(changes.get("staged", []))),
+        "unstaged": sorted(selected & set(changes.get("unstaged", []))),
+        "untracked": sorted(selected & set(changes.get("untracked", []))),
+        "entries": entries,
+        "excluded_paths": sorted(all_changes - selected),
+        "fingerprint": digest.hexdigest(),
+    }
+
+
+def _branch_policy_reasons(
+    current: str, target: str, policy: Mapping[str, Any]
+) -> list[str]:
+    push = policy.get("push", {})
+    allowed = push.get("allowed_branches", []) if isinstance(push, dict) else []
+    protected = push.get("protected_branches", []) if isinstance(push, dict) else []
+    reasons: list[str] = []
+    for label, branch in (("current", current), ("target", target)):
+        if not any(_matches(branch, pattern) for pattern in allowed):
+            reasons.append(f"{label} branch is not allowed: {branch}")
+        if any(_matches(branch, pattern) for pattern in protected):
+            reasons.append(f"{label} branch is protected: {branch}")
+    return reasons
+
+
+def _tracking_ref_sha(root: Path, push_target: Mapping[str, Any]) -> str | None:
+    result = _git(
+        root,
+        "rev-parse",
+        "--verify",
+        "--quiet",
+        push_target["tracking_ref"],
+        allowed_codes=(0, 1),
+    )
+    return result.stdout.strip() if result.returncode == 0 else None
+
+
+def _auto_push_eligibility(
+    root: Path,
+    repository: Mapping[str, Any],
+    policy: Mapping[str, Any],
+) -> tuple[Mapping[str, Any] | None, list[str]]:
+    reasons: list[str] = []
+    try:
+        push_target = resolve_push_target(root)
+    except GitReadError as exc:
+        return None, [str(exc)]
+    reasons.extend(
+        _branch_policy_reasons(
+            push_target["current_branch"], push_target["target_branch"], policy
+        )
+    )
+    tracking_sha = _tracking_ref_sha(root, push_target)
+    if tracking_sha is None:
+        reasons.append("configured upstream tracking ref is unavailable locally")
+    else:
+        head_sha = _git(root, "rev-parse", "HEAD").stdout.strip()
+        if head_sha != tracking_sha:
+            reasons.append(
+                "current HEAD must exactly match the upstream tracking ref before auto delivery"
+            )
+    if push_target["current_branch"] != repository["branch"]:
+        reasons.append("current branch changed during auto preflight")
+    return push_target, reasons
+
+
+def git_plan(
+    root: Path | str,
+    *,
+    operation: str,
+    delivery: str,
+    paths: Sequence[str] = (),
+    message_file: Path | str | None = None,
+    expected_content_fingerprint: str | None = None,
+    expected_fingerprint: str | None = None,
+    expected_commit: str | None = None,
+) -> Mapping[str, Any]:
+    root_path = _normalized_root(root)
+    loaded = load_manifest(root_path)
+    if loaded is None:
+        return _json_result("NOT_CONFIGURED", operation=operation, reasons=[])
+    loaded_policy = load_policy(root_path, loaded)
+    assert loaded_policy is not None
+    policy_path, policy = loaded_policy
+    automation = policy.get("automation", {})
+    safety = policy.get("safety", {})
+    reasons: list[str] = []
+    policy_relative = policy_path.relative_to(root_path).as_posix()
+    if safety.get("require_task_authorization") is not True:
+        reasons.append("policy must require current Task Brief authorization")
+    if safety.get("explicit_staging") is not True:
+        reasons.append("policy must require explicit staging")
+    if safety.get("allow_force_push") is not False:
+        reasons.append("policy must forbid force push")
+    if delivery not in ("commit", "commit-and-push", "auto"):
+        reasons.append("Git Delivery does not authorize Git writes")
+
+    repository = _git_repository(root_path)
+    changes = _changed_paths(root_path)
+    changed_control_paths = {
+        ".project/project.yml",
+        policy_relative,
+    } & {
+        *changes["unstaged"],
+        *changes["staged"],
+        *changes["untracked"],
+    }
+    if changed_control_paths:
+        reasons.append(
+            "uncommitted delivery controls cannot authorize this task: "
+            + ", ".join(sorted(changed_control_paths))
+        )
+    normalized_paths: list[str] = []
+    message_result: Mapping[str, Any] | None = None
+    push_target: Mapping[str, Any] | None = None
+    outgoing_commits: list[str] = []
+    outgoing_paths: list[str] = []
+    commit_content: Mapping[str, Any] | None = None
+
+    if operation == "auto":
+        if delivery != "auto":
+            raise PolicyInputError("auto operation requires --delivery auto")
+        actual = set(changes["unstaged"]) | set(changes["staged"]) | set(
+            changes["untracked"]
+        )
+        if not actual:
+            return _json_result(
+                "PASS",
+                operation=operation,
+                delivery=delivery,
+                decision=DECISION_NO_DELIVERY,
+                decision_reasons=[],
+                policy=policy_relative,
+                repository={
+                    "root": repository["root"].as_posix(),
+                    "git_dir": repository["git_dir"].as_posix(),
+                    "git_common_dir": repository["git_common_dir"].as_posix(),
+                    "current_branch": repository["branch"],
+                },
+                paths=[],
+                changes=changes,
+                message=None,
+                push_target=None,
+                checks={"commit": [], "push": []},
+            )
+        if message_file is None:
+            raise PolicyInputError(
+                "auto operation requires --message-file when changes exist: "
+                + ", ".join(sorted(actual))
+            )
+        normalized_paths = [_repository_path(path) for path in paths]
+        if not normalized_paths:
+            raise PolicyInputError("auto operation requires at least one --path when changes exist")
+        if expected_content_fingerprint is not None and not re.fullmatch(
+            r"[0-9a-fA-F]{64}", expected_content_fingerprint
+        ):
+            raise PolicyInputError(
+                "--expected-content-fingerprint must be a 64-character hexadecimal digest"
+            )
+        message_result = validate_message(root_path, message_file)
+        if message_result["status"] != "PASS":
+            return _json_result(
+                "BLOCKED",
+                operation=operation,
+                delivery=delivery,
+                decision=None,
+                reasons=["commit message validation failed"],
+                policy=policy_relative,
+                repository={
+                    "root": repository["root"].as_posix(),
+                    "git_dir": repository["git_dir"].as_posix(),
+                    "git_common_dir": repository["git_common_dir"].as_posix(),
+                    "current_branch": repository["branch"],
+                },
+                paths=normalized_paths,
+                changes=changes,
+                message=message_result,
+                push_target=None,
+                checks={"commit": [], "push": []},
+            )
+        commit_content = _commit_content(root_path, normalized_paths, changes)
+        current_content_fingerprint = str(commit_content["fingerprint"])
+        if expected_content_fingerprint is None:
+            content_confirmation_status = "PENDING"
+        elif expected_content_fingerprint.lower() != current_content_fingerprint:
+            content_confirmation_status = "STALE"
+        else:
+            content_confirmation_status = "CONFIRMED"
+
+        decision_reasons = list(reasons)
+        if automation.get("commit") is not True:
+            decision_reasons.append("automatic commit is disabled")
+        if automation.get("push") is not True:
+            decision_reasons.append("automatic push is disabled")
+        requested = set(normalized_paths)
+        missing = sorted(requested - actual)
+        extra = sorted(actual - requested)
+        if missing:
+            decision_reasons.append(
+                "requested paths have no current changes: " + ", ".join(missing)
+            )
+        if extra:
+            decision_reasons.append(
+                "current changes are outside auto delivery scope: " + ", ".join(extra)
+            )
+        if changes["staged"]:
+            decision_reasons.append(
+                "index must be empty before auto delivery: "
+                + ", ".join(changes["staged"])
+            )
+        decision_reasons.extend(_path_policy_reasons(normalized_paths, policy))
+        push_target, push_reasons = _auto_push_eligibility(
+            root_path, repository, policy
+        )
+        decision_reasons.extend(push_reasons)
+        if decision_reasons:
+            decision = DECISION_MESSAGE_ONLY
+        elif content_confirmation_status != "CONFIRMED":
+            decision = DECISION_CONFIRM_AUTO_CONTENT
+        else:
+            decision = DECISION_AUTO_UPLOAD
+        return _json_result(
+            "PASS",
+            operation=operation,
+            delivery=delivery,
+            decision=decision,
+            decision_reasons=decision_reasons,
+            policy=policy_relative,
+            repository={
+                "root": repository["root"].as_posix(),
+                "git_dir": repository["git_dir"].as_posix(),
+                "git_common_dir": repository["git_common_dir"].as_posix(),
+                "current_branch": repository["branch"],
+            },
+            paths=normalized_paths,
+            changes=changes,
+            message=message_result,
+            commit_content=commit_content,
+            content_confirmation={
+                "required": True,
+                "status": content_confirmation_status,
+                "expected_fingerprint": expected_content_fingerprint,
+                "current_fingerprint": current_content_fingerprint,
+            },
+            push_target=push_target,
+            checks={
+                "commit": policy.get("commit", {}).get("checks", []),
+                "push": policy.get("push", {}).get("checks", []),
+            },
+        )
+
+    if operation == "commit":
+        if delivery == "auto":
+            if automation.get("commit") is not True:
+                reasons.append("automatic commit is disabled for auto delivery")
+            if automation.get("push") is not True:
+                reasons.append("automatic push is disabled for auto delivery")
+        if message_file is None:
+            raise PolicyInputError("commit operation requires --message-file")
+        message_result = validate_message(root_path, message_file)
+        if message_result["status"] != "PASS":
+            reasons.append("commit message validation failed")
+        normalized_paths = [_repository_path(path) for path in paths]
+        if not normalized_paths:
+            raise PolicyInputError("commit operation requires at least one --path")
+        reasons.extend(_path_policy_reasons(normalized_paths, policy))
+        actual = set(changes["unstaged"]) | set(changes["staged"]) | set(changes["untracked"])
+        missing = sorted(set(normalized_paths) - actual)
+        if missing:
+            reasons.append("requested paths have no current changes: " + ", ".join(missing))
+        outside_staged = sorted(set(changes["staged"]) - set(normalized_paths))
+        if outside_staged:
+            reasons.append("staged paths are outside delivery scope: " + ", ".join(outside_staged))
+        commit_content = _commit_content(root_path, normalized_paths, changes)
+        checks = policy.get("commit", {}).get("checks", [])
+    elif operation == "push":
+        if delivery not in ("commit-and-push", "auto"):
+            reasons.append("Git Delivery does not authorize push")
+        if delivery == "auto" and automation.get("push") is not True:
+            reasons.append("automatic push is disabled for auto delivery")
+        push_target = resolve_push_target(root_path)
+        reasons.extend(
+            _branch_policy_reasons(
+                push_target["current_branch"], push_target["target_branch"], policy
+            )
+        )
+        if expected_fingerprint and push_target["fingerprint"] != expected_fingerprint:
+            reasons.append("local .git push target changed after preflight")
+        if delivery == "auto" and not expected_fingerprint:
+            reasons.append("auto push requires the original preflight fingerprint")
+        if delivery == "auto" and not expected_commit:
+            reasons.append("auto push requires the newly created commit SHA")
+        if expected_commit and not re.fullmatch(r"[0-9a-fA-F]{40,64}", expected_commit):
+            raise PolicyInputError("--expected-commit must be a full hexadecimal commit SHA")
+        if changes["staged"]:
+            reasons.append("staged changes remain before push: " + ", ".join(changes["staged"]))
+            reasons.extend(_path_policy_reasons(changes["staged"], policy))
+        upstream = push_target["tracking_ref"]
+        verify = _git(
+            root_path,
+            "rev-parse",
+            "--verify",
+            "--quiet",
+            upstream,
+            allowed_codes=(0, 1),
+        )
+        if verify.returncode != 0:
+            reasons.append("configured upstream tracking ref is unavailable locally")
+        else:
+            outgoing_commits = [
+                line
+                for line in _git(root_path, "rev-list", "--reverse", f"{upstream}..HEAD").stdout.splitlines()
+                if line
+            ]
+            if not outgoing_commits:
+                reasons.append("there are no outgoing commits")
+            if delivery == "auto" and expected_commit and outgoing_commits != [
+                expected_commit.lower()
+            ]:
+                reasons.append(
+                    "auto push outgoing commits must contain only the newly created commit"
+                )
+            outgoing_paths = _nul_paths(
+                _git(root_path, "diff", "--name-only", "-z", f"{upstream}..HEAD").stdout
+            )
+            reasons.extend(_path_policy_reasons(outgoing_paths, policy))
+        checks = policy.get("push", {}).get("checks", [])
+    else:
+        raise PolicyInputError("operation must be auto, commit, or push")
+
+    return _json_result(
+        "PASS" if not reasons else "BLOCKED",
+        operation=operation,
+        delivery=delivery,
+        reasons=reasons,
+        policy=policy_relative,
+        repository={
+            "root": repository["root"].as_posix(),
+            "git_dir": repository["git_dir"].as_posix(),
+            "git_common_dir": repository["git_common_dir"].as_posix(),
+            "current_branch": repository["branch"],
+        },
+        paths=normalized_paths,
+        changes=changes,
+        message=message_result,
+        push_target=push_target,
+        outgoing_commits=outgoing_commits,
+        outgoing_paths=outgoing_paths,
+        commit_content=commit_content,
+        checks=checks,
+    )
+
+
+def _build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description=__doc__)
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    rules = subparsers.add_parser("rules", help="resolve applicable project rules")
+    rules.add_argument("--root", type=Path, default=Path.cwd())
+    selection = rules.add_mutually_exclusive_group(required=True)
+    selection.add_argument("--path", action="append", dest="paths")
+    selection.add_argument("--all", action="store_true")
+
+    message = subparsers.add_parser("message", help="validate one completed commit message")
+    message.add_argument("--root", type=Path, default=Path.cwd())
+    message.add_argument("--file", type=Path, required=True, dest="message_file")
+
+    plan = subparsers.add_parser("git-plan", help="perform read-only Git delivery preflight")
+    plan.add_argument("--root", type=Path, default=Path.cwd())
+    plan.add_argument("--operation", choices=("auto", "commit", "push"), required=True)
+    plan.add_argument(
+        "--delivery", choices=("commit", "commit-and-push", "auto"), required=True
+    )
+    plan.add_argument("--path", action="append", dest="paths", default=[])
+    plan.add_argument("--message-file", type=Path)
+    plan.add_argument("--expected-content-fingerprint")
+    plan.add_argument("--expected-fingerprint")
+    plan.add_argument("--expected-commit")
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    args = _build_parser().parse_args(argv)
+    try:
+        if args.command == "rules":
+            result = resolve_rules(args.root, args.paths or [], include_all=args.all)
+        elif args.command == "message":
+            result = validate_message(args.root, args.message_file)
+        else:
+            result = git_plan(
+                args.root,
+                operation=args.operation,
+                delivery=args.delivery,
+                paths=args.paths,
+                message_file=args.message_file,
+                expected_content_fingerprint=args.expected_content_fingerprint,
+                expected_fingerprint=args.expected_fingerprint,
+                expected_commit=args.expected_commit,
+            )
+    except PolicyInputError as exc:
+        print(json.dumps(_json_result("INVALID", error=str(exc)), ensure_ascii=False))
+        return EXIT_INPUT
+    except GitReadError as exc:
+        print(json.dumps(_json_result("BLOCKED", reasons=[str(exc)]), ensure_ascii=False))
+        return EXIT_EXTERNAL
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return EXIT_BLOCKED if result["status"] == "BLOCKED" else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,6 +1,6 @@
 ---
 name: new-driver
-description: 新增或修改嵌入式外设驱动 / Create or change an embedded peripheral driver
+description: Create or change an embedded peripheral driver / 新增或修改嵌入式外设驱动
 agent: Orchestrator
 argument-hint: 描述外设、接口、硬件 revision 与验收条件 / Describe the peripheral, interface, hardware revision, and acceptance criteria
 ---

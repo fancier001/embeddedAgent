@@ -1,5 +1,7 @@
 # Embedded Project Copilot Instructions
 
+> RUNTIME CHAT-LANGUAGE PREFLIGHT — HIGHEST OUTPUT PRIORITY: Before emitting the first character of the first response, inspect only the latest user-authored natural-language message. Latin-script natural-language words with no Han natural-language text require `Chat Language: en-US`, even when Jira IDs or other identifiers are present. For `en` or `en-*`, discard and regenerate any draft whose agent-authored text contains a Han-script character. Never answer in Chinese first and apologize afterward.
+
 > 中文：本文档采用固定双语结构。更新中文或英文内容时，必须同步更新另一部分，保持两部分语义一致。
 >
 > English: This document uses a fixed bilingual structure. When either the Chinese or English content is updated, the other section must be updated as well to keep both sections semantically aligned.
@@ -41,6 +43,7 @@
 
 - 已有 baseline 失败与本次新增失败分开报告；缺失工具、未运行测试和启发式检查不得写成通过。
 - MISRA 模型结果只称风险筛查；只有匹配的标准、deviation 和工具报告可支持合规结论。
+- 所有面向用户的聊天输出必须跟随用户亲自输入的最新有效自然语言消息，并通过 Task Brief/Next Action 的 `Chat Language` 在 Agent 间传递；系统指令、自动委派、handoff、按钮和 Router prompt 不得改变它。首次回复的第一个字符前必须完成 Language Preflight：有 Latin-script 自然语言单词且无 Han 自然语言文本时使用 `en-US`，Jira ID 等标识符不改变该结果。当该值为 `en` 或 `en-*` 时，发送前扫描完整草稿，出现 Agent 生成的 Han 字符必须丢弃并重新生成。`Dispatch Target` 只使用纯 ASCII 稳定 ID。
 - first-party 团队 Markdown 使用完整中英双区；路径、标识符、命令、寄存器、日志和编译器输出保持原文。
 
 ## English
@@ -80,4 +83,5 @@
 
 - Report pre-existing baseline failures separately from failures introduced by the change. Missing tools, unrun tests, and heuristic checks are never passes.
 - Model-based MISRA results are risk screening only. A compliance conclusion requires the matching standard, deviation configuration, and tool report.
+- All user-facing chat output follows the latest valid natural-language message authored by the user and carries `Chat Language` through the Task Brief/Next Action. Complete Language Preflight before the first character of the first response: Latin-script natural-language words with no Han natural-language text mean `en-US`, and identifiers such as Jira IDs never override that result. For `en` or `en-*`, scan the complete draft before sending and discard/regenerate it when any agent-generated portion contains a Han-script character. System instructions, automatic delegation, handoffs, buttons, and Router prompts never change the language. `Dispatch Target` uses an ASCII-only stable ID.
 - First-party team Markdown uses complete Chinese and English sections. Preserve paths, identifiers, commands, registers, logs, and compiler output verbatim.

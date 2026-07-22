@@ -18,6 +18,7 @@ description: Agent Kit 结构、权限和去重规则 / Agent Kit structure, per
 - 五个业务 Agent 可由用户调用；Router 使用 `user-invocable: false` 与 `disable-model-invocation: true`。基础 handoff 和 Router 返回入口为 `send: false`；业务 Agent 末尾唯一 Next Action handoff 为 `send: true`。
 - Handoff 的精确标签、顺序、目标、发送方式和安全提示由验证器检查。按钮只负责角色切换，不提供缺失输入，也不确认 Jira、修改内容、commit、push 或外部命令。
 - Next Action 需要用户输入时必须显式使用 `Input Required: YES`，逐项给出 `Required Input` 和可复制 `Reply Template`；无需输入时使用 `Input Required: NO` 并明确提示点击下一步或无需操作。
+- 所有 Agent 在首次回复的第一个字符前先解析或传递 `Chat Language`。有 Latin-script 自然语言单词且无 Han 自然语言文本时必须使用 `en-US`，Jira ID 等标识符不得覆盖该结果。当该值为 `en` 或 `en-*` 时，发送前扫描完整草稿，出现 Agent 生成的 Han 字符必须丢弃并重新生成。`Dispatch Target` 只使用共享契约定义的纯 ASCII 稳定 ID。
 - Prompt 不声明 `tools`，必须把 `${input:...}` 交给目标 Agent；需要 Skill 时直接链接其规范文件。
 - Skill 目录名与小写连字符 `name` 一致，附属资源从 `SKILL.md` 直接链接；确定性脚本留在对应 Skill 的 `scripts/`。
 - `.project/project.yml` 是项目级约束唯一入口；规则通过 `rules` 注册，Git policy 通过 `git_policy` 引用，集成扩展写入 `extensions`。
@@ -32,6 +33,7 @@ description: Agent Kit 结构、权限和去重规则 / Agent Kit structure, per
 - The five business Agents are user-invocable; the Router uses `user-invocable: false` and `disable-model-invocation: true`. Base handoffs and Router returns use `send: false`; the final Next Action handoff on a business Agent is the only `send: true` entry.
 - The validator checks exact handoff labels, order, targets, send behavior, and safety prompts. A button changes roles only; it supplies no missing input and confirms no Jira, change content, commit, push, or external command.
 - A Next Action that needs user input uses `Input Required: YES` with itemized `Required Input` and a copy-ready `Reply Template`; otherwise it uses `Input Required: NO` and explicitly tells the user to click Next Action or take no action.
+- Every Agent resolves or preserves `Chat Language` before the first character of the first response. Latin-script natural-language words with no Han natural-language text require `en-US`; identifiers such as Jira IDs never override that result. For `en` or `en-*`, scan the complete draft before sending and discard/regenerate it when any agent-generated portion contains a Han-script character. `Dispatch Target` uses only the ASCII stable IDs defined by the shared contract.
 - Prompts declare no `tools`, pass `${input:...}` to the target Agent, and directly link a required Skill specification.
 - A Skill directory matches its lowercase-hyphen `name`, links supporting resources directly from `SKILL.md`, and keeps deterministic helpers in its own `scripts/` directory.
 - `.project/project.yml` is the sole project-policy entry point. Register rules through `rules`, reference Git policy through `git_policy`, and place integration data under `extensions`.

@@ -326,4 +326,653 @@ class GitPlanTests(unittest.TestCase):
     @staticmethod
     def git(cwd: Path, *arguments: str, check: bool = True) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
-            ["git", "-C"ãNº¶‰ËkºwµçM•±˜¹…ÍÍ•ÉÑQÉÕ”¡…¹ä ‰Á…Ñ ¥Ì‘•¹¥•ˆ¥¸É•…Í½¸™½ÈÉ•…Í½¸¥¸É•ÍÕ±Ñl‰É•…Í½¹Ì‰t¤¤((€€€‘•˜Ñ•ÍÑ}½¹™¥Éµ•‘}½µµ¥Ñ}…¹¹½Ñ}ÕÍ•}Õ¹½µµ¥ÑÑ•‘}‘•±¥Ù•Éå}½¹ÑÉ½±Ì¡Í•±˜¤€´ø9½¹”è(€€€€€€€Á½±¥å}Á…Ñ €ôÍ•±˜¹É•Á¼€¼€ˆ¹ÁÉ½©•Ğˆ€¼€‰¥Ğˆ€¼€‰‘•±¥Ù•Éä¹åµ°ˆ(€€€€€€€Á½±¥ä€ôå…µ°¹Í…™•}±½…¡Á½±¥å}Á…Ñ ¹É•…‘}Ñ•áĞ¡•¹½‘¥¹œô‰ÕÑ˜´àˆ¤¤(€€€€€€€Á½±¥ål‰…ÕÑ½µ…Ñ¥½¸‰t€ôì‰½µµ¥Ğˆè…±Í”°€‰ÁÕÍ ˆè…±Í•ô(€€€€€€€Á½±¥å}Á…Ñ ¹İÉ¥Ñ•}Ñ•áĞ¡å…µ°¹Í…™•}‘ÕµÀ¡Á½±¥ä°Í½ÉÑ}­•åÌõ…±Í”¤°•¹½‘¥¹œô‰ÕÑ˜´àˆ¤(€€€€€€€ÁÉ½‘ÕĞ€ôÍ•±˜¹É•Á¼€¼€‰Í½ÕÉ”ˆ€¼€‰ÁÉ½‘ÕĞ¹Œˆ(€€€€€€€ÁÉ½‘ÕĞ¹Á…É•¹Ğ¹µ­‘¥È ¤(€€€€€€€ÁÉ½‘ÕĞ¹İÉ¥Ñ•}Ñ•áĞ ‰¥¹ĞÁÉ½‘ÕĞ¡Ù½¥¤ìÉ•ÑÕÉ¸€Àìõq¸ˆ°•¹½‘¥¹œô‰ÕÑ˜´àˆ¤((€€€€€€€É•ÍÕ±Ğ€ô¥Ñ}Á±…¸ (€€€€€€€€€€€Í•±˜¹É•Á¼°(€€€€€€€€€€€½Á•É…Ñ¥½¸ô‰½µµ¥Ğˆ°(€€€€€€€€€€€‘•±¥Ù•Éäô‰½µµ¥Ğˆ°(€€€€€€€€€€€Á…Ñ¡ÌõmÁÉ½‘ÕĞ¹É•±…Ñ¥Ù•}Ñ¼¡Í•±˜¹É•Á¼¤¹…Í}Á½Í¥à ¥t°(€€€€€€€€€€€µ•ÍÍ…•}™¥±”õÍ•±˜¹…ÕÑ½}µ•ÍÍ…” ¤°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° ‰	1=-ˆ°É•ÍÕ±Ñl‰ÍÑ…ÑÕÌ‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑQÉÕ” (€€€€€€€€€€€…¹ä (€€€€€€€€€€€€€€€€‰Õ¹½µµ¥ÑÑ•‘•±¥Ù•Éä½¹ÑÉ½±Ìˆ¥¸É•…Í½¸(€€€€€€€€€€€€€€€™½ÈÉ•…Í½¸¥¸É•ÍÕ±Ñl‰É•…Í½¹Ì‰t(€€€€€€€€€€€€¤(€€€€€€€€¤((€€€‘•˜Ñ•ÍÑ}…ÕÑ½}Á±…¹}Í•±•ÑÍ}ÕÁ±½…‘}…¹‘}¥Í}É•…‘}½¹±ä¡Í•±˜¤€´ø9½¹”è(€€€€€€€µ•ÍÍ…”€ôÍ•±˜¹ÁÉ•Á…É•}…ÕÑ½}¡…¹” ¤(€€€€€€€‰•™½É”€ôÍ•±˜¹Í¹…ÁÍ¡½Ğ ¤(€€€€€€€É•ÍÕ±Ğ€ôÍ•±˜¹…ÕÑ½}Á±…¸¡µ•ÍÍ…”¤(€€€€€€€…™Ñ•È€ôÍ•±˜¹Í¹…ÁÍ¡½Ğ ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° ‰AMLˆ°É•ÍÕ±Ñl‰ÍÑ…ÑÕÌ‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡%M%=9}UQ=}UA1=°É•ÍÕ±Ñl‰‘•¥Í¥½¸‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡mt°É•ÍÕ±Ñl‰‘•¥Í¥½¹}É•…Í½¹Ì‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° ‰=9%I5ˆ°É•ÍÕ±Ñl‰½¹Ñ•¹Ñ}½¹™¥Éµ…Ñ¥½¸‰ul‰ÍÑ…ÑÕÌ‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡‰•™½É”°…™Ñ•È¤((€€€‘•˜Ñ•ÍÑ}…ÕÑ½}Á±…¹}É•ÅÕ¥É•Í}½¹™¥Éµ•‘}½µµ¥Ñ}½¹Ñ•¹Ñ}…¹‘}É•©•ÑÍ}‘É¥™Ğ¡Í•±˜¤€´ø9½¹”è(€€€€€€€µ•ÍÍ…”€ôÍ•±˜¹ÁÉ•Á…É•}…ÕÑ½}¡…¹” ¤(€€€€€€€‰•™½É”€ôÍ•±˜¹Í¹…ÁÍ¡½Ğ ¤(€€€€€€€Á•¹‘¥¹œ€ôÍ•±˜¹…ÕÑ½}Á±…¸¡µ•ÍÍ…”°½¹™¥Éµ}½¹Ñ•¹Ğõ…±Í”¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° ‰AMLˆ°Á•¹‘¥¹l‰ÍÑ…ÑÕÌ‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡%M%=9}=9%I5}UQ=}=9Q9P°Á•¹‘¥¹l‰‘•¥Í¥½¸‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° ‰A9%9ˆ°Á•¹‘¥¹l‰½¹Ñ•¹Ñ}½¹™¥Éµ…Ñ¥½¸‰ul‰ÍÑ…ÑÕÌ‰t¤(€€€€€€€™¥¹•ÉÁÉ¥¹Ğ€ôÁ•¹‘¥¹l‰½µµ¥Ñ}½¹Ñ•¹Ğ‰ul‰™¥¹•ÉÁÉ¥¹Ğ‰t(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° (€€€€€€€€€€€™¥¹•ÉÁÉ¥¹Ğ°(€€€€€€€€€€€Á•¹‘¥¹l‰½¹Ñ•¹Ñ}½¹™¥Éµ…Ñ¥½¸‰ul‰ÕÉÉ•¹Ñ}™¥¹•ÉÁÉ¥¹Ğ‰t°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡‰•™½É”°Í•±˜¹Í¹…ÁÍ¡½Ğ ¤¤((€€€€€€€É•…‘µ”€ôÍ•±˜¹É•Á¼€¼€‰I5¹µˆ(€€€€€€€É•…‘µ”¹İÉ¥Ñ•}Ñ•áĞ (€€€€€€€€€€€É•…‘µ”¹É•…‘}Ñ•áĞ¡•¹½‘¥¹œô‰ÕÑ˜´àˆ¤€¬€‰‘É¥™Ğ…™Ñ•ÈÁÉ•Ù¥•İq¸ˆ°(€€€€€€€€€€€•¹½‘¥¹œô‰ÕÑ˜´àˆ°(€€€€€€€€¤(€€€€€€€ÍÑ…±”€ô‘¥Ğ (€€€€€€€€€€€¥Ñ}Á±…¸ (€€€€€€€€€€€€€€€Í•±˜¹É•Á¼°(€€€€€€€€€€€€€€€½Á•É…Ñ¥½¸ô‰…ÕÑ¼ˆ°(€€€€€€€€€€€€€€€‘•±¥Ù•Éäô‰…ÕÑ¼ˆ°(€€€€€€€€€€€€€€€Á…Ñ¡Ìõl‰I5¹µ‰t°(€€€€€€€€€€€€€€€µ•ÍÍ…•}™¥±”õµ•ÍÍ…”°(€€€€€€€€€€€€€€€•áÁ•Ñ•‘}½¹Ñ•¹Ñ}™¥¹•ÉÁÉ¥¹Ğõ™¥¹•ÉÁÉ¥¹Ğ°(€€€€€€€€€€€€¤(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡%M%=9}=9%I5}UQ=}=9Q9P°ÍÑ…±•l‰‘•¥Í¥½¸‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° ‰MQ1ˆ°ÍÑ…±•l‰½¹Ñ•¹Ñ}½¹™¥Éµ…Ñ¥½¸‰ul‰ÍÑ…ÑÕÌ‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ9½ÑÅÕ…° (€€€€€€€€€€€™¥¹•ÉÁÉ¥¹Ğ°(€€€€€€€€€€€ÍÑ…±•l‰½¹Ñ•¹Ñ}½¹™¥Éµ…Ñ¥½¸‰ul‰ÕÉÉ•¹Ñ}™¥¹•ÉÁÉ¥¹Ğ‰t°(€€€€€€€€¤((€€€€€€€½¹™¥Éµ•€ô‘¥Ğ (€€€€€€€€€€€¥Ñ}Á±…¸ (€€€€€€€€€€€€€€€Í•±˜¹É•Á¼°(€€€€€€€€€€€€€€€½Á•É…Ñ¥½¸ô‰…ÕÑ¼ˆ°(€€€€€€€€€€€€€€€‘•±¥Ù•Éäô‰…ÕÑ¼ˆ°(€€€€€€€€€€€€€€€Á…Ñ¡Ìõl‰I5¹µ‰t°(€€€€€€€€€€€€€€€µ•ÍÍ…•}™¥±”õµ•ÍÍ…”°(€€€€€€€€€€€€€€€•áÁ•Ñ•‘}½¹Ñ•¹Ñ}™¥¹•ÉÁÉ¥¹ĞõÍÑ…±•l‰½µµ¥Ñ}½¹Ñ•¹Ğ‰ul‰™¥¹•ÉÁÉ¥¹Ğ‰t°(€€€€€€€€€€€€¤(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡%M%=9}UQ=}UA1=°½¹™¥Éµ•‘l‰‘•¥Í¥½¸‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° ‰=9%I5ˆ°½¹™¥Éµ•‘l‰½¹Ñ•¹Ñ}½¹™¥Éµ…Ñ¥½¸‰ul‰ÍÑ…ÑÕÌ‰t¤((€€€‘•˜Ñ•ÍÑ}…ÕÑ½}Á±…¹}É•ÑÕÉ¹Í}¹½}‘•±¥Ù•Éå}İ¥Ñ¡½ÕÑ}¡…¹•Ì¡Í•±˜¤€´ø9½¹”è(€€€€€€€É•ÍÕ±Ğ€ô¥Ñ}Á±…¸¡Í•±˜¹É•Á¼°½Á•É…Ñ¥½¸ô‰…ÕÑ¼ˆ°‘•±¥Ù•Éäô‰…ÕÑ¼ˆ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° ‰AMLˆ°É•ÍÕ±Ñl‰ÍÑ…ÑÕÌ‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡%M%=9}9=}1%YId°É•ÍÕ±Ñl‰‘•¥Í¥½¸‰t¤((€€€‘•˜Ñ•ÍÑ}…ÕÑ½}Á±…¹}‰±½­Í}¥¹Ù…±¥‘}µ•ÍÍ…•}¥¹ÍÑ•…‘}½™}ÕÍ¥¹}Á±…•¡½±‘•ÉÌ¡Í•±˜¤€´ø9½¹”è(€€€€€€€Í•±˜¹ÁÉ•Á…É•}…ÕÑ½}¡…¹” ¤(€€€€€€€µ•ÍÍ…”€ôÍ•±˜¹…ÕÑ½}µ•ÍÍ…” ˆñAÉ½©•ĞøñÕ¹Ñ¥½¸‰±½¬øè€ñMÕµµ…Éäùq¸ˆ¤(€€€€€€€É•ÍÕ±Ğ€ôÍ•±˜¹…ÕÑ½}Á±…¸¡µ•ÍÍ…”¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° ‰	1=-ˆ°É•ÍÕ±Ñl‰ÍÑ…ÑÕÌ‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%Í9½¹”¡É•ÍÕ±Ñl‰‘•¥Í¥½¸‰t¤((€€€‘•˜Ñ•ÍÑ}…ÕÑ½}Á±…¹}™…±±Í}‰…­}™½É}•á¥ÍÑ¥¹}½ÕÑ½¥¹}½µµ¥Ğ¡Í•±˜¤€´ø9½¹”è(€€€€€€€ÕÉÉ•¹Ğ€ô€¡Í•±˜¹É•Á¼€¼€‰I5¹µˆ¤¹É•…‘}Ñ•áĞ¡•¹½‘¥¹œô‰ÕÑ˜´àˆ¤(€€€€€€€€¡Í•±˜¹É•Á¼€¼€‰I5¹µˆ¤¹İÉ¥Ñ•}Ñ•áĞ¡ÕÉÉ•¹Ğ€¬€‰Á•¹‘¥¹q¸ˆ°•¹½‘¥¹œô‰ÕÑ˜´àˆ¤(€€€€€€€‰•™½É”€ôÍ•±˜¹Í¹…ÁÍ¡½Ğ ¤(€€€€€€€É•ÍÕ±Ğ€ôÍ•±˜¹…ÕÑ½}Á±…¸¡Í•±˜¹…ÕÑ½}µ•ÍÍ…” ¤¤(€€€€€€€…™Ñ•È€ôÍ•±˜¹Í¹…ÁÍ¡½Ğ ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡%M%=9}5MM}=91d°É•ÍÕ±Ñl‰‘•¥Í¥½¸‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑQÉÕ” (€€€€€€€€€€€…¹ä ‰ÕÁÍÑÉ•…´ÑÉ…­¥¹œÉ•˜ˆ¥¸É•…Í½¸™½ÈÉ•…Í½¸¥¸É•ÍÕ±Ñl‰‘•¥Í¥½¹}É•…Í½¹Ì‰t¤(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡‰•™½É”°…™Ñ•È¤((€€€‘•˜Ñ•ÍÑ}…ÕÑ½}Á±…¹}™…±±Í}‰…­}™½É}•á¥ÍÑ¥¹}¥¹½µ¥¹}½µµ¥Ğ¡Í•±˜¤€´ø9½¹”è(€€€€€€€µ•ÍÍ…”€ôÍ•±˜¹ÁÉ•Á…É•}…ÕÑ½}¡…¹” ¤(€€€€€€€ÑÉ•”€ôÍ•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰İÉ¥Ñ”µÑÉ•”ˆ¤¹ÍÑ‘½ÕĞ¹ÍÑÉ¥À ¤(€€€€€€€Á…É•¹Ğ€ôÍ•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰É•ØµÁ…ÉÍ”ˆ°€‰!ˆ¤¹ÍÑ‘½ÕĞ¹ÍÑÉ¥À ¤(€€€€€€€¥¹½µ¥¹œ€ôÍ•±˜¹¥Ğ (€€€€€€€€€€€Í•±˜¹É•Á¼°(€€€€€€€€€€€€‰½µµ¥ĞµÑÉ•”ˆ°(€€€€€€€€€€€ÑÉ•”°(€€€€€€€€€€€€ˆµÀˆ°(€€€€€€€€€€€Á…É•¹Ğ°(€€€€€€€€€€€€ˆµ´ˆ°(€€€€€€€€€€€€‰Í¥µÕ±…Ñ•¥¹½µ¥¹œ½µµ¥Ğˆ°(€€€€€€€€¤¹ÍÑ‘½ÕĞ¹ÍÑÉ¥À ¤(€€€€€€€Í•±˜¹¥Ğ (€€€€€€€€€€€Í•±˜¹É•Á¼°(€€€€€€€€€€€€‰ÕÁ‘…Ñ”µÉ•˜ˆ°(€€€€€€€€€€€€‰É•™Ì½É•µ½Ñ•Ì½½É¥¥¸½™•…ÑÕÉ”½Ñ•ÍĞˆ°(€€€€€€€€€€€¥¹½µ¥¹œ°(€€€€€€€€¤(€€€€€€€É•ÍÕ±Ğ€ôÍ•±˜¹…ÕÑ½}Á±…¸¡µ•ÍÍ…”¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡%M%=9}5MM}=91d°É•ÍÕ±Ñl‰‘•¥Í¥½¸‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑQÉÕ” (€€€€€€€€€€€…¹ä ‰ÕÁÍÑÉ•…´ÑÉ…­¥¹œÉ•˜ˆ¥¸É•…Í½¸™½ÈÉ•…Í½¸¥¸É•ÍÕ±Ñl‰‘•¥Í¥½¹}É•…Í½¹Ì‰t¤(€€€€€€€€¤((€€€‘•˜Ñ•ÍÑ}…ÕÑ½}Á±…¹}™…±±Í}‰…­}™½É}Õ¹É•±…Ñ•‘}½É}ÍÑ…•‘}¡…¹•Ì¡Í•±˜¤€´ø9½¹”è(€€€€€€€µ•ÍÍ…”€ôÍ•±˜¹ÁÉ•Á…É•}…ÕÑ½}¡…¹” ¤(€€€€€€€‘½Ì€ôÍ•±˜¹É•Á¼€¼€‰‘½Ìˆ(€€€€€€€‘½Ì¹µ­‘¥È ¤(€€€€€€€€¡‘½Ì€¼€‰Õ¹É•±…Ñ•¹µˆ¤¹İÉ¥Ñ•}Ñ•áĞ ‰Õ¹É•±…Ñ•‘q¸ˆ°•¹½‘¥¹œô‰ÕÑ˜´àˆ¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰…‘ˆ°€‰I5¹µˆ¤(€€€€€€€É•ÍÕ±Ğ€ôÍ•±˜¹…ÕÑ½}Á±…¸¡µ•ÍÍ…”¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡%M%=9}5MM}=91d°É•ÍÕ±Ñl‰‘•¥Í¥½¸‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑQÉÕ” (€€€€€€€€€€€…¹ä ‰½ÕÑÍ¥‘”…ÕÑ¼‘•±¥Ù•ÉäÍ½Á”ˆ¥¸É•…Í½¸™½ÈÉ•…Í½¸¥¸É•ÍÕ±Ñl‰‘•¥Í¥½¹}É•…Í½¹Ì‰t¤(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑQÉÕ” (€€€€€€€€€€€…¹ä ‰¥¹‘•àµÕÍĞ‰”•µÁÑäˆ¥¸É•…Í½¸™½ÈÉ•…Í½¸¥¸É•ÍÕ±Ñl‰‘•¥Í¥½¹}É•…Í½¹Ì‰t¤(€€€€€€€€¤((€€€‘•˜Ñ•ÍÑ}…ÕÑ½}Á±…¹}™…±±Í}‰…­}İ¡•¹}…ÕÑ½µ…Ñ¥½¹}½É}ÁÕÍ¡}Ñ…É•Ñ}¥Í}Õ¹…Ù…¥±…‰±”¡Í•±˜¤€´ø9½¹”è(€€€€€€€µ•ÍÍ…”€ôÍ•±˜¹ÁÉ•Á…É•}…ÕÑ½}¡…¹” ¤(€€€€€€€Á½±¥å}Á…Ñ €ôÍ•±˜¹É•Á¼€¼€ˆ¹ÁÉ½©•Ğˆ€¼€‰¥Ğˆ€¼€‰‘•±¥Ù•Éä¹åµ°ˆ(€€€€€€€Á½±¥ä€ôå…µ°¹Í…™•}±½…¡Á½±¥å}Á…Ñ ¹É•…‘}Ñ•áĞ¡•¹½‘¥¹œô‰ÕÑ˜´àˆ¤¤(€€€€€€€Á½±¥ål‰…ÕÑ½µ…Ñ¥½¸‰ul‰ÁÕÍ ‰t€ô…±Í”(€€€€€€€Á½±¥å}Á…Ñ ¹İÉ¥Ñ•}Ñ•áĞ¡å…µ°¹Í…™•}‘ÕµÀ¡Á½±¥ä°Í½ÉÑ}­•åÌõ…±Í”¤°•¹½‘¥¹œô‰ÕÑ˜´àˆ¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰½¹™¥œˆ°€ˆ´µÕ¹Í•Ğˆ°€‰‰É…¹ ¹™•…ÑÕÉ”½Ñ•ÍĞ¹É•µ½Ñ”ˆ¤(€€€€€€€É•ÍÕ±Ğ€ôÍ•±˜¹…ÕÑ½}Á±…¸¡µ•ÍÍ…”¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡%M%=9}5MM}=91d°É•ÍÕ±Ñl‰‘•¥Í¥½¸‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑQÉÕ” (€€€€€€€€€€€…¹ä ‰…ÕÑ½µ…Ñ¥ŒÁÕÍ ¥Ì‘¥Í…‰±•ˆ¥¸É•…Í½¸™½ÈÉ•…Í½¸¥¸É•ÍÕ±Ñl‰‘•¥Í¥½¹}É•…Í½¹Ì‰t¤(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑQÉÕ” (€€€€€€€€€€€…¹ä ‰µÕÍĞ¡…Ù”•á…Ñ±ä½¹”Ù…±Õ”ˆ¥¸É•…Í½¸™½ÈÉ•…Í½¸¥¸É•ÍÕ±Ñl‰‘•¥Í¥½¹}É•…Í½¹Ì‰t¤(€€€€€€€€¤((€€€‘•˜Ñ•ÍÑ}…ÕÑ½}Á±…¹}™…±±Í}‰…­}™½É}ÁÉ½Ñ•Ñ•‘}‰É…¹ ¡Í•±˜¤€´ø9½¹”è(€€€€€€€µ•ÍÍ…”€ôÍ•±˜¹ÁÉ•Á…É•}…ÕÑ½}¡…¹” ¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰‰É…¹ ˆ°€ˆµ´ˆ°€‰µ…¥¸ˆ¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰½¹™¥œˆ°€‰‰É…¹ ¹µ…¥¸¹É•µ½Ñ”ˆ°€‰½É¥¥¸ˆ¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰½¹™¥œˆ°€‰‰É…¹ ¹µ…¥¸¹µ•É”ˆ°€‰É•™Ì½¡•…‘Ì½µ…¥¸ˆ¤(€€€€€€€É•ÍÕ±Ğ€ôÍ•±˜¹…ÕÑ½}Á±…¸¡µ•ÍÍ…”¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡%M%=9}5MM}=91d°É•ÍÕ±Ñl‰‘•¥Í¥½¸‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑQÉÕ” (€€€€€€€€€€€…¹ä ‰ÁÉ½Ñ•Ñ•ˆ¥¸É•…Í½¸™½ÈÉ•…Í½¸¥¸É•ÍÕ±Ñl‰‘•¥Í¥½¹}É•…Í½¹Ì‰t¤(€€€€€€€€¤((€€€‘•˜Ñ•ÍÑ}…ÕÑ½}Á±…¹}™…±±Í}‰…­}™½É}µÕ±Ñ¥Á±•}ÁÕÍ¡ÕÉ±Ì¡Í•±˜¤€´ø9½¹”è(€€€€€€€µ•ÍÍ…”€ôÍ•±˜¹ÁÉ•Á…É•}…ÕÑ½}¡…¹” ¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰½¹™¥œˆ°€ˆ´µ…‘ˆ°€‰É•µ½Ñ”¹½É¥¥¸¹ÁÕÍ¡ÕÉ°ˆ°€‰½¹”ˆ¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰½¹™¥œˆ°€ˆ´µ…‘ˆ°€‰É•µ½Ñ”¹½É¥¥¸¹ÁÕÍ¡ÕÉ°ˆ°€‰Ñİ¼ˆ¤(€€€€€€€É•ÍÕ±Ğ€ôÍ•±˜¹…ÕÑ½}Á±…¸¡µ•ÍÍ…”¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡%M%=9}5MM}=91d°É•ÍÕ±Ñl‰‘•¥Í¥½¸‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑQÉÕ” (€€€€€€€€€€€…¹ä ‰•á…Ñ±ä½¹”ˆ¥¸É•…Í½¸™½ÈÉ•…Í½¸¥¸É•ÍÕ±Ñl‰‘•¥Í¥½¹}É•…Í½¹Ì‰t¤(€€€€€€€€¤((€€€‘•˜Ñ•ÍÑ}…ÕÑ½}½µµ¥Ñ}…¹‘}ÁÕÍ¡}ÁÉ•™±¥¡Ñ}±½­Í}¹•İ}½µµ¥Ğ¡Í•±˜¤€´ø9½¹”è(€€€€€€€µ•ÍÍ…”€ôÍ•±˜¹ÁÉ•Á…É•}…ÕÑ½}¡…¹” ¤(€€€€€€€‘•¥Í¥½¸€ôÍ•±˜¹…ÕÑ½}Á±…¸¡µ•ÍÍ…”¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡%M%=9}UQ=}UA1=°‘•¥Í¥½¹l‰‘•¥Í¥½¸‰t¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰…‘ˆ°€‰I5¹µˆ¤(€€€€€€€½µµ¥Ñ}Á±…¸€ô¥Ñ}Á±…¸ (€€€€€€€€€€€Í•±˜¹É•Á¼°(€€€€€€€€€€€½Á•É…Ñ¥½¸ô‰½µµ¥Ğˆ°(€€€€€€€€€€€‘•±¥Ù•Éäô‰…ÕÑ¼ˆ°(€€€€€€€€€€€Á…Ñ¡Ìõl‰I5¹µ‰t°(€€€€€€€€€€€µ•ÍÍ…•}™¥±”õµ•ÍÍ…”°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° ‰AMLˆ°½µµ¥Ñ}Á±…¹l‰ÍÑ…ÑÕÌ‰t°½µµ¥Ñ}Á±…¹l‰É•…Í½¹Ì‰t¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰½µµ¥Ğˆ°€ˆµˆ°ÍÑÈ¡µ•ÍÍ…”¤¤(€€€€€€€½µµ¥Ñ}Í¡„€ôÍ•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰É•ØµÁ…ÉÍ”ˆ°€‰!ˆ¤¹ÍÑ‘½ÕĞ¹ÍÑÉ¥À ¤(€€€€€€€ÁÕÍ¡}Á±…¸€ô¥Ñ}Á±…¸ (€€€€€€€€€€€Í•±˜¹É•Á¼°(€€€€€€€€€€€½Á•É…Ñ¥½¸ô‰ÁÕÍ ˆ°(€€€€€€€€€€€‘•±¥Ù•Éäô‰…ÕÑ¼ˆ°(€€€€€€€€€€€•áÁ•Ñ•‘}™¥¹•ÉÁÉ¥¹Ğõ‘•¥Í¥½¹l‰ÁÕÍ¡}Ñ…É•Ğ‰ul‰™¥¹•ÉÁÉ¥¹Ğ‰t°(€€€€€€€€€€€•áÁ•Ñ•‘}½µµ¥Ğõ½µµ¥Ñ}Í¡„°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° ‰AMLˆ°ÁÕÍ¡}Á±…¹l‰ÍÑ…ÑÕÌ‰t°ÁÕÍ¡}Á±…¹l‰É•…Í½¹Ì‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡m½µµ¥Ñ}Í¡…t°ÁÕÍ¡}Á±…¹l‰½ÕÑ½¥¹}½µµ¥ÑÌ‰t¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰ÁÕÍ ˆ°€‰½É¥¥¸ˆ°€‰!éÉ•™Ì½¡•…‘Ì½™•…ÑÕÉ”½Ñ•ÍĞˆ¤(€€€€€€€É•µ½Ñ•}Í¡„€ôÍ•±˜¹¥Ğ (€€€€€€€€€€€Í•±˜¹É•µ½Ñ”°€‰É•ØµÁ…ÉÍ”ˆ°€‰É•™Ì½¡•…‘Ì½™•…ÑÕÉ”½Ñ•ÍĞˆ(€€€€€€€€¤¹ÍÑ‘½ÕĞ¹ÍÑÉ¥À ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡½µµ¥Ñ}Í¡„°É•µ½Ñ•}Í¡„¤((€€€‘•˜Ñ•ÍÑ}…ÕÑ½}ÁÕÍ¡}É•©•ÑÍ}İÉ½¹}•áÁ•Ñ•‘}½µµ¥Ğ¡Í•±˜¤€´ø9½¹”è(€€€€€€€µ•ÍÍ…”€ôÍ•±˜¹ÁÉ•Á…É•}…ÕÑ½}¡…¹” ¤(€€€€€€€‘•¥Í¥½¸€ôÍ•±˜¹…ÕÑ½}Á±…¸¡µ•ÍÍ…”¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰…‘ˆ°€‰I5¹µˆ¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰½µµ¥Ğˆ°€ˆµˆ°ÍÑÈ¡µ•ÍÍ…”¤¤(€€€€€€€É•ÍÕ±Ğ€ô¥Ñ}Á±…¸ (€€€€€€€€€€€Í•±˜¹É•Á¼°(€€€€€€€€€€€½Á•É…Ñ¥½¸ô‰ÁÕÍ ˆ°(€€€€€€€€€€€‘•±¥Ù•Éäô‰…ÕÑ¼ˆ°(€€€€€€€€€€€•áÁ•Ñ•‘}™¥¹•ÉÁÉ¥¹Ğõ‘•¥Í¥½¹l‰ÁÕÍ¡}Ñ…É•Ğ‰ul‰™¥¹•ÉÁÉ¥¹Ğ‰t°(€€€€€€€€€€€•áÁ•Ñ•‘}½µµ¥ĞôˆÀˆ€¨€ĞÀ°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° ‰	1=-ˆ°É•ÍÕ±Ñl‰ÍÑ…ÑÕÌ‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑQÉÕ” (€€€€€€€€€€€…¹ä ‰½¹±äÑ¡”¹•İ±äÉ•…Ñ•½µµ¥Ğˆ¥¸É•…Í½¸™½ÈÉ•…Í½¸¥¸É•ÍÕ±Ñl‰É•…Í½¹Ì‰t¤(€€€€€€€€¤((€€€‘•˜Ñ•ÍÑ}…ÕÑ½}ÁÕÍ¡}ÍÑ½ÁÍ}½¹}™¥¹•ÉÁÉ¥¹Ñ}‘É¥™Ñ}…¹‘}­••ÁÍ}½µµ¥Ğ¡Í•±˜¤€´ø9½¹”è(€€€€€€€µ•ÍÍ…”€ôÍ•±˜¹ÁÉ•Á…É•}…ÕÑ½}¡…¹” ¤(€€€€€€€‘•¥Í¥½¸€ôÍ•±˜¹…ÕÑ½}Á±…¸¡µ•ÍÍ…”¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰…‘ˆ°€‰I5¹µˆ¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰½µµ¥Ğˆ°€ˆµˆ°ÍÑÈ¡µ•ÍÍ…”¤¤(€€€€€€€½µµ¥Ñ}Í¡„€ôÍ•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰É•ØµÁ…ÉÍ”ˆ°€‰!ˆ¤¹ÍÑ‘½ÕĞ¹ÍÑÉ¥À ¤(€€€€€€€Í•±˜¹¥Ğ (€€€€€€€€€€€Í•±˜¹É•Á¼°(€€€€€€€€€€€€‰½¹™¥œˆ°(€€€€€€€€€€€€‰É•µ½Ñ”¹½É¥¥¸¹ÁÕÍ¡ÕÉ°ˆ°(€€€€€€€€€€€€‰¡ÑÑÁÌè¼½•á…µÁ±”¹¥¹Ù…±¥½‘É¥™Ñ•¹¥Ğˆ°(€€€€€€€€¤(€€€€€€€É•ÍÕ±Ğ€ô¥Ñ}Á±…¸ (€€€€€€€€€€€Í•±˜¹É•Á¼°(€€€€€€€€€€€½Á•É…Ñ¥½¸ô‰ÁÕÍ ˆ°(€€€€€€€€€€€‘•±¥Ù•Éäô‰…ÕÑ¼ˆ°(€€€€€€€€€€€•áÁ•Ñ•‘}™¥¹•ÉÁÉ¥¹Ğõ‘•¥Í¥½¹l‰ÁÕÍ¡}Ñ…É•Ğ‰ul‰™¥¹•ÉÁÉ¥¹Ğ‰t°(€€€€€€€€€€€•áÁ•Ñ•‘}½µµ¥Ğõ½µµ¥Ñ}Í¡„°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° ‰	1=-ˆ°É•ÍÕ±Ñl‰ÍÑ…ÑÕÌ‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑQÉÕ” (€€€€€€€€€€€…¹ä ‰¡…¹•…™Ñ•ÈÁÉ•™±¥¡Ğˆ¥¸É•…Í½¸™½ÈÉ•…Í½¸¥¸É•ÍÕ±Ñl‰É•…Í½¹Ì‰t¤(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡½µµ¥Ñ}Í¡„°Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰É•ØµÁ…ÉÍ”ˆ°€‰!ˆ¤¹ÍÑ‘½ÕĞ¹ÍÑÉ¥À ¤¤((€€€‘•˜Ñ•ÍÑ}™…¥±•‘}…ÕÑ½}ÁÕÍ¡}­••ÁÍ}±½…±}½µµ¥Ğ¡Í•±˜¤€´ø9½¹”è(€€€€€€€µ•ÍÍ…”€ôÍ•±˜¹ÁÉ•Á…É•}…ÕÑ½}¡…¹” ¤(€€€€€€€Í•±˜¹¥Ğ (€€€€€€€€€€€Í•±˜¹É•Á¼°(€€€€€€€€€€€€‰½¹™¥œˆ°(€€€€€€€€€€€€‰É•µ½Ñ”¹½É¥¥¸¹ÕÉ°ˆ°(€€€€€€€€€€€€‰¡ÑÑÀè¼¼ÄÈÜ¸À¸À¸Äèä½Õ¹…Ù…¥±…‰±”¹¥Ğˆ°(€€€€€€€€¤(€€€€€€€‘•¥Í¥½¸€ôÍ•±˜¹…ÕÑ½}Á±…¸¡µ•ÍÍ…”¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡%M%=9}UQ=}UA1=°‘•¥Í¥½¹l‰‘•¥Í¥½¸‰t¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰…‘ˆ°€‰I5¹µˆ¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰½µµ¥Ğˆ°€ˆµˆ°ÍÑÈ¡µ•ÍÍ…”¤¤(€€€€€€€½µµ¥Ñ}Í¡„€ôÍ•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰É•ØµÁ…ÉÍ”ˆ°€‰!ˆ¤¹ÍÑ‘½ÕĞ¹ÍÑÉ¥À ¤(€€€€€€€ÁÕÍ¡}Á±…¸€ô¥Ñ}Á±…¸ (€€€€€€€€€€€Í•±˜¹É•Á¼°(€€€€€€€€€€€½Á•É…Ñ¥½¸ô‰ÁÕÍ ˆ°(€€€€€€€€€€€‘•±¥Ù•Éäô‰…ÕÑ¼ˆ°(€€€€€€€€€€€•áÁ•Ñ•‘}™¥¹•ÉÁÉ¥¹Ğõ‘•¥Í¥½¹l‰ÁÕÍ¡}Ñ…É•Ğ‰ul‰™¥¹•ÉÁÉ¥¹Ğ‰t°(€€€€€€€€€€€•áÁ•Ñ•‘}½µµ¥Ğõ½µµ¥Ñ}Í¡„°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° ‰AMLˆ°ÁÕÍ¡}Á±…¹l‰ÍÑ…ÑÕÌ‰t°ÁÕÍ¡}Á±…¹l‰É•…Í½¹Ì‰t¤(€€€€€€€ÁÕÍ¡•€ôÍÕ‰ÁÉ½•ÍÌ¹ÉÕ¸ (€€€€€€€€€€€l(€€€€€€€€€€€€€€€€‰¥Ğˆ°(€€€€€€€€€€€€€€€€ˆµˆ°(€€€€€€€€€€€€€€€ÍÑÈ¡Í•±˜¹É•Á¼¤°(€€€€€€€€€€€€€€€€‰ÁÕÍ ˆ°(€€€€€€€€€€€€€€€€‰½É¥¥¸ˆ°(€€€€€€€€€€€€€€€€‰!éÉ•™Ì½¡•…‘Ì½™•…ÑÕÉ”½Ñ•ÍĞˆ°(€€€€€€€€€€€t°(€€€€€€€€€€€Ñ•áĞõQÉÕ”°(€€€€€€€€€€€•¹½‘¥¹œô‰ÕÑ˜´àˆ°(€€€€€€€€€€€•ÉÉ½ÉÌô‰É•Á±…”ˆ°(€€€€€€€€€€€…ÁÑÕÉ•}½ÕÑÁÕĞõQÉÕ”°(€€€€€€€€€€€¡•¬õ…±Í”°(€€€€€€€€€€€Ñ¥µ•½ÕĞôÄÔ°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ9½ÑÅÕ…° À°ÁÕÍ¡•¹É•ÑÕÉ¹½‘”¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡½µµ¥Ñ}Í¡„°Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰É•ØµÁ…ÉÍ”ˆ°€‰!ˆ¤¹ÍÑ‘½ÕĞ¹ÍÑÉ¥À ¤¤((€€€‘•˜Ñ•ÍÑ}½µµ¥Ñ}Á±…¹}‰±½­Í}ÍÑ…•‘}™¥±•Í}½ÕÑÍ¥‘•}•áÁ±¥¥Ñ}Í½Á”¡Í•±˜¤€´ø9½¹”è(€€€€€€€‘½Ì€ôÍ•±˜¹É•Á¼€¼€‰‘½Ìˆ(€€€€€€€‘½Ì¹µ­‘¥È ¤(€€€€€€€É•ÅÕ•ÍÑ•€ô‘½Ì€¼€‰¹½Ñ”¹µˆ(€€€€€€€É•ÅÕ•ÍÑ•¹İÉ¥Ñ•}Ñ•áĞ ‰¹½Ñ•q¸ˆ°•¹½‘¥¹œô‰ÕÑ˜´àˆ¤(€€€€€€€€¡Í•±˜¹É•Á¼€¼€‰I5¹µˆ¤¹İÉ¥Ñ•}Ñ•áĞ ‰Õ¹É•±…Ñ•ÍÑ…•¡…¹•q¸ˆ°•¹½‘¥¹œô‰ÕÑ˜´àˆ¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰…‘ˆ°€‰I5¹µˆ¤(€€€€€€€µ•ÍÍ…”€ôÍ•±˜¹É•Á¼€¼€‰µ•ÍÍ…”¹ÑáĞˆ(€€€€€€€Í¡ÕÑ¥°¹½Áå™¥±”¡%aQUI}I==P€¼€‰Ù…±¥µÅ‘´ÀĞÜµ‰Õœµ™¥à¹ÑáĞˆ°µ•ÍÍ…”¤(€€€€€€€É•ÍÕ±Ğ€ô¥Ñ}Á±…¸ (€€€€€€€€€€€Í•±˜¹É•Á¼°(€€€€€€€€€€€½Á•É…Ñ¥½¸ô‰½µµ¥Ğˆ°(€€€€€€€€€€€‘•±¥Ù•Éäô‰½µµ¥Ğˆ°(€€€€€€€€€€€Á…Ñ¡Ìõl‰‘½Ì½¹½Ñ”¹µ‰t°(€€€€€€€€€€€µ•ÍÍ…•}™¥±”õµ•ÍÍ…”°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° ‰	1=-ˆ°É•ÍÕ±Ñl‰ÍÑ…ÑÕÌ‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑQÉÕ” (€€€€€€€€€€€…¹ä ‰ÍÑ…•Á…Ñ¡Ì…É”½ÕÑÍ¥‘”‘•±¥Ù•ÉäÍ½Á”ˆ¥¸É•…Í½¸™½ÈÉ•…Í½¸¥¸É•ÍÕ±Ñl‰É•…Í½¹Ì‰t¤(€€€€€€€€¤((€€€‘•˜Ñ•ÍÑ}ÁÉ½Ñ•Ñ•‘}‰É…¹¡}…¹‘}½¹™¥ÕÉ…Ñ¥½¹}‘É¥™Ñ}‰±½¬¡Í•±˜¤€´ø9½¹”è(€€€€€€€½É¥¥¹…°€ôÉ•Í½±Ù•}ÁÕÍ¡}Ñ…É•Ğ¡Í•±˜¹É•Á¼¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰½¹™¥œˆ°€‰É•µ½Ñ”¹½É¥¥¸¹ÁÕÍ¡ÕÉ°ˆ°€‰¡ÑÑÁÌè¼½•á…µÁ±”¹¥¹Ù…±¥½¡…¹•¹¥Ğˆ¤(€€€€€€€‘É¥™Ğ€ô¥Ñ}Á±…¸ (€€€€€€€€€€€Í•±˜¹É•Á¼°(€€€€€€€€€€€½Á•É…Ñ¥½¸ô‰ÁÕÍ ˆ°(€€€€€€€€€€€‘•±¥Ù•Éäô‰½µµ¥Ğµ…¹µÁÕÍ ˆ°(€€€€€€€€€€€•áÁ•Ñ•‘}™¥¹•ÉÁÉ¥¹Ğõ½É¥¥¹…±l‰™¥¹•ÉÁÉ¥¹Ğ‰t°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰±½…°€¹¥ĞÁÕÍ Ñ…É•Ğ¡…¹•…™Ñ•ÈÁÉ•™±¥¡Ğˆ°‘É¥™Ñl‰É•…Í½¹Ì‰t¤((€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰‰É…¹ ˆ°€ˆµ´ˆ°€‰µ…¥¸ˆ¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰½¹™¥œˆ°€‰‰É…¹ ¹µ…¥¸¹É•µ½Ñ”ˆ°€‰½É¥¥¸ˆ¤(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰½¹™¥œˆ°€‰‰É…¹ ¹µ…¥¸¹µ•É”ˆ°€‰É•™Ì½¡•…‘Ì½µ…¥¸ˆ¤(€€€€€€€ÁÉ½Ñ•Ñ•€ô¥Ñ}Á±…¸ (€€€€€€€€€€€Í•±˜¹É•Á¼°½Á•É…Ñ¥½¸ô‰ÁÕÍ ˆ°‘•±¥Ù•Éäô‰½µµ¥Ğµ…¹µÁÕÍ ˆ(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑQÉÕ”¡…¹ä ‰ÁÉ½Ñ•Ñ•ˆ¥¸É•…Í½¸™½ÈÉ•…Í½¸¥¸ÁÉ½Ñ•Ñ•‘l‰É•…Í½¹Ì‰t¤¤((€€€‘•˜Ñ•ÍÑ}±¥¹­•‘}İ½É­ÑÉ••}ÕÍ•Í}½µµ½¹}¥Ñ}‘¥É•Ñ½Éä¡Í•±˜¤€´ø9½¹”è(€€€€€€€±¥¹­•€ôÍ•±˜¹‰…Í”€¼€‰±¥¹­•ˆ(€€€€€€€Í•±˜¹¥Ğ¡Í•±˜¹É•Á¼°€‰İ½É­ÑÉ•”ˆ°€‰…‘ˆ°€ˆµˆˆ°€‰™•…ÑÕÉ”½±¥¹­•ˆ°ÍÑÈ¡±¥¹­•¤°€‰!ˆ¤(€€€€€€€Í•±˜¹¥Ğ¡±¥¹­•°€‰½¹™¥œˆ°€‰‰É…¹ ¹™•…ÑÕÉ”½±¥¹­•¹É•µ½Ñ”ˆ°€‰½É¥¥¸ˆ¤(€€€€€€€Í•±˜¹¥Ğ¡±¥¹­•°€‰½¹™¥œˆ°€‰‰É…¹ ¹™•…ÑÕÉ”½±¥¹­•¹µ•É”ˆ°€‰É•™Ì½¡•…‘Ì½™•…ÑÕÉ”½±¥¹­•ˆ¤(€€€€€€€Ñ…É•Ğ€ôÉ•Í½±Ù•}ÁÕÍ¡}Ñ…É•Ğ¡±¥¹­•¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ9½ÑÅÕ…°¡Ñ…É•Ñl‰¥Ñ}‘¥È‰t°Ñ…É•Ñl‰¥Ñ}½µµ½¹}‘¥È‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑQÉÕ”¡Ñ…É•Ñl‰¥Ñ}½µµ½¹}‘¥È‰t¹•¹‘Íİ¥Ñ  ˆ¼¹¥Ğˆ¤¤(()¥˜}}¹…µ•}|€ôô€‰}}µ…¥¹}|ˆè(€€€Õ¹¥ÑÑ•ÍĞ¹µ…¥¸ ¤(
+            ["git", "-C", str(cwd), *arguments],
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            capture_output=True,
+            check=check,
+        )
+
+    def snapshot(self) -> tuple[str, str, bytes, bytes, str]:
+        return (
+            self.git(self.repo, "rev-parse", "HEAD").stdout,
+            self.git(self.repo, "status", "--porcelain=v1").stdout,
+            (self.repo / ".git" / "index").read_bytes(),
+            (self.repo / ".git" / "config").read_bytes(),
+            self.git(self.remote, "rev-parse", "refs/heads/feature/test").stdout,
+        )
+
+    def auto_message(self, text: str | None = None) -> Path:
+        message = self.base / "auto-message.txt"
+        message.write_text(
+            text
+            if text is not None
+            else (FIXTURE_ROOT / "valid-qdm047-bug-fix.txt").read_text(
+                encoding="utf-8"
+            ),
+            encoding="utf-8",
+        )
+        return message
+
+    def prepare_auto_change(self) -> Path:
+        self.git(self.repo, "push", "origin", "HEAD:refs/heads/feature/test")
+        self.git(self.repo, "fetch", "origin")
+        current = (self.repo / "README.md").read_text(encoding="utf-8")
+        (self.repo / "README.md").write_text(
+            current + "pending auto delivery\n", encoding="utf-8"
+        )
+        return self.auto_message()
+
+    def auto_plan(
+        self, message: Path, *, confirm_content: bool = True
+    ) -> dict[str, object]:
+        pending = dict(
+            git_plan(
+                self.repo,
+                operation="auto",
+                delivery="auto",
+                paths=["README.md"],
+                message_file=message,
+            )
+        )
+        if not confirm_content or pending.get("commit_content") is None:
+            return pending
+        fingerprint = pending["commit_content"]["fingerprint"]
+        return dict(
+            git_plan(
+                self.repo,
+                operation="auto",
+                delivery="auto",
+                paths=["README.md"],
+                message_file=message,
+                expected_content_fingerprint=fingerprint,
+            )
+        )
+
+    def test_local_config_resolves_remote_url_branch_and_target_ref(self) -> None:
+        target = resolve_push_target(self.repo)
+        self.assertEqual("origin", target["remote"])
+        self.assertEqual("feature/test", target["current_branch"])
+        self.assertEqual("refs/heads/feature/test", target["target_ref"])
+        self.assertEqual(self.remote.as_posix(), Path(target["push_url"]).as_posix())
+        self.assertTrue(all(target["config_sources"].values()))
+
+    def test_environment_and_global_style_overrides_are_ignored(self) -> None:
+        environment = {
+            "GIT_CONFIG_COUNT": "1",
+            "GIT_CONFIG_KEY_0": "remote.origin.url",
+            "GIT_CONFIG_VALUE_0": "https://attacker.invalid/wrong.git",
+        }
+        with patch.dict(os.environ, environment, clear=False):
+            target = resolve_push_target(self.repo)
+        self.assertEqual(self.remote.as_posix(), Path(target["push_url"]).as_posix())
+
+    def test_unique_pushurl_is_preferred_and_credentials_are_redacted(self) -> None:
+        self.git(
+            self.repo,
+            "config",
+            "remote.origin.pushurl",
+            "https://user:token@example.invalid/repo.git?access_token=secret",
+        )
+        target = resolve_push_target(self.repo)
+        self.assertEqual("https://***@example.invalid/repo.git?***", target["push_url"])
+        self.assertNotIn("token", target["push_url"])
+        self.assertEqual("https://***@host/repo?***#***", _redact_url("https://u:p@host/repo?q=x#secret"))
+
+    def test_multiple_pushurls_missing_upstream_detached_and_wrong_ref_block(self) -> None:
+        self.git(self.repo, "config", "--add", "remote.origin.pushurl", "one")
+        self.git(self.repo, "config", "--add", "remote.origin.pushurl", "two")
+        with self.assertRaises(GitReadError):
+            resolve_push_target(self.repo)
+        self.git(self.repo, "config", "--unset-all", "remote.origin.pushurl")
+        self.git(self.repo, "config", "--unset", "branch.feature/test.remote")
+        with self.assertRaises(GitReadError):
+            resolve_push_target(self.repo)
+        self.git(self.repo, "config", "branch.feature/test.remote", "origin")
+        self.git(self.repo, "config", "branch.feature/test.merge", "refs/tags/test")
+        with self.assertRaises(GitReadError):
+            resolve_push_target(self.repo)
+        self.git(self.repo, "config", "branch.feature/test.merge", "refs/heads/feature/test")
+        self.git(self.repo, "checkout", "--detach")
+        with self.assertRaises(GitReadError):
+            resolve_push_target(self.repo)
+
+    def test_wrong_root_and_missing_git_metadata_block(self) -> None:
+        child = self.repo / "child"
+        child.mkdir()
+        with self.assertRaises(GitReadError):
+            resolve_push_target(child)
+        outside = self.base / "not-a-repository"
+        outside.mkdir()
+        with self.assertRaises(GitReadError):
+            resolve_push_target(outside)
+
+    def test_push_plan_is_read_only_and_reports_outgoing_paths(self) -> None:
+        before = self.snapshot()
+        result = git_plan(
+            self.repo, operation="push", delivery="commit-and-push"
+        )
+        after = self.snapshot()
+        self.assertEqual("PASS", result["status"], result["reasons"])
+        self.assertEqual(["README.md"], result["outgoing_paths"])
+        self.assertEqual(before, after)
+
+    def test_confirmed_commit_ignores_auto_switches_and_allows_product_code(self) -> None:
+        policy_path = self.repo / ".project" / "git" / "delivery.yml"
+        policy = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
+        policy["automation"] = {"commit": False, "push": False}
+        policy["scope"]["allowed_paths"] = ["docs/**"]
+        policy_path.write_text(yaml.safe_dump(policy, sort_keys=False), encoding="utf-8")
+        self.git(self.repo, "add", ".project/git/delivery.yml")
+        self.git(self.repo, "commit", "-m", "disable automatic delivery")
+
+        product = (
+            self.repo
+            / "imx-yocto"
+            / "sources"
+            / "meta-itk"
+            / "recipes-ikotek"
+            / "ikversion"
+            / "ikversion_1.0.0.bb"
+        )
+        product.parent.mkdir(parents=True)
+        product.write_text("SRC_URI += product-project-version\n", encoding="utf-8")
+        message = self.auto_message()
+        result = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="commit",
+            paths=[product.relative_to(self.repo).as_posix()],
+            message_file=message,
+        )
+        self.assertEqual("PASS", result["status"], result["reasons"])
+        self.assertEqual(
+            [product.relative_to(self.repo).as_posix()],
+            result["commit_content"]["paths"],
+        )
+        self.assertEqual([], result["commit_content"]["excluded_paths"])
+
+    def test_confirmed_commit_reports_and_excludes_unrelated_dirty_paths(self) -> None:
+        product = self.repo / "source" / "task_change.c"
+        product.parent.mkdir()
+        product.write_text("int task_change(void) { return 1; }\n", encoding="utf-8")
+        unrelated = self.repo / "notes" / "unrelated.txt"
+        unrelated.parent.mkdir()
+        unrelated.write_text("pre-existing user work\n", encoding="utf-8")
+
+        result = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="commit",
+            paths=[product.relative_to(self.repo).as_posix()],
+            message_file=self.auto_message(),
+        )
+        self.assertEqual("PASS", result["status"], result["reasons"])
+        self.assertEqual(["source/task_change.c"], result["commit_content"]["paths"])
+        self.assertIn(
+            "notes/unrelated.txt", result["commit_content"]["excluded_paths"]
+        )
+        self.assertEqual(
+            [
+                {
+                    "path": "source/task_change.c",
+                    "states": ["untracked"],
+                    "added": 1,
+                    "deleted": 0,
+                    "binary": False,
+                }
+            ],
+            result["commit_content"]["entries"],
+        )
+        fingerprint = result["commit_content"]["fingerprint"]
+        self.assertRegex(fingerprint, r"^[0-9a-f]{64}$")
+
+        unrelated.write_text("changed unrelated user work\n", encoding="utf-8")
+        unchanged_scope = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="commit",
+            paths=[product.relative_to(self.repo).as_posix()],
+            message_file=self.auto_message(),
+        )
+        self.assertEqual(
+            fingerprint, unchanged_scope["commit_content"]["fingerprint"]
+        )
+
+        product.write_text("int task_change(void) { return 2; }\n", encoding="utf-8")
+        changed_scope = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="commit",
+            paths=[product.relative_to(self.repo).as_posix()],
+            message_file=self.auto_message(),
+        )
+        self.assertNotEqual(
+            fingerprint, changed_scope["commit_content"]["fingerprint"]
+        )
+
+        readme = self.repo / "README.md"
+        readme.write_text(
+            readme.read_text(encoding="utf-8") + "tracked change\n",
+            encoding="utf-8",
+        )
+        tracked_scope = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="commit",
+            paths=["README.md"],
+            message_file=self.auto_message(),
+        )
+        self.assertEqual(
+            {
+                "path": "README.md",
+                "states": ["unstaged"],
+                "added": 1,
+                "deleted": 0,
+                "binary": False,
+            },
+            tracked_scope["commit_content"]["entries"][0],
+        )
+
+        binary = self.repo / "source" / "capture.bin"
+        binary.write_bytes(b"\x00\x01\x02")
+        binary_scope = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="commit",
+            paths=["source/capture.bin"],
+            message_file=self.auto_message(),
+        )
+        self.assertEqual(
+            {
+                "path": "source/capture.bin",
+                "states": ["untracked"],
+                "added": None,
+                "deleted": None,
+                "binary": True,
+            },
+            binary_scope["commit_content"]["entries"][0],
+        )
+
+    def test_confirmed_push_ignores_auto_switches(self) -> None:
+        self.git(self.repo, "push", "origin", "HEAD:refs/heads/feature/test")
+        policy_path = self.repo / ".project" / "git" / "delivery.yml"
+        policy = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
+        policy["automation"] = {"commit": False, "push": False}
+        policy_path.write_text(yaml.safe_dump(policy, sort_keys=False), encoding="utf-8")
+        self.git(self.repo, "add", ".project/git/delivery.yml")
+        self.git(self.repo, "commit", "-m", "disable automatic delivery")
+        self.git(self.repo, "push", "origin", "HEAD:refs/heads/feature/test")
+        (self.repo / "README.md").write_text("confirmed push\n", encoding="utf-8")
+        self.git(self.repo, "add", "README.md")
+        self.git(self.repo, "commit", "-m", "confirmed outgoing change")
+
+        result = git_plan(
+            self.repo, operation="push", delivery="commit-and-push"
+        )
+        self.assertEqual("PASS", result["status"], result["reasons"])
+
+    def test_denied_build_output_stays_blocked_for_confirmed_commit(self) -> None:
+        artifact = self.repo / "module" / "build" / "firmware.elf"
+        artifact.parent.mkdir(parents=True)
+        artifact.write_text("not a real elf\n", encoding="utf-8")
+        result = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="commit",
+            paths=[artifact.relative_to(self.repo).as_posix()],
+            message_file=self.auto_message(),
+        )
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertTrue(any("path is denied" in reason for reason in result["reasons"]))
+
+    def test_confirmed_commit_cannot_use_uncommitted_delivery_controls(self) -> None:
+        policy_path = self.repo / ".project" / "git" / "delivery.yml"
+        policy = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
+        policy["automation"] = {"commit": False, "push": False}
+        policy_path.write_text(yaml.safe_dump(policy, sort_keys=False), encoding="utf-8")
+        product = self.repo / "source" / "product.c"
+        product.parent.mkdir()
+        product.write_text("int product(void) { return 0; }\n", encoding="utf-8")
+
+        result = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="commit",
+            paths=[product.relative_to(self.repo).as_posix()],
+            message_file=self.auto_message(),
+        )
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertTrue(
+            any(
+                "uncommitted delivery controls" in reason
+                for reason in result["reasons"]
+            )
+        )
+
+    def test_auto_plan_selects_upload_and_is_read_only(self) -> None:
+        message = self.prepare_auto_change()
+        before = self.snapshot()
+        result = self.auto_plan(message)
+        after = self.snapshot()
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual(DECISION_AUTO_UPLOAD, result["decision"])
+        self.assertEqual([], result["decision_reasons"])
+        self.assertEqual("CONFIRMED", result["content_confirmation"]["status"])
+        self.assertEqual(before, after)
+
+    def test_auto_plan_requires_confirmed_commit_content_and_rejects_drift(self) -> None:
+        message = self.prepare_auto_change()
+        before = self.snapshot()
+        pending = self.auto_plan(message, confirm_content=False)
+        self.assertEqual("PASS", pending["status"])
+        self.assertEqual(DECISION_CONFIRM_AUTO_CONTENT, pending["decision"])
+        self.assertEqual("PENDING", pending["content_confirmation"]["status"])
+        fingerprint = pending["commit_content"]["fingerprint"]
+        self.assertEqual(
+            fingerprint,
+            pending["content_confirmation"]["current_fingerprint"],
+        )
+        self.assertEqual(before, self.snapshot())
+
+        readme = self.repo / "README.md"
+        readme.write_text(
+            readme.read_text(encoding="utf-8") + "drift after preview\n",
+            encoding="utf-8",
+        )
+        stale = dict(
+            git_plan(
+                self.repo,
+                operation="auto",
+                delivery="auto",
+                paths=["README.md"],
+                message_file=message,
+                expected_content_fingerprint=fingerprint,
+            )
+        )
+        self.assertEqual(DECISION_CONFIRM_AUTO_CONTENT, stale["decision"])
+        self.assertEqual("STALE", stale["content_confirmation"]["status"])
+        self.assertNotEqual(
+            fingerprint,
+            stale["content_confirmation"]["current_fingerprint"],
+        )
+
+        confirmed = dict(
+            git_plan(
+                self.repo,
+                operation="auto",
+                delivery="auto",
+                paths=["README.md"],
+                message_file=message,
+                expected_content_fingerprint=stale["commit_content"]["fingerprint"],
+            )
+        )
+        self.assertEqual(DECISION_AUTO_UPLOAD, confirmed["decision"])
+        self.assertEqual("CONFIRMED", confirmed["content_confirmation"]["status"])
+
+    def test_auto_plan_returns_no_delivery_without_changes(self) -> None:
+        result = git_plan(self.repo, operation="auto", delivery="auto")
+        self.assertEqual("PASS", result["status"])
+        self.assertEqual(DECISION_NO_DELIVERY, result["decision"])
+
+    def test_auto_plan_blocks_invalid_message_instead_of_using_placeholders(self) -> None:
+        self.prepare_auto_change()
+        message = self.auto_message("<Project><Function block>: <Summary>\n")
+        result = self.auto_plan(message)
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertIsNone(result["decision"])
+
+    def test_auto_plan_falls_back_for_existing_outgoing_commit(self) -> None:
+        current = (self.repo / "README.md").read_text(encoding="utf-8")
+        (self.repo / "README.md").write_text(current + "pending\n", encoding="utf-8")
+        before = self.snapshot()
+        result = self.auto_plan(self.auto_message())
+        after = self.snapshot()
+        self.assertEqual(DECISION_MESSAGE_ONLY, result["decision"])
+        self.assertTrue(
+            any("upstream tracking ref" in reason for reason in result["decision_reasons"])
+        )
+        self.assertEqual(before, after)
+
+    def test_auto_plan_falls_back_for_existing_incoming_commit(self) -> None:
+        message = self.prepare_auto_change()
+        tree = self.git(self.repo, "write-tree").stdout.strip()
+        parent = self.git(self.repo, "rev-parse", "HEAD").stdout.strip()
+        incoming = self.git(
+            self.repo,
+            "commit-tree",
+            tree,
+            "-p",
+            parent,
+            "-m",
+            "simulated incoming commit",
+        ).stdout.strip()
+        self.git(
+            self.repo,
+            "update-ref",
+            "refs/remotes/origin/feature/test",
+            incoming,
+        )
+        result = self.auto_plan(message)
+        self.assertEqual(DECISION_MESSAGE_ONLY, result["decision"])
+        self.assertTrue(
+            any("upstream tracking ref" in reason for reason in result["decision_reasons"])
+        )
+
+    def test_auto_plan_falls_back_for_unrelated_or_staged_changes(self) -> None:
+        message = self.prepare_auto_change()
+        docs = self.repo / "docs"
+        docs.mkdir()
+        (docs / "unrelated.md").write_text("unrelated\n", encoding="utf-8")
+        self.git(self.repo, "add", "README.md")
+        result = self.auto_plan(message)
+        self.assertEqual(DECISION_MESSAGE_ONLY, result["decision"])
+        self.assertTrue(
+            any("outside auto delivery scope" in reason for reason in result["decision_reasons"])
+        )
+        self.assertTrue(
+            any("index must be empty" in reason for reason in result["decision_reasons"])
+        )
+
+    def test_auto_plan_falls_back_when_automation_or_push_target_is_unavailable(self) -> None:
+        message = self.prepare_auto_change()
+        policy_path = self.repo / ".project" / "git" / "delivery.yml"
+        policy = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
+        policy["automation"]["push"] = False
+        policy_path.write_text(yaml.safe_dump(policy, sort_keys=False), encoding="utf-8")
+        self.git(self.repo, "config", "--unset", "branch.feature/test.remote")
+        result = self.auto_plan(message)
+        self.assertEqual(DECISION_MESSAGE_ONLY, result["decision"])
+        self.assertTrue(
+            any("automatic push is disabled" in reason for reason in result["decision_reasons"])
+        )
+        self.assertTrue(
+            any("must have exactly one value" in reason for reason in result["decision_reasons"])
+        )
+
+    def test_auto_plan_falls_back_for_protected_branch(self) -> None:
+        message = self.prepare_auto_change()
+        self.git(self.repo, "branch", "-m", "main")
+        self.git(self.repo, "config", "branch.main.remote", "origin")
+        self.git(self.repo, "config", "branch.main.merge", "refs/heads/main")
+        result = self.auto_plan(message)
+        self.assertEqual(DECISION_MESSAGE_ONLY, result["decision"])
+        self.assertTrue(
+            any("protected" in reason for reason in result["decision_reasons"])
+        )
+
+    def test_auto_plan_falls_back_for_multiple_pushurls(self) -> None:
+        message = self.prepare_auto_change()
+        self.git(self.repo, "config", "--add", "remote.origin.pushurl", "one")
+        self.git(self.repo, "config", "--add", "remote.origin.pushurl", "two")
+        result = self.auto_plan(message)
+        self.assertEqual(DECISION_MESSAGE_ONLY, result["decision"])
+        self.assertTrue(
+            any("exactly one" in reason for reason in result["decision_reasons"])
+        )
+
+    def test_auto_commit_and_push_preflight_locks_new_commit(self) -> None:
+        message = self.prepare_auto_change()
+        decision = self.auto_plan(message)
+        self.assertEqual(DECISION_AUTO_UPLOAD, decision["decision"])
+        self.git(self.repo, "add", "README.md")
+        commit_plan = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="auto",
+            paths=["README.md"],
+            message_file=message,
+        )
+        self.assertEqual("PASS", commit_plan["status"], commit_plan["reasons"])
+        self.git(self.repo, "commit", "-F", str(message))
+        commit_sha = self.git(self.repo, "rev-parse", "HEAD").stdout.strip()
+        push_plan = git_plan(
+            self.repo,
+            operation="push",
+            delivery="auto",
+            expected_fingerprint=decision["push_target"]["fingerprint"],
+            expected_commit=commit_sha,
+        )
+        self.assertEqual("PASS", push_plan["status"], push_plan["reasons"])
+        self.assertEqual([commit_sha], push_plan["outgoing_commits"])
+        self.git(self.repo, "push", "origin", "HEAD:refs/heads/feature/test")
+        remote_sha = self.git(
+            self.remote, "rev-parse", "refs/heads/feature/test"
+        ).stdout.strip()
+        self.assertEqual(commit_sha, remote_sha)
+
+    def test_auto_push_rejects_wrong_expected_commit(self) -> None:
+        message = self.prepare_auto_change()
+        decision = self.auto_plan(message)
+        self.git(self.repo, "add", "README.md")
+        self.git(self.repo, "commit", "-F", str(message))
+        result = git_plan(
+            self.repo,
+            operation="push",
+            delivery="auto",
+            expected_fingerprint=decision["push_target"]["fingerprint"],
+            expected_commit="0" * 40,
+        )
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertTrue(
+            any("only the newly created commit" in reason for reason in result["reasons"])
+        )
+
+    def test_auto_push_stops_on_fingerprint_drift_and_keeps_commit(self) -> None:
+        message = self.prepare_auto_change()
+        decision = self.auto_plan(message)
+        self.git(self.repo, "add", "README.md")
+        self.git(self.repo, "commit", "-F", str(message))
+        commit_sha = self.git(self.repo, "rev-parse", "HEAD").stdout.strip()
+        self.git(
+            self.repo,
+            "config",
+            "remote.origin.pushurl",
+            "https://example.invalid/drifted.git",
+        )
+        result = git_plan(
+            self.repo,
+            operation="push",
+            delivery="auto",
+            expected_fingerprint=decision["push_target"]["fingerprint"],
+            expected_commit=commit_sha,
+        )
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertTrue(
+            any("changed after preflight" in reason for reason in result["reasons"])
+        )
+        self.assertEqual(commit_sha, self.git(self.repo, "rev-parse", "HEAD").stdout.strip())
+
+    def test_failed_auto_push_keeps_local_commit(self) -> None:
+        message = self.prepare_auto_change()
+        self.git(
+            self.repo,
+            "config",
+            "remote.origin.url",
+            "http://127.0.0.1:9/unavailable.git",
+        )
+        decision = self.auto_plan(message)
+        self.assertEqual(DECISION_AUTO_UPLOAD, decision["decision"])
+        self.git(self.repo, "add", "README.md")
+        self.git(self.repo, "commit", "-F", str(message))
+        commit_sha = self.git(self.repo, "rev-parse", "HEAD").stdout.strip()
+        push_plan = git_plan(
+            self.repo,
+            operation="push",
+            delivery="auto",
+            expected_fingerprint=decision["push_target"]["fingerprint"],
+            expected_commit=commit_sha,
+        )
+        self.assertEqual("PASS", push_plan["status"], push_plan["reasons"])
+        pushed = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(self.repo),
+                "push",
+                "origin",
+                "HEAD:refs/heads/feature/test",
+            ],
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            capture_output=True,
+            check=False,
+            timeout=15,
+        )
+        self.assertNotEqual(0, pushed.returncode)
+        self.assertEqual(commit_sha, self.git(self.repo, "rev-parse", "HEAD").stdout.strip())
+
+    def test_commit_plan_blocks_staged_files_outside_explicit_scope(self) -> None:
+        docs = self.repo / "docs"
+        docs.mkdir()
+        requested = docs / "note.md"
+        requested.write_text("note\n", encoding="utf-8")
+        (self.repo / "README.md").write_text("unrelated staged change\n", encoding="utf-8")
+        self.git(self.repo, "add", "README.md")
+        message = self.repo / "message.txt"
+        shutil.copyfile(FIXTURE_ROOT / "valid-qdm047-bug-fix.txt", message)
+        result = git_plan(
+            self.repo,
+            operation="commit",
+            delivery="commit",
+            paths=["docs/note.md"],
+            message_file=message,
+        )
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertTrue(
+            any("staged paths are outside delivery scope" in reason for reason in result["reasons"])
+        )
+
+    def test_protected_branch_and_configuration_drift_block(self) -> None:
+        original = resolve_push_target(self.repo)
+        self.git(self.repo, "config", "remote.origin.pushurl", "https://example.invalid/changed.git")
+        drift = git_plan(
+            self.repo,
+            operation="push",
+            delivery="commit-and-push",
+            expected_fingerprint=original["fingerprint"],
+        )
+        self.assertIn("local .git push target changed after preflight", drift["reasons"])
+
+        self.git(self.repo, "branch", "-m", "main")
+        self.git(self.repo, "config", "branch.main.remote", "origin")
+        self.git(self.repo, "config", "branch.main.merge", "refs/heads/main")
+        protected = git_plan(
+            self.repo, operation="push", delivery="commit-and-push"
+        )
+        self.assertTrue(any("protected" in reason for reason in protected["reasons"]))
+
+    def test_linked_worktree_uses_common_git_directory(self) -> None:
+        linked = self.base / "linked"
+        self.git(self.repo, "worktree", "add", "-b", "feature/linked", str(linked), "HEAD")
+        self.git(linked, "config", "branch.feature/linked.remote", "origin")
+        self.git(linked, "config", "branch.feature/linked.merge", "refs/heads/feature/linked")
+        target = resolve_push_target(linked)
+        self.assertNotEqual(target["git_dir"], target["git_common_dir"])
+        self.assertTrue(target["git_common_dir"].endswith("/.git"))
+
+
+if __name__ == "__main__":
+    unittest.main()

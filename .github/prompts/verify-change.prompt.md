@@ -1,6 +1,6 @@
 ---
 name: verify-change
-description: 对嵌入式改动执行完整质量验收 / Run complete quality acceptance for an embedded change
+description: Run complete quality acceptance for an embedded change / 对嵌入式改动执行完整质量验收
 agent: Orchestrator
 argument-hint: 当前 diff、提交、文件集合或功能范围 / Current diff, commit, file set, or feature scope
 ---

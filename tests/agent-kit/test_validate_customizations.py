@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import shutil
 import sys
 import tempfile
@@ -357,4 +358,638 @@ class CustomizationValidatorTests(unittest.TestCase):
             )
         )
 
-    def tes×½º¶‰žËkºwµçQ%¸ ‰ÍÕÁÁ±¥•Ì¹¼µ¥ÍÍ¥¹œ¥¹ÁÕÐˆ°¡…¹‘½™™l‰ÁÉ½µÁÐ‰t¤(€€€€€€€€€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ (€€€€€€€€€€€€€€€€€€€€‰½¹™¥ÉµÌ¹¼½µµ¥Ð°ÁÕÍ °½È•áÑ•É¹…°½µµ…¹ˆ°(€€€€€€€€€€€€€€€€€€€¡…¹‘½™™l‰ÁÉ½µÁÐ‰t°(€€€€€€€€€€€€€€€€¤((€€€€€€€…•¹Ð€ôÍ•±˜¹É•Á¼€¼€ˆ¹¥Ñ¡Õˆˆ€¼€‰…•¹ÑÌˆ€¼€‰½É¡•ÍÑÉ…Ñ½È¹…•¹Ð¹µˆ(€€€€€€€½É¥¥¹…°€ô…•¹Ð¹É•…‘}Ñ•áÐ¡•¹½‘¥¹œô‰ÕÑ˜´àˆ¤(€€€€€€€µÕÑ…Ñ¥½¹Ì€ô€ (€€€€€€€€€€€€ ‰…•¹Ðè9•áÑÑ¥½¹I½ÕÑ•Èˆ°€‰…•¹Ðèµ‰•‘‘•‘•Ù•±½Á•Èˆ¤°(€€€€€€€€€€€€ ˆ€€€Í•¹èÑÉÕ”ˆ°€ˆ€€€Í•¹è™…±Í”ˆ¤°(€€€€€€€€€€€€ ‰ÍÕÁÁ±¥•Ì¹¼µ¥ÍÍ¥¹œ¥¹ÁÕÐˆ°€‰ÍÕÁÁ±¥•Ì¥µÁ±¥¥Ð¥¹ÁÕÐˆ¤°(€€€€€€€€¤(€€€€€€€™½È½±°¹•Ü¥¸µÕÑ…Ñ¥½¹Ìè(€€€€€€€€€€€Ý¥Ñ Í•±˜¹ÍÕ‰Q•ÍÐ¡µÕÑ…Ñ¥½¸õ½±¤è(€€€€€€€€€€€€€€€…•¹Ð¹ÝÉ¥Ñ•}Ñ•áÐ (€€€€€€€€€€€€€€€€€€€½É¥¥¹…°¹É•Á±…”¡½±°¹•Ü°€Ä¤°(€€€€€€€€€€€€€€€€€€€•¹½‘¥¹œô‰ÕÑ˜´àˆ°(€€€€€€€€€€€€€€€€€€€¹•Ý±¥¹”ô‰q¸ˆ°(€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰!9=}9aQ}Q%=8ˆ°Í•±˜¹½‘•Ì ¤¤(€€€€€€€…•¹Ð¹ÝÉ¥Ñ•}Ñ•áÐ¡½É¥¥¹…°°•¹½‘¥¹œô‰ÕÑ˜´àˆ°¹•Ý±¥¹”ô‰q¸ˆ¤((€€€‘•˜Ñ•ÍÑ}¹•áÑ}…Ñ¥½¹}É½ÕÑ•É}¥Í}¡¥‘‘•¹}…¹‘}µ¥¹¥µ…°¡Í•±˜¤€´ø9½¹”è(€€€€€€€É½ÕÑ•È€ôÍ•±˜¹É•Á¼€¼€ˆ¹¥Ñ¡Õˆˆ€¼€‰…•¹ÑÌˆ€¼€‰¹•áÐµ…Ñ¥½¸µÉ½ÕÑ•È¹…•¹Ð¹µˆ(€€€€€€€½É¥¥¹…°€ôÉ½ÕÑ•È¹É•…‘}Ñ•áÐ¡•¹½‘¥¹œô‰ÕÑ˜´àˆ¤(€€€€€€€™É½¹Ñµ…ÑÑ•È€ôå…µ°¹Í…™•}±½…¡½É¥¥¹…°¹ÍÁ±¥Ð ˆ´´µq¸ˆ°€È¥lÅt¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° ‰9•áÑÑ¥½¹I½ÕÑ•Èˆ°™É½¹Ñµ…ÑÑ•Él‰¹…µ”‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%Ì¡™É½¹Ñµ…ÑÑ•Él‰ÕÍ•Èµ¥¹Ù½…‰±”‰t°…±Í”¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%Ì¡™É½¹Ñµ…ÑÑ•Él‰‘¥Í…‰±”µµ½‘•°µ¥¹Ù½…Ñ¥½¸‰t°QÉÕ”¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡l‰…•¹Ðˆ°€‰É•…ˆ°€‰Í•…É ‰t°™É½¹Ñµ…ÑÑ•Él‰Ñ½½±Ì‰t¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° (€€€€€€€€€€€l(€€€€€€€€€€€€€€€€‰=É¡•ÍÑÉ…Ñ½Èˆ°(€€€€€€€€€€€€€€€€‰	ÕI•Í½±Ù•Èˆ°(€€€€€€€€€€€€€€€€‰µ‰•‘‘•‘•Ù•±½Á•Èˆ°(€€€€€€€€€€€€€€€€‰EÕ…±¥ÑåI•Ù¥•Ý•Èˆ°(€€€€€€€€€€€€€€€€‰½-••Á•Èˆ°(€€€€€€€€€€€t°(€€€€€€€€€€€™É½¹Ñµ…ÑÑ•Él‰…•¹ÑÌ‰t°(€€€€€€€€¤(€€€€€€€•áÁ•Ñ•‘}¡…¹‘½™™Ì€ô€ (€€€€€€€€€€€€ ‹¢þS–n{žò[š:H€¼I•ÑÕÉ¸Ñ¼=É¡•ÍÑÉ…Ñ½Èˆ°€‰=É¡•ÍÑÉ…Ñ½Èˆ¤°(€€€€€€€€€€€€ ‹¢þS–n{¦^»¦Šc¢ž–Ì€¼I•ÑÕÉ¸Ñ¼	ÕœI•Í½±Ù•Èˆ°€‰	ÕI•Í½±Ù•Èˆ¤°(€€€€€€€€€€€€ ‹¢þS–n{–º{šZô€¼I•ÑÕÉ¸Ñ¼µ‰•‘‘••Ù•±½Á•Èˆ°€‰µ‰•‘‘•‘•Ù•±½Á•Èˆ¤°(€€€€€€€€€€€€ ‹¢þS–n{¢¾–º„€¼I•ÑÕÉ¸Ñ¼EÕ…±¥ÑäI•Ù¥•Ý•Èˆ°€‰EÕ…±¥ÑåI•Ù¥•Ý•Èˆ¤°(€€€€€€€€€€€€ ‹¢þS–n{šZš†Œ€¼I•ÑÕÉ¸Ñ¼½Œ-••Á•Èˆ°€‰½-••Á•Èˆ¤°(€€€€€€€€¤(€€€€€€€¡…¹‘½™™Ì€ô™É½¹Ñµ…ÑÑ•Él‰¡…¹‘½™™Ì‰t(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…° (€€€€€€€€€€€•áÁ•Ñ•‘}¡…¹‘½™™Ì°(€€€€€€€€€€€ÑÕÁ±” ¡¥Ñ•µl‰±…‰•°‰t°¥Ñ•µl‰…•¹Ð‰t¤™½È¥Ñ•´¥¸¡…¹‘½™™Ì¤°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑQÉÕ”¡…±°¡¥Ñ•µl‰Í•¹‰t¥Ì…±Í”™½È¥Ñ•´¥¸¡…¹‘½™™Ì¤¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑQÉÕ” (€€€€€€€€€€€…±° (€€€€€€€€€€€€€€€€‰I•Ù…±¥‘…Ñ”Ñ¡”±…Ñ•ÍÐÕ¹¥ÅÕ”9•áÐÑ¥½¸ˆ¥¸¥Ñ•µl‰ÁÉ½µÁÐ‰t(€€€€€€€€€€€€€€€…¹€‰ÍÕÁÁ±¥•Ì¹¼µ¥ÍÍ¥¹œ¥¹ÁÕÐˆ¥¸¥Ñ•µl‰ÁÉ½µÁÐ‰t(€€€€€€€€€€€€€€€…¹€‰½¹™¥ÉµÌ¹¼½µµ¥Ð°ÁÕÍ °½È•áÑ•É¹…°½µµ…¹ˆ(€€€€€€€€€€€€€€€¥¸¥Ñ•µl‰ÁÉ½µÁÐ‰t(€€€€€€€€€€€€€€€™½È¥Ñ•´¥¸¡…¹‘½™™Ì(€€€€€€€€€€€€¤(€€€€€€€€¤((€€€€€€€µÕÑ…Ñ¥½¹Ì€ô€ (€€€€€€€€€€€€ ‰ÕÍ•Èµ¥¹Ù½…‰±”è™…±Í”ˆ°€‰ÕÍ•Èµ¥¹Ù½…‰±”èÑÉÕ”ˆ°€‰9Q}%9Y=	1ˆ¤°(€€€€€€€€€€€€ (€€€€€€€€€€€€€€€€‰Ñ½½±Ìèl…•¹Ðœ°€É•…œ°€Í•…É tˆ°(€€€€€€€€€€€€€€€€‰Ñ½½±Ìèl…•¹Ðœ°€É•…œ°€Í•…É œ°€•á•ÕÑ”tˆ°(€€€€€€€€€€€€€€€€‰9Q}Q==1Lˆ°(€€€€€€€€€€€€¤°(€€€€€€€€€€€€ (€€€€€€€€€€€€€€€€‰…Ðµ½ÍÐ•¥¡Ð½¹Í•ÕÑ¥Ù”…Ñ¥½¹Ìˆ°(€€€€€€€€€€€€€€€€‰Ý¥Ñ¡½ÕÐ„ÑÉ…¹Í¥Ñ¥½¸±¥µ¥Ðˆ°(€€€€€€€€€€€€€€€€‰9Q}	=e}=9QIPˆ°(€€€€€€€€€€€€¤°(€€€€€€€€€€€€ (€€€€€€€€€€€€€€€€‹¢þS–n{žò[š:H€¼I•ÑÕÉ¸Ñ¼=É¡•ÍÑÉ…Ñ½Èˆ°(€€€€€€€€€€€€€€€€‰I5=Y}I=UQI}11	,ˆ°(€€€€€€€€€€€€€€€€‰!9=}	M1%9ˆ°(€€€€€€€€€€€€¤°(€€€€€€€€€€€€ (€€€€€€€€€€€€€€€€ˆ€€€Í•¹è™…±Í”ˆ°(€€€€€€€€€€€€€€€€ˆ€€€Í•¹èÑÉÕ”ˆ°(€€€€€€€€€€€€€€€€‰!9=}I=UQI}11	,ˆ°(€€€€€€€€€€€€¤°(€€€€€€€€€€€€ (€€€€€€€€€€€€€€€€‰ÍÕÁÁ±¥•Ì¹¼µ¥ÍÍ¥¹œ¥¹ÁÕÐˆ°(€€€€€€€€€€€€€€€€‰ÍÕÁÁ±¥•Ì¥µÁ±¥¥Ð¥¹ÁÕÐˆ°(€€€€€€€€€€€€€€€€‰!9=}I=UQI}11	,ˆ°(€€€€€€€€€€€€¤°(€€€€€€€€¤(€€€€€€€™½È½±°¹•Ü°½‘”¥¸µÕÑ…Ñ¥½¹Ìè(€€€€€€€€€€€Ý¥Ñ Í•±˜¹ÍÕ‰Q•ÍÐ¡µÕÑ…Ñ¥½¸õ½±¤è(€€€€€€€€€€€€€€€É½ÕÑ•È¹ÝÉ¥Ñ•}Ñ•áÐ (€€€€€€€€€€€€€€€€€€€½É¥¥¹…°¹É•Á±…”¡½±°¹•Ü°€Ä¤°(€€€€€€€€€€€€€€€€€€€•¹½‘¥¹œô‰ÕÑ˜´àˆ°(€€€€€€€€€€€€€€€€€€€¹•Ý±¥¹”ô‰q¸ˆ°(€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸¡½‘”°Í•±˜¹½‘•Ì ¤¤(€€€€€€€É½ÕÑ•È¹ÝÉ¥Ñ•}Ñ•áÐ¡½É¥¥¹…°°•¹½‘¥¹œô‰ÕÑ˜´àˆ°¹•Ý±¥¹”ô‰q¸ˆ¤((€€€€€€€™½Èµ…É­•È¥¸€ ‰%¹ÁÕÐI•ÅÕ¥É•ˆ°€‰I•Á±äQ•µÁ±…Ñ”ˆ¤è(€€€€€€€€€€€Ý¥Ñ Í•±˜¹ÍÕ‰Q•ÍÐ¡É•ÅÕ¥É•‘}¥¹ÁÕÑ}µ…É­•Èõµ…É­•È¤è(€€€€€€€€€€€€€€€É½ÕÑ•È¹ÝÉ¥Ñ•}Ñ•áÐ (€€€€€€€€€€€€€€€€€€€½É¥¥¹…°¹É•Á±…”¡µ…É­•È°€‰I5=Y}%9AUQ}=9QIPˆ¤°(€€€€€€€€€€€€€€€€€€€•¹½‘¥¹œô‰ÕÑ˜´àˆ°(€€€€€€€€€€€€€€€€€€€¹•Ý±¥¹”ô‰q¸ˆ°(€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰9Q}	=e}=9QIPˆ°Í•±˜¹½‘•Ì ¤¤(€€€€€€€É½ÕÑ•È¹ÝÉ¥Ñ•}Ñ•áÐ¡½É¥¥¹…°°•¹½‘¥¹œô‰ÕÑ˜´àˆ°¹•Ý±¥¹”ô‰q¸ˆ¤((€€€‘•˜Ñ•ÍÑ}¥Ñ}‘•±¥Ù•Éå}¡…¹‘½™™}¥Í}É•ÅÕ¥É•‘}…™Ñ•É}É•Ù¥•Ý}…¹‘}‘½Õµ•¹Ñ…Ñ¥½¸¡Í•±˜¤€´ø9½¹”è(€€€€€€€™½È¹…µ”¥¸€ (€€€€€€€€€€€€‰‰ÕœµÉ•Í½±Ù•È¹…•¹Ð¹µˆ°(€€€€€€€€€€€€‰ÅÕ…±¥ÑäµÉ•Ù¥•Ý•È¹…•¹Ð¹µˆ°(€€€€€€€€€€€€‰‘½Œµ­••Á•È¹…•¹Ð¹µˆ°(€€€€€€€€¤è(€€€€€€€€€€€…•¹Ð€ôÍ•±˜¹É•Á¼€¼€ˆ¹¥Ñ¡Õˆˆ€¼€‰…•¹ÑÌˆ€¼¹…µ”(€€€€€€€€€€€½É¥¥¹…°€ô…•¹Ð¹É•…‘}Ñ•áÐ¡•¹½‘¥¹œô‰ÕÑ˜´àˆ¤(€€€€€€€€€€€Ý¥Ñ Í•±˜¹ÍÕ‰Q•ÍÐ¡…•¹Ðõ¹…µ”¤è(€€€€€€€€€€€€€€€…•¹Ð¹ÝÉ¥Ñ•}Ñ•áÐ (€€€€€€€€€€€€€€€€€€€½É¥¥¹…°¹É•Á±…” (€€€€€€€€€€€€€€€€€€€€€€€€‰¥Ðƒš>C’ê“’ê“’î`€¼¥Ð•±¥Ù•Éäˆ°(€€€€€€€€€€€€€€€€€€€€€€€€‰I5=Y}%Q}1%YIe}!9=ˆ°(€€€€€€€€€€€€€€€€€€€€¤°(€€€€€€€€€€€€€€€€€€€•¹½‘¥¹œô‰ÕÑ˜´àˆ°(€€€€€€€€€€€€€€€€€€€¹•Ý±¥¹”ô‰q¸ˆ°(€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰!9=}1%YIdˆ°Í•±˜¹½‘•Ì ¤¤(€€€€€€€€€€€…•¹Ð¹ÝÉ¥Ñ•}Ñ•áÐ¡½É¥¥¹…°°•¹½‘¥¹œô‰ÕÑ˜´àˆ°¹•Ý±¥¹”ô‰q¸ˆ¤((€€€€€€€€€€€™½Èµ…É­•È¥¸€ (€€€€€€€€€€€€€€€€‰É•½µµ•¹‘•‘•™…Õ±Ðˆ°(€€€€€€€€€€€€€€€€‰ÕÍ•ÈµÍÕÁÁ±¥•)¥É„%ˆ°(€€€€€€€€€€€€€€€€‰•¹•É…Ñ”•Ù•Éä½Ñ¡•È½µµ¥Ð™¥•±ˆ°(€€€€€€€€€€€€€€€€‰ÕÉÉ•¹Ð¥¹ÁÕÐ‰½àˆ°(€€€€€€€€€€€€€€€€‰•á•ÕÑ”‘¥É•Ñ±ä…ÌÑ¡”ÕÉÉ•¹Ðµ‰•‘‘•‘•Ù•±½Á•Èˆ°(€€€€€€€€€€€€€€€€‰¹•Ù•È‘•±•…Ñ”Ñ¼å½ÕÉÍ•±˜ˆ°(€€€€€€€€€€€€€€€€‰Q…Í¬¡…¹”	…Í•±¥¹”ˆ°(€€€€€€€€€€€€€€€€‰Q…Í¬¡…¹”1•‘•Èˆ°(€€€€€€€€€€€€€€€€‰QQ}=55%Q}M=Aˆ°(€€€€€€€€€€€€€€€€‰½µµ¥Ð½¹Ñ•¹Ðˆ°(€€€€€€€€€€€€€€€€‰)UMQ}!9MPˆ°(€€€€€€€€€€€€€€€€‰¡…¹”½¹™¥Éµ…Ñ¥½¸èA9%9ˆ°(€€€€€€€€€€€€€€€€‰=9%I5}AUM ˆ°(€€€€€€€€€€€€€€€€‰59U1}AUM ˆ°(€€€€€€€€€€€€¤è(€€€€€€€€€€€€€€€Ý¥Ñ Í•±˜¹ÍÕ‰Q•ÍÐ¡…•¹Ðõ¹…µ”°ÁÉ½µÁÑ}µ…É­•Èõµ…É­•È¤è(€€€€€€€€€€€€€€€€€€€…•¹Ð¹ÝÉ¥Ñ•}Ñ•áÐ (€€€€€€€€€€€€€€€€€€€€€€€½É¥¥¹…°¹É•Á±…” (€€€€€€€€€€€€€€€€€€€€€€€€€€€µ…É­•È°(€€€€€€€€€€€€€€€€€€€€€€€€€€€€‰I5=Y}1%YIe}U1Q}=9QIPˆ°(€€€€€€€€€€€€€€€€€€€€€€€€¤°(€€€€€€€€€€€€€€€€€€€€€€€•¹½‘¥¹œô‰ÕÑ˜´àˆ°(€€€€€€€€€€€€€€€€€€€€€€€¹•Ý±¥¹”ô‰q¸ˆ°(€€€€€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰!9=}1%YIdˆ°Í•±˜¹½‘•Ì ¤¤(€€€€€€€€€€€…•¹Ð¹ÝÉ¥Ñ•}Ñ•áÐ¡½É¥¥¹…°°•¹½‘¥¹œô‰ÕÑ˜´àˆ°¹•Ý±¥¹”ô‰q¸ˆ¤((€€€‘•˜Ñ•ÍÑ}Í¡…É•‘}½¹ÑÉ…Ñ}É•ÅÕ¥É•Í}¡…¹•}½¹™¥Éµ…Ñ¥½¹}…¹‘}…‘©ÕÍÑµ•¹Ð¡Í•±˜¤€´ø9½¹”è(€€€€€€€½¹ÑÉ…Ð€ôÍ•±˜¹É•Á¼€¼€ˆ¹¥Ñ¡Õˆˆ€¼€‰…•¹Ðµ½¹ÑÉ…ÑÌ¹µˆ(€€€€€€€½É¥¥¹…°€ô½¹ÑÉ…Ð¹É•…‘}Ñ•áÐ¡•¹½‘¥¹œô‰ÕÑ˜´àˆ¤(€€€€€€€™½Èµ…É­•È¥¸€ (€€€€€€€€€€€€ˆŒŒ9•áÐÑ¥½¸ˆ°(€€€€€€€€€€€€‰)UMQ}!9MQ€ˆ°(€€€€€€€€€€€€‰¡…¹”½¹™¥Éµ…Ñ¥½¸èA9%9ˆ°(€€€€€€€€€€€€‰½¹™¥É´¡…¹•Ì…¹½µµ¥Ðˆ°(€€€€€€€€€€€€‰Á•Èµ™¥±”•¹ÑÉ¥•Í€ˆ°(€€€€€€€€€€€€‰=9%I5}AUM!€ˆ°(€€€€€€€€€€€€‰59U1}AUM!€ˆ°(€€€€€€€€€€€€‰MQIQ}9]}%MMU€ˆ°(€€€€€€€€€€€€ˆ´U$I½ÕÑ”èˆ°(€€€€€€€€€€€€ˆ´¥ÍÁ…Ñ Q…É•Ðèˆ°(€€€€€€€€€€€€ˆ´%¹ÁÕÐI•ÅÕ¥É•èˆ°(€€€€€€€€€€€€ˆ´I•ÅÕ¥É•%¹ÁÕÐèˆ°(€€€€€€€€€€€€ˆ´I•Á±äQ•µÁ±…Ñ”èˆ°(€€€€€€€€€€€€ˆ´%¹ÍÑÉÕÑ¥½¸èˆ°(€€€€€€€€€€€€‰AI=Y%}Y%9€ˆ°(€€€€€€€€€€€€‰9aQ}Q%=9}	UQQ=8ˆ°(€€€€€€€€€€€€‰!9=èñ•á…ÐÕÉÉ•¹Ðµ…•¹Ð‰…Í”µ‰ÕÑÑ½¸±…‰•°øˆ°(€€€€€€€€€€€€‰9Q}=9Q%9Uˆ°(€€€€€€€€€€€€‰9=Q}IU8ƒŠP9½ÐÉ•ÅÕ¥É•è€ñÉ•…Í½¸øˆ°(€€€€€€€€€€€€‰=9%I5}=55%Q}=9Q9Q€ˆ°(€€€€€€€€€€€€ˆ´µ•áÁ•Ñ•µ½¹Ñ•¹Ðµ™¥¹•ÉÁÉ¥¹Ðˆ°(€€€€€€€€€€€€‰½¹Ñ•¹Ñ}½¹™¥Éµ…Ñ¥½¸¹ÍÑ…ÑÕÌè=9%I5ˆ°(€€€€€€€€€€€€‰½µµ¥Ð½¹Ñ•¹Ð½¹™¥Éµ…Ñ¥½¸èA9%9ˆ°(€€€€€€€€€€€€‹¢þS–n{žò[š:H€¼I•ÑÕÉ¸Ñ¼=É¡•ÍÑÉ…Ñ½Èˆ°(€€€€€€€€€€€€‰™¥Ù”ÍÑ…Ñ¥Œ™…±±‰…¬¡…¹‘½™™Ìˆ°(€€€€€€€€¤è(€€€€€€€€€€€Ý¥Ñ Í•±˜¹ÍÕ‰Q•ÍÐ¡µ…É­•Èõµ…É­•È¤è(€€€€€€€€€€€€€€€½¹ÑÉ…Ð¹ÝÉ¥Ñ•}Ñ•áÐ (€€€€€€€€€€€€€€€€€€€½É¥¥¹…°¹É•Á±…”¡µ…É­•È°€‰I5=Y}M!I}=9QIPˆ¤°(€€€€€€€€€€€€€€€€€€€•¹½‘¥¹œô‰ÕÑ˜´àˆ°(€€€€€€€€€€€€€€€€€€€¹•Ý±¥¹”ô‰q¸ˆ°(€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€Í•±˜¹…ÍÍ•ÉÑQÉÕ” (€€€€€€€€€€€€€€€€€€€…¹ä¡½‘”¹ÍÑ…ÉÑÍÝ¥Ñ  ‰M!I}=9QIPˆ¤™½È½‘”¥¸Í•±˜¹½‘•Ì ¤¤(€€€€€€€€€€€€€€€€¤(€€€€€€€½¹ÑÉ…Ð¹ÝÉ¥Ñ•}Ñ•áÐ¡½É¥¥¹…°°•¹½‘¥¹œô‰ÕÑ˜´àˆ°¹•Ý±¥¹”ô‰q¸ˆ¤((€€€‘•˜Ñ•ÍÑ}±½Í•}¥ÍÍÕ•}¡…¹‘½™™}¥Í}É•ÅÕ¥É•‘}…™Ñ•É}‘•±¥Ù•Éä¡Í•±˜¤€´ø9½¹”è(€€€€€€€…•¹Ð€ôÍ•±˜¹É•Á¼€¼€ˆ¹¥Ñ¡Õˆˆ€¼€‰…•¹ÑÌˆ€¼€‰•µ‰•‘‘•µ‘•Ù•±½Á•È¹…•¹Ð¹µˆ(€€€€€€€½É¥¥¹…°€ô…•¹Ð¹É•…‘}Ñ•áÐ¡•¹½‘¥¹œô‰ÕÑ˜´àˆ¤(€€€€€€€…•¹Ð¹ÝÉ¥Ñ•}Ñ•áÐ (€€€€€€€€€€€½É¥¥¹…°¹É•Á±…” (€€€€€€€€€€€€€€€€‹¦^»¦Šc–ÞË¢ž–Ì€¼±½Í”%ÍÍÕ”ˆ°(€€€€€€€€€€€€€€€€‰I5=Y}1=M}%MMU}!9=ˆ°(€€€€€€€€€€€€¤°(€€€€€€€€€€€•¹½‘¥¹œô‰ÕÑ˜´àˆ°(€€€€€€€€€€€¹•Ý±¥¹”ô‰q¸ˆ°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰!9=}1=M}%MMUˆ°Í•±˜¹½‘•Ì ¤¤((€€€€€€€™½Èµ…É­•È¥¸€ (€€€€€€€€€€€€‰I•¡•¬ˆ°(€€€€€€€€€€€€‰É•Á…¥Èˆ°(€€€€€€€€€€€€‰Í•±•Ñ•¥Ð‘•±¥Ù•Éäˆ°(€€€€€€€€€€€€‰±•…È¥ÍÍÕ”µ±•Ù•°ÍÑ…Ñ”ˆ°(€€€€€€€€€€€€‰™É•Í ¥ÍÍÕ”%9Q-ˆ°(€€€€€€€€€€€€‰½Ñ¡•ÉÝ¥Í”É•ÑÕÉ¸	1=-ˆ°(€€€€€€€€€€€€‰9•áÐÑ¥½¸ˆ°(€€€€€€€€¤è(€€€€€€€€€€€Ý¥Ñ Í•±˜¹ÍÕ‰Q•ÍÐ¡ÁÉ½µÁÑ}µ…É­•Èõµ…É­•È¤è(€€€€€€€€€€€€€€€…•¹Ð¹ÝÉ¥Ñ•}Ñ•áÐ (€€€€€€€€€€€€€€€€€€€½É¥¥¹…°¹É•Á±…” (€€€€€€€€€€€€€€€€€€€€€€€µ…É­•È°(€€€€€€€€€€€€€€€€€€€€€€€€‰I5=Y}1=M}%MMU}=9QIPˆ°(€€€€€€€€€€€€€€€€€€€€¤°(€€€€€€€€€€€€€€€€€€€•¹½‘¥¹œô‰ÕÑ˜´àˆ°(€€€€€€€€€€€€€€€€€€€¹•Ý±¥¹”ô‰q¸ˆ°(€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰!9=}1=M}%MMUˆ°Í•±˜¹½‘•Ì ¤¤(€€€€€€€…•¹Ð¹ÝÉ¥Ñ•}Ñ•áÐ¡½É¥¥¹…°°•¹½‘¥¹œô‰ÕÑ˜´àˆ°¹•Ý±¥¹”ô‰q¸ˆ¤((€€€‘•˜Ñ•ÍÑ}µ…±™½Éµ•‘}…•¹Ñ}å…µ±}¥Í}É•©•Ñ•¡Í•±˜¤€´ø9½¹”è(€€€€€€€Í¡ÕÑ¥°¹½Áå™¥±” (€€€€€€€€€€€%aQUIL€¼€‰¹•…Ñ¥Ù”ˆ€¼€‰µ…±™½Éµ•µ…•¹Ð¹…•¹Ð¹µˆ°(€€€€€€€€€€€Í•±˜¹É•Á¼€¼€ˆ¹¥Ñ¡Õˆˆ€¼€‰…•¹ÑÌˆ€¼€‰•µ‰•‘‘•µ‘•Ù•±½Á•È¹…•¹Ð¹µˆ°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰I=9Q5QQI}e50ˆ°Í•±˜¹½‘•Ì ¤¤((€€€‘•˜Ñ•ÍÑ}µ¥ÍÍ¥¹}Í­¥±±}…¹‘}ÍÑ…±•}ÁÉ½µÁÑ}É•™•É•¹•}…É•}É•©•Ñ•¡Í•±˜¤€´ø9½¹”è(€€€€€€€Í­¥±°€ôÍ•±˜¹É•Á¼€¼€ˆ¹¥Ñ¡Õˆˆ€¼€‰Í­¥±±Ìˆ€¼€‰µ¥ÍÉ„µÉ¥Í¬µÉ•Ù¥•Üˆ€¼€‰M-%10¹µˆ(€€€€€€€Í­¥±°¹Õ¹±¥¹¬ ¤(€€€€€€€ÁÉ½µÁÐ€ôÍ•±˜¹É•Á¼€¼€ˆ¹¥Ñ¡Õˆˆ€¼€‰ÁÉ½µÁÑÌˆ€¼€‰µ¥ÍÉ„µÉ•Ù¥•Ü¹ÁÉ½µÁÐ¹µˆ(€€€€€€€ÁÉ½µÁÐ¹ÝÉ¥Ñ•}Ñ•áÐ (€€€€€€€€€€€ÁÉ½µÁÐ¹É•…‘}Ñ•áÐ¡•¹½‘¥¹œô‰ÕÑ˜´àˆ¤¹É•Á±…” (€€€€€€€€€€€€€€€€ˆ¸¸½Í­¥±±Ì½µ¥ÍÉ„µÉ¥Í¬µÉ•Ù¥•Ü½M-%10¹µˆ°(€€€€€€€€€€€€€€€€ˆ¸¸½Í­¥±±Ì½É•¹…µ•µÉ•Ù¥•Ü½M-%10¹µˆ°(€€€€€€€€€€€€¤°(€€€€€€€€€€€•¹½‘¥¹œô‰ÕÑ˜´àˆ°(€€€€€€€€€€€¹•Ý±¥¹”ô‰q¸ˆ°(€€€€€€€€¤(€€€€€€€½‘•Ì€ôÍ•±˜¹½‘•Ì ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰M-%11}MPˆ°½‘•Ì¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰AI=5AQ}M-%10ˆ°½‘•Ì¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰1%9-}5%MM%9ˆ°½‘•Ì¤((€€€‘•˜Ñ•ÍÑ}µ¥ÍÍ¥¹}…¹…±åé•}‰Õ}ÁÉ½µÁÑ}¥Í}É•©•Ñ•¡Í•±˜¤€´ø9½¹”è(€€€€€€€ÁÉ½µÁÐ€ôÍ•±˜¹É•Á¼€¼€ˆ¹¥Ñ¡Õˆˆ€¼€‰ÁÉ½µÁÑÌˆ€¼€‰…¹…±åé”µ‰Õœ¹ÁÉ½µÁÐ¹µˆ(€€€€€€€ÁÉ½µÁÐ¹Õ¹±¥¹¬ ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰AI=5AQ}MPˆ°Í•±˜¹½‘•Ì ¤¤((€€€‘•˜Ñ•ÍÑ}‰Õ}ÁÉ½µÁÑ}µÕÍÑ}É½ÕÑ•}Ñ½}‰Õ}É•Í½±Ù•È¡Í•±˜¤€´ø9½¹”è(€€€€€€€ÁÉ½µÁÐ€ôÍ•±˜¹É•Á¼€¼€ˆ¹¥Ñ¡Õˆˆ€¼€‰ÁÉ½µÁÑÌˆ€¼€‰…¹…±åé”µ‰Õœ¹ÁÉ½µÁÐ¹µˆ(€€€€€€€ÁÉ½µÁÐ¹ÝÉ¥Ñ•}Ñ•áÐ (€€€€€€€€€€€ÁÉ½µÁÐ¹É•…‘}Ñ•áÐ¡•¹½‘¥¹œô‰ÕÑ˜´àˆ¤¹É•Á±…” (€€€€€€€€€€€€€€€€‰…•¹Ðè	ÕI•Í½±Ù•Èˆ°(€€€€€€€€€€€€€€€€‰…•¹ÐèEÕ…±¥ÑåI•Ù¥•Ý•Èˆ°(€€€€€€€€€€€€¤°(€€€€€€€€€€€•¹½‘¥¹œô‰ÕÑ˜´àˆ°(€€€€€€€€€€€¹•Ý±¥¹”ô‰q¸ˆ°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰AI=5AQ}9Pˆ°Í•±˜¹½‘•Ì ¤¤((€€€‘•˜Ñ•ÍÑ}µ¥ÍÍ¥¹}É•ÅÕ¥É•‘}Í­¥±±}ÍÉ¥ÁÑ}¥Í}É•©•Ñ•¡Í•±˜¤€´ø9½¹”è(€€€€€€€ÍÉ¥ÁÐ€ô€ (€€€€€€€€€€€Í•±˜¹É•Á¼(€€€€€€€€€€€€¼€ˆ¹¥Ñ¡Õˆˆ(€€€€€€€€€€€€¼€‰Í­¥±±Ìˆ(€€€€€€€€€€€€¼€‰µ¥ÍÉ„µÉ¥Í¬µÉ•Ù¥•Üˆ(€€€€€€€€€€€€¼€‰ÍÉ¥ÁÑÌˆ(€€€€€€€€€€€€¼€‰¹½Éµ…±¥é•}Í…É¥˜¹Áäˆ(€€€€€€€€¤(€€€€€€€ÍÉ¥ÁÐ¹Õ¹±¥¹¬ ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰M-%11}MI%AQ}MPˆ°Í•±˜¹½‘•Ì ¤¤((€€€‘•˜Ñ•ÍÑ}±½}…¹…±åÍ¥Í}½ÕÑÁÕÑ}½¹ÑÉ…Ñ}¥Í}É•ÅÕ¥É•¡Í•±˜¤€´ø9½¹”è(€€€€€€€Í­¥±°€ô€ (€€€€€€€€€€€Í•±˜¹É•Á¼(€€€€€€€€€€€€¼€ˆ¹¥Ñ¡Õˆˆ(€€€€€€€€€€€€¼€‰Í­¥±±Ìˆ(€€€€€€€€€€€€¼€‰™¥ÉµÝ…É”µ±½œµ…¹…±åÍ¥Ìˆ(€€€€€€€€€€€€¼€‰M-%10¹µˆ(€€€€€€€€¤(€€€€€€€½É¥¥¹…°€ôÍ­¥±°¹É•…‘}Ñ•áÐ¡•¹½‘¥¹œô‰ÕÑ˜´àˆ¤(€€€€€€€™½Èµ…É­•È¥¸€ (€€€€€€€€€€€€‰U%}Me5AQ=5Lˆ°(€€€€€€€€€€€€‰=9%I5}%IQ%=8ˆ°(€€€€€€€€€€€€‰UÍ…”MåµÁÑ½´EÕ•ÍÑ¥½¹Ìˆ°(€€€€€€€€€€€€‰UÍ…”MåµÁÑ½´AÉ½™¥±”ˆ°(€€€€€€€€€€€€‰¥É•Ñ¥½¸½¹™¥Éµ…Ñ¥½¸ˆ°(€€€€€€€€€€€€‰%9Q%e}AI=	14ˆ°(€€€€€€€€€€€€‰Y%9}!,ˆ°(€€€€€€€€€€€€‰]%Q}Y%9ˆ°(€€€€€€€€€€€€‰9½Éµ…±¥é•Ù•¹ÑÌˆ°(€€€€€€€€¤è(€€€€€€€€€€€Ý¥Ñ Í•±˜¹ÍÕ‰Q•ÍÐ¡µ…É­•Èõµ…É­•È¤è(€€€€€€€€€€€€€€€Í­¥±°¹ÝÉ¥Ñ•}Ñ•áÐ (€€€€€€€€€€€€€€€€€€€½É¥¥¹…°¹É•Á±…”¡µ…É­•È°€‰I5=Y}IEU%I}	!Y%=Hˆ¤°(€€€€€€€€€€€€€€€€€€€•¹½‘¥¹œô‰ÕÑ˜´àˆ°(€€€€€€€€€€€€€€€€€€€¹•Ý±¥¹”ô‰q¸ˆ°(€€€€€€€€€€€€€€€€¤(€€€€€€€€€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰M-%11}	=e}=9QIPˆ°Í•±˜¹½‘•Ì ¤¤(€€€€€€€Í­¥±°¹ÝÉ¥Ñ•}Ñ•áÐ¡½É¥¥¹…°°•¹½‘¥¹œô‰ÕÑ˜´àˆ°¹•Ý±¥¹”ô‰q¸ˆ¤((€€€‘•˜Ñ•ÍÑ}¥¹Ù…±¥‘}ÁÉ½©•Ñ}ÁÉ½™¥±•}¥Í}É•©•Ñ•¡Í•±˜¤€´ø9½¹”è(€€€€€€€Í¡ÕÑ¥°¹½Áå™¥±” (€€€€€€€€€€€%aQUIL€¼€‰¹•…Ñ¥Ù”ˆ€¼€‰¥¹Ù…±¥µÁÉ½™¥±”¹åµ°ˆ°(€€€€€€€€€€€Í•±˜¹É•Á¼€¼€ˆ¹¥Ñ¡Õˆˆ€¼€‰•µ‰•‘‘•µÁÉ½©•Ð¹åµ°ˆ°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰AI=%1}M!5ˆ°Í•±˜¹½‘•Ì ¤¤((€€€‘•˜Ñ•ÍÑ}É±™}¥Í}É•©•Ñ•¡Í•±˜¤€´ø9½¹”è(€€€€€€€É•…‘µ”€ôÍ•±˜¹É•Á¼€¼€‰I5¹µˆ(€€€€€€€Ñ•áÐ€ôÉ•…‘µ”¹É•…‘}Ñ•áÐ¡•¹½‘¥¹œô‰ÕÑ˜´àˆ¤(€€€€€€€É•…‘µ”¹ÝÉ¥Ñ•}‰åÑ•Ì¡Ñ•áÐ¹É•Á±…” ‰qÉq¸ˆ°€‰q¸ˆ¤¹É•Á±…” ‰q¸ˆ°€‰qÉq¸ˆ¤¹•¹½‘” ‰ÕÑ˜´àˆ¤¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰QaQ}1ˆ°Í•±˜¹½‘•Ì ¤¤((€€€‘•˜Ñ•ÍÑ}µ¥ÍÍ¥¹}‰¥±¥¹Õ…±}Í•Ñ¥½¹}¥Í}É•©•Ñ•¡Í•±˜¤€´ø9½¹”è(€€€€€€€Í•±˜¹¥¹ÍÑ…±±}¹•…Ñ¥Ù•}µ…É­‘½Ý¸ ‰‰É½­•¸µ‰¥±¥¹Õ…°¹µˆ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰	%1%9U1}MQ%=9Lˆ°Í•±˜¹½‘•Ì ¤¤((€€€‘•˜Ñ•ÍÑ}ÁÉ½©•Ñ}µ…É­‘½Ý¹}É•ÅÕ¥É•Í}‰¥±¥¹Õ…±}Í•Ñ¥½¹Ì¡Í•±˜¤€´ø9½¹”è(€€€€€€€Í¡ÕÑ¥°¹½Áå™¥±” (€€€€€€€€€€€%aQUIL€¼€‰¹•…Ñ¥Ù”ˆ€¼€‰‰É½­•¸µ‰¥±¥¹Õ…°¹µˆ°(€€€€€€€€€€€Í•±˜¹É•Á¼€¼€ˆ¹ÁÉ½©•Ðˆ€¼€‰ÉÕ±•Ìˆ€¼€‰‰É½­•¸µ‰¥±¥¹Õ…°¹µˆ°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰	%1%9U1}MQ%=9Lˆ°Í•±˜¹½‘•Ì ¤¤((€€€‘•˜Ñ•ÍÑ}Õ¹É•Í½±Ù•‘}Ñ½‘½}Íå¹}¥¹}ÁÉ½Í•}¥Í}É•©•Ñ•¡Í•±˜¤€´ø9½¹”è(€€€€€€€Í•±˜¹¥¹ÍÑ…±±}¹•…Ñ¥Ù•}µ…É­‘½Ý¸ ‰Ñ½‘¼µÍå¹Œ¹µˆ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰Q==}Me9ˆ°Í•±˜¹½‘•Ì ¤¤((€€€‘•˜Ñ•ÍÑ}‰É½­•¹}±½…±}µ…É­‘½Ý¹}±¥¹­}¥Í}É•©•Ñ•¡Í•±˜¤€´ø9½¹”è(€€€€€€€Í•±˜¹¥¹ÍÑ…±±}¹•…Ñ¥Ù•}µ…É­‘½Ý¸ ‰‰É½­•¸µ±¥¹¬¹µˆ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰1%9-}5%MM%9ˆ°Í•±˜¹½‘•Ì ¤¤((€€€‘•˜Ñ•ÍÑ}Ù…±¥‘}±½…±}µ…É­‘½Ý¹}…¹¡½ÉÍ}…É•}…•ÁÑ•¡Í•±˜¤€´ø9½¹”è(€€€€€€€‘½Ì€ôÍ•±˜¹É•Á¼€¼€‰‘½Ìˆ(€€€€€€€Í¡ÕÑ¥°¹½Áå™¥±” (€€€€€€€€€€€%aQUIL€¼€‰µ…É­‘½Ý¸ˆ€¼€‰…¹¡½ÈµÑ…É•Ð¹µˆ°(€€€€€€€€€€€‘½Ì€¼€‰…¹¡½ÈµÑ…É•Ð¹µˆ°(€€€€€€€€¤(€€€€€€€Í¡ÕÑ¥°¹½Áå™¥±” (€€€€€€€€€€€%aQUIL€¼€‰µ…É­‘½Ý¸ˆ€¼€‰…¹¡½Èµ±¥¹­ÌµÙ…±¥¹µˆ°(€€€€€€€€€€€‘½Ì€¼€‰…¹¡½Èµ±¥¹­ÌµÙ…±¥¹µˆ°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑÅÕ…°¡mt°Í•±˜¹‘¥…¹½ÍÑ¥Ì ¤¤((€€€‘•˜Ñ•ÍÑ}µ¥ÍÍ¥¹}±½…±}µ…É­‘½Ý¹}…¹¡½É}¥Í}É•©•Ñ•¡Í•±˜¤€´ø9½¹”è(€€€€€€€‘½Ì€ôÍ•±˜¹É•Á¼€¼€‰‘½Ìˆ(€€€€€€€Í¡ÕÑ¥°¹½Áå™¥±” (€€€€€€€€€€€%aQUIL€¼€‰µ…É­‘½Ý¸ˆ€¼€‰…¹¡½ÈµÑ…É•Ð¹µˆ°(€€€€€€€€€€€‘½Ì€¼€‰…¹¡½ÈµÑ…É•Ð¹µˆ°(€€€€€€€€¤(€€€€€€€Í•±˜¹¥¹ÍÑ…±±}¹•…Ñ¥Ù•}µ…É­‘½Ý¸ ‰‰É½­•¸µ…¹¡½È¹µˆ¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ%¸ ‰1%9-}9!=I}5%MM%9ˆ°Í•±˜¹½‘•Ì ¤¤((€€€‘•˜Ñ•ÍÑ}‘½Õµ•¹Ñ•‘}Ñ½‘½}Íå¹}¥¹Í¥‘•}½‘•}¥Í}…±±½Ý•¡Í•±˜¤€´ø9½¹”è(€€€€€€€É•…‘µ”€ôÍ•±˜¹É•Á¼€¼€‰I5¹µˆ(€€€€€€€É•…‘µ”¹ÝÉ¥Ñ•}Ñ•áÐ (€€€€€€€€€€€É•…‘µ”¹É•…‘}Ñ•áÐ¡•¹½‘¥¹œô‰ÕÑ˜´àˆ¤(€€€€€€€€€€€€¬€‰q¸ð„´´Q¡”Á½±¥äÑ½­•¸¥Ì¥¹Ñ•¹Ñ¥½¹…±±äÅÕ½Ñ•èQ=<¡Íå¹Œ¥€¸€´´ùq¸ˆ°(€€€€€€€€€€€•¹½‘¥¹œô‰ÕÑ˜´àˆ°(€€€€€€€€€€€¹•Ý±¥¹”ô‰q¸ˆ°(€€€€€€€€¤(€€€€€€€Í•±˜¹…ÍÍ•ÉÑ9½Ñ%¸ ‰Q==}Me9ˆ°Í•±˜¹½‘•Ì ¤¤(()¥˜}}¹…µ•}|€ôô€‰}}µ…¥¹}|ˆè(€€€Õ¹¥ÑÑ•ÍÐ¹µ…¥¸ ¤(
+    def test_invalid_agent_tools_reference_and_send_are_rejected(self) -> None:
+        shutil.copyfile(
+            FIXTURES / "negative" / "invalid-agent.agent.md",
+            self.repo / ".github" / "agents" / "embedded-developer.agent.md",
+        )
+        codes = self.codes()
+        self.assertIn("AGENT_TOOLS", codes)
+        self.assertIn("AGENT_REFERENCE", codes)
+        self.assertIn("HANDOFF_SEND", codes)
+
+    def test_base_handoff_buttons_are_exact_and_static(self) -> None:
+        expected = {
+            "orchestrator.agent.md": (
+                ("Bug åˆ†æžä¸Žè§£å†³ / Diagnose and Resolve Bug", "BugResolver"),
+                ("å®žçŽ°å˜æ›´ / Implement", "EmbeddedDeveloper"),
+                ("ç‹¬ç«‹è¯„å®¡ / Review", "QualityReviewer"),
+                ("æ–‡æ¡£æ²‰æ·€ / Document", "DocKeeper"),
+                ("æ‰§è¡Œä¸‹ä¸€æ­¥ / Next Action", "NextActionRouter"),
+            ),
+            "bug-resolver.agent.md": (
+                ("å®žæ–½ä¿®å¤ / Implement Fix", "EmbeddedDeveloper"),
+                ("è´¨é‡è¯„ä¼° / Quality Assessment", "QualityReviewer"),
+                ("è®°å½•ç»“è®º / Document Resolution", "DocKeeper"),
+                ("Git æäº¤äº¤ä»˜ / Git Delivery", "EmbeddedDeveloper"),
+                ("æ‰§è¡Œä¸‹ä¸€æ­¥ / Next Action", "NextActionRouter"),
+            ),
+            "embedded-developer.agent.md": (
+                ("ç‹¬ç«‹è¯„å®¡ / Quality Review", "QualityReviewer"),
+                ("æ–‡æ¡£åŒæ­¥ / Document Changes", "DocKeeper"),
+                ("é—®é¢˜å·²è§£å†³ / Close Issue", "BugResolver"),
+                ("æ‰§è¡Œä¸‹ä¸€æ­¥ / Next Action", "NextActionRouter"),
+            ),
+            "quality-reviewer.agent.md": (
+                ("ä¿®å¤é—®é¢˜ / Fix Issues", "EmbeddedDeveloper"),
+                ("æ²‰æ·€è´¨é‡ç»“è®º / Document Quality Findings", "DocKeeper"),
+                ("Git æäº¤äº¤ä»˜ / Git Delivery", "EmbeddedDeveloper"),
+                ("æ‰§è¡Œä¸‹ä¸€æ­¥ / Next Action", "NextActionRouter"),
+            ),
+            "doc-keeper.agent.md": (
+                ("è¿”å›žç¼–æŽ’ / Resolve Conflict", "Orchestrator"),
+                ("Git æäº¤äº¤ä»˜ / Git Delivery", "EmbeddedDeveloper"),
+                ("æ‰§è¡Œä¸‹ä¸€æ­¥ / Next Action", "NextActionRouter"),
+            ),
+        }
+        for name, expected_handoffs in expected.items():
+            source = (self.repo / ".github" / "agents" / name).read_text(
+                encoding="utf-8"
+            )
+            frontmatter = yaml.safe_load(source.split("---\n", 2)[1])
+            handoffs = frontmatter["handoffs"]
+            with self.subTest(agent=name):
+                self.assertEqual(
+                    expected_handoffs,
+                    tuple((item["label"], item["agent"]) for item in handoffs),
+                )
+                self.assertTrue(all(item["send"] is False for item in handoffs[:-1]))
+                self.assertIs(handoffs[-1]["send"], True)
+                self.assertEqual("æ‰§è¡Œä¸‹ä¸€æ­¥ / Next Action", handoffs[-1]["label"])
+                self.assertEqual("NextActionRouter", handoffs[-1]["agent"])
+                self.assertTrue(
+                    all(
+                        set(item) == {"label", "agent", "prompt", "send"}
+                        for item in handoffs
+                    )
+                )
+
+    def test_handoff_label_order_and_fields_are_validator_locked(self) -> None:
+        agent = self.repo / ".github" / "agents" / "orchestrator.agent.md"
+        original = agent.read_text(encoding="utf-8")
+        agent.write_text(
+            original.replace(
+                "Bug åˆ†æžä¸Žè§£å†³ / Diagnose and Resolve Bug",
+                "Renamed Bug Handoff",
+                1,
+            ),
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assertIn("HANDOFF_BASELINE", self.codes())
+
+        agent.write_text(
+            original.replace("    send: false", "    send: false\n    when: dynamic", 1),
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assertIn("HANDOFF_FIELDS", self.codes())
+        agent.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_next_action_handoff_is_appended_and_safe(self) -> None:
+        source_agents = {
+            "orchestrator.agent.md": "Orchestrator",
+            "bug-resolver.agent.md": "BugResolver",
+            "embedded-developer.agent.md": "EmbeddedDeveloper",
+            "quality-reviewer.agent.md": "QualityReviewer",
+            "doc-keeper.agent.md": "DocKeeper",
+        }
+        for name, source_agent in source_agents.items():
+            source = (self.repo / ".github" / "agents" / name).read_text(
+                encoding="utf-8"
+            )
+            frontmatter = yaml.safe_load(source.split("---\n", 2)[1])
+            handoff = frontmatter["handoffs"][-1]
+            with self.subTest(agent=name):
+                self.assertEqual("æ‰§è¡Œä¸‹ä¸€æ­¥ / Next Action", handoff["label"])
+                self.assertEqual("NextActionRouter", handoff["agent"])
+                self.assertIs(handoff["send"], True)
+                self.assertIn(f"Source Agent: {source_agent}", handoff["prompt"])
+                self.assertIn("supplies no missing input", handoff["prompt"])
+                self.assertIn(
+                    "confirms no commit, push, or external command",
+                    handoff["prompt"],
+                )
+
+        agent = self.repo / ".github" / "agents" / "orchestrator.agent.md"
+        original = agent.read_text(encoding="utf-8")
+        mutations = (
+            ("agent: NextActionRouter", "agent: EmbeddedDeveloper"),
+            ("    send: true", "    send: false"),
+            ("supplies no missing input", "supplies implicit input"),
+        )
+        for old, new in mutations:
+            with self.subTest(mutation=old):
+                agent.write_text(
+                    original.replace(old, new, 1),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("HANDOFF_NEXT_ACTION", self.codes())
+        agent.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_next_action_router_is_hidden_and_minimal(self) -> None:
+        router = self.repo / ".github" / "agents" / "next-action-router.agent.md"
+        original = router.read_text(encoding="utf-8")
+        frontmatter = yaml.safe_load(original.split("---\n", 2)[1])
+        self.assertEqual("NextActionRouter", frontmatter["name"])
+        self.assertIs(frontmatter["user-invocable"], False)
+        self.assertIs(frontmatter["disable-model-invocation"], True)
+        self.assertEqual(["agent", "read", "search"], frontmatter["tools"])
+        self.assertEqual(
+            [
+                "Orchestrator",
+                "BugResolver",
+                "EmbeddedDeveloper",
+                "QualityReviewer",
+                "DocKeeper",
+            ],
+            frontmatter["agents"],
+        )
+        expected_handoffs = (
+            ("è¿”å›žç¼–æŽ’ / Return to Orchestrator", "Orchestrator"),
+            ("è¿”å›žé—®é¢˜è§£å†³ / Return to Bug Resolver", "BugResolver"),
+            ("è¿”å›žå®žæ–½ / Return to Embedded Developer", "EmbeddedDeveloper"),
+            ("è¿”å›žè¯„å®¡ / Return to Quality Reviewer", "QualityReviewer"),
+            ("è¿”å›žæ–‡æ¡£ / Return to Doc Keeper", "DocKeeper"),
+        )
+        handoffs = frontmatter["handoffs"]
+        self.assertEqual(
+            expected_handoffs,
+            tuple((item["label"], item["agent"]) for item in handoffs),
+        )
+        self.assertTrue(all(item["send"] is False for item in handoffs))
+        self.assertTrue(
+            all(
+                "Revalidate the latest unique Next Action" in item["prompt"]
+                and "supplies no missing input" in item["prompt"]
+                and "confirms no commit, push, or external command"
+                in item["prompt"]
+                for item in handoffs
+            )
+        )
+
+        mutations = (
+            ("user-invocable: false", "user-invocable: true", "AGENT_INVOCABLE"),
+            (
+                "tools: ['agent', 'read', 'search']",
+                "tools: ['agent', 'read', 'search', 'execute']",
+                "AGENT_TOOLS",
+            ),
+            (
+                "at most eight consecutive actions",
+                "without a transition limit",
+                "AGENT_BODY_CONTRACT",
+            ),
+            (
+                "è¿”å›žç¼–æŽ’ / Return to Orchestrator",
+                "REMOVED_ROUTER_FALLBACK",
+                "HANDOFF_BASELINE",
+            ),
+            (
+                "    send: false",
+                "    send: true",
+                "HANDOFF_ROUTER_FALLBACK",
+            ),
+            (
+                "supplies no missing input",
+                "supplies implicit input",
+                "HANDOFF_ROUTER_FALLBACK",
+            ),
+        )
+        for old, new, code in mutations:
+            with self.subTest(mutation=old):
+                router.write_text(
+                    original.replace(old, new, 1),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn(code, self.codes())
+        router.write_text(original, encoding="utf-8", newline="\n")
+
+        for marker in ("Chat Language", "Input Required", "Reply Template"):
+            with self.subTest(required_input_marker=marker):
+                router.write_text(
+                    original.replace(marker, "REMOVED_INPUT_CONTRACT"),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("AGENT_BODY_CONTRACT", self.codes())
+        router.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_git_delivery_handoff_is_required_after_review_and_documentation(self) -> None:
+        for name in (
+            "bug-resolver.agent.md",
+            "quality-reviewer.agent.md",
+            "doc-keeper.agent.md",
+        ):
+            agent = self.repo / ".github" / "agents" / name
+            original = agent.read_text(encoding="utf-8")
+            with self.subTest(agent=name):
+                agent.write_text(
+                    original.replace(
+                        "Git æäº¤äº¤ä»˜ / Git Delivery",
+                        "REMOVED_GIT_DELIVERY_HANDOFF",
+                    ),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("HANDOFF_DELIVERY", self.codes())
+            agent.write_text(original, encoding="utf-8", newline="\n")
+
+            for marker in (
+                "recommended default",
+                "user-supplied Jira ID",
+                "generate every other commit field",
+                "current input box",
+                "execute directly as the current EmbeddedDeveloper",
+                "never delegate to yourself",
+                "Task Change Baseline",
+                "Task Change Ledger",
+                "DETECT_COMMIT_SCOPE",
+                "Commit Content",
+                "ADJUST_CHANGESET",
+                "Change Confirmation: PENDING",
+                "CONFIRM_PUSH",
+                "MANUAL_PUSH",
+            ):
+                with self.subTest(agent=name, prompt_marker=marker):
+                    agent.write_text(
+                        original.replace(
+                            marker,
+                            "REMOVED_DELIVERY_DEFAULT_CONTRACT",
+                        ),
+                        encoding="utf-8",
+                        newline="\n",
+                    )
+                    self.assertIn("HANDOFF_DELIVERY", self.codes())
+            agent.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_shared_contract_requires_change_confirmation_and_adjustment(self) -> None:
+        contract = self.repo / ".github" / "agent-contracts.md"
+        original = contract.read_text(encoding="utf-8")
+        for marker in (
+            "## Next Action",
+            "`ADJUST_CHANGESET`",
+            "Change Confirmation: PENDING",
+            "confirm changes and commit",
+            "per-file `entries`",
+            "`CONFIRM_PUSH`",
+            "`MANUAL_PUSH`",
+            "`START_NEW_ISSUE`",
+            "- UI Route:",
+            "- Chat Language:",
+            "- Dispatch Target:",
+            "- Input Required:",
+            "- Required Input:",
+            "- Reply Template:",
+            "- Instruction:",
+            "`PROVIDE_EVIDENCE`",
+            "NEXT_ACTION_BUTTON",
+            "HANDOFF:ORCHESTRATOR",
+            "HANDOFF:BUG_RESOLVER",
+            "HANDOFF:EMBEDDED_DEVELOPER",
+            "HANDOFF:QUALITY_REVIEWER",
+            "HANDOFF:DOC_KEEPER",
+            "AGENT_CONTINUE",
+            "NOT_RUN â€” Not required: <reason>",
+            "`CONFIRM_COMMIT_CONTENT`",
+            "--expected-content-fingerprint",
+            "content_confirmation.status: CONFIRMED",
+            "Commit Content Confirmation: PENDING",
+            "è¿”å›žç¼–æŽ’ / Return to Orchestrator",
+            "five static fallback handoffs",
+        ):
+            with self.subTest(marker=marker):
+                contract.write_text(
+                    original.replace(marker, "REMOVED_SHARED_CONTRACT"),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertTrue(
+                    any(code.startswith("SHARED_CONTRACT") for code in self.codes())
+                )
+        contract.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_shared_contract_requires_chat_language_follow_user(self) -> None:
+        contract = self.repo / ".github" / "agent-contracts.md"
+        original = contract.read_text(encoding="utf-8")
+        for marker in (
+            "åœ¨è¾“å‡ºé¦–ä¸ªå­—ç¬¦ä¹‹å‰",
+            "Before emitting the first character",
+            "Latin-script natural-language words",
+            "discard the draft and regenerate",
+            "handoff promptã€æŒ‰é’®ã€Router prompt",
+            "handoff prompts, buttons, Router prompts",
+            "zero Han-script characters",
+            "Never copy a bilingual button label",
+        ):
+            with self.subTest(marker=marker):
+                contract.write_text(
+                    original.replace(marker, "REMOVED_CHAT_LANGUAGE_CONTRACT"),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("SHARED_CONTRACT", self.codes())
+        contract.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_all_agents_preserve_chat_language_across_routing(self) -> None:
+        for name in (
+            "orchestrator.agent.md",
+            "bug-resolver.agent.md",
+            "embedded-developer.agent.md",
+            "quality-reviewer.agent.md",
+            "doc-keeper.agent.md",
+            "next-action-router.agent.md",
+        ):
+            agent = self.repo / ".github" / "agents" / name
+            original = agent.read_text(encoding="utf-8")
+            with self.subTest(agent=name):
+                agent.write_text(
+                    original.replace("Chat Language", "REMOVED_CHAT_LANGUAGE"),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("AGENT_BODY_CONTRACT", self.codes())
+            agent.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_all_agents_enforce_english_only_generated_output(self) -> None:
+        for name in (
+            "orchestrator.agent.md",
+            "bug-resolver.agent.md",
+            "embedded-developer.agent.md",
+            "quality-reviewer.agent.md",
+            "doc-keeper.agent.md",
+            "next-action-router.agent.md",
+        ):
+            agent = self.repo / ".github" / "agents" / name
+            original = agent.read_text(encoding="utf-8")
+            with self.subTest(agent=name):
+                agent.write_text(
+                    original.replace(
+                        "CHAT LANGUAGE OUTPUT GATE",
+                        "REMOVED_LANGUAGE_OUTPUT_GATE",
+                    ),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("AGENT_BODY_CONTRACT", self.codes())
+            agent.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_all_agents_require_first_response_language_precheck(self) -> None:
+        for name in (
+            "orchestrator.agent.md",
+            "bug-resolver.agent.md",
+            "embedded-developer.agent.md",
+            "quality-reviewer.agent.md",
+            "doc-keeper.agent.md",
+            "next-action-router.agent.md",
+        ):
+            agent = self.repo / ".github" / "agents" / name
+            original = agent.read_text(encoding="utf-8")
+            with self.subTest(agent=name):
+                agent.write_text(
+                    original.replace(
+                        "FIRST-RESPONSE PRECHECK",
+                        "REMOVED_FIRST_RESPONSE_PRECHECK",
+                    ),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("AGENT_BODY_CONTRACT", self.codes())
+            agent.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_initial_english_bug_message_regression_is_documented(self) -> None:
+        smoke_test = (
+            self.repo / "tests" / "agent-kit" / "manual" / "vscode-smoke-test.md"
+        ).read_text(encoding="utf-8")
+        message = (
+            "i want to fix the issue that customer-project-version not include in "
+            "version. jiraid QDC017-1234"
+        )
+        self.assertEqual(2, smoke_test.count(message))
+        self.assertIn("Chat Language: en-US", smoke_test)
+        self.assertIn("never responds in Chinese first and apologizes afterward", smoke_test)
+
+    def test_agent_and_prompt_descriptions_are_english_first(self) -> None:
+        agent = self.repo / ".github" / "agents" / "bug-resolver.agent.md"
+        original_agent = agent.read_text(encoding="utf-8")
+        agent.write_text(
+            original_agent.replace(
+                'description: "Embedded bug-resolution orchestrator',
+                'description: "åµŒå…¥å¼ Bug è§£å†³ç¼–æŽ’å™¨ / Embedded bug-resolution orchestrator',
+            ),
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assertIn("AGENT_DESCRIPTION_LANGUAGE_ORDER", self.codes())
+        agent.write_text(original_agent, encoding="utf-8", newline="\n")
+
+        prompt = self.repo / ".github" / "prompts" / "analyze-bug.prompt.md"
+        original_prompt = prompt.read_text(encoding="utf-8")
+        prompt.write_text(
+            original_prompt.replace(
+                "description: Understand errors",
+                "description: ç†è§£é”™è¯¯ / Understand errors",
+            ),
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assertIn("PROMPT_DESCRIPTION_LANGUAGE_ORDER", self.codes())
+
+    def test_english_next_action_example_has_no_generated_han_text(self) -> None:
+        contract = (self.repo / ".github" / "agent-contracts.md").read_text(
+            encoding="utf-8"
+        )
+        english_example = contract.split(
+            "For a manual independent review that needs no input, emit:", 1
+        )[1].split("```md", 1)[1].split("```", 1)[0]
+        self.assertIsNone(re.search(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]", english_example))
+        self.assertIn(
+            "- Dispatch Target: HANDOFF:QUALITY_REVIEWER",
+            english_example,
+        )
+        self.assertIn("click `Next Action`", english_example)
+
+    def test_close_issue_handoff_is_required_after_delivery(self) -> None:
+        agent = self.repo / ".github" / "agents" / "embedded-developer.agent.md"
+        original = agent.read_text(encoding="utf-8")
+        agent.write_text(
+            original.replace(
+                "é—®é¢˜å·²è§£å†³ / Close Issue",
+                "REMOVED_CLOSE_ISSUE_HANDOFF",
+            ),
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assertIn("HANDOFF_CLOSE_ISSUE", self.codes())
+
+        for marker in (
+            "Recheck",
+            "repair",
+            "selected Git delivery",
+            "clear issue-level state",
+            "fresh issue INTAKE",
+            "otherwise return BLOCKED",
+            "Next Action",
+        ):
+            with self.subTest(prompt_marker=marker):
+                agent.write_text(
+                    original.replace(
+                        marker,
+                        "REMOVED_CLOSE_ISSUE_CONTRACT",
+                    ),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("HANDOFF_CLOSE_ISSUE", self.codes())
+        agent.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_malformed_agent_yaml_is_rejected(self) -> None:
+        shutil.copyfile(
+            FIXTURES / "negative" / "malformed-agent.agent.md",
+            self.repo / ".github" / "agents" / "embedded-developer.agent.md",
+        )
+        self.assertIn("FRONTMATTER_YAML", self.codes())
+
+    def test_missing_skill_and_stale_prompt_reference_are_rejected(self) -> None:
+        skill = self.repo / ".github" / "skills" / "misra-risk-review" / "SKILL.md"
+        skill.unlink()
+        prompt = self.repo / ".github" / "prompts" / "misra-review.prompt.md"
+        prompt.write_text(
+            prompt.read_text(encoding="utf-8").replace(
+                "../skills/misra-risk-review/SKILL.md",
+                "../skills/renamed-review/SKILL.md",
+            ),
+            encoding="utf-8",
+            newline="\n",
+        )
+        codes = self.codes()
+        self.assertIn("SKILL_SET", codes)
+        self.assertIn("PROMPT_SKILL", codes)
+        self.assertIn("LINK_MISSING", codes)
+
+    def test_missing_analyze_bug_prompt_is_rejected(self) -> None:
+        prompt = self.repo / ".github" / "prompts" / "analyze-bug.prompt.md"
+        prompt.unlink()
+        self.assertIn("PROMPT_SET", self.codes())
+
+    def test_bug_prompt_must_route_to_bug_resolver(self) -> None:
+        prompt = self.repo / ".github" / "prompts" / "analyze-bug.prompt.md"
+        prompt.write_text(
+            prompt.read_text(encoding="utf-8").replace(
+                "agent: BugResolver",
+                "agent: QualityReviewer",
+            ),
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assertIn("PROMPT_AGENT", self.codes())
+
+    def test_missing_required_skill_script_is_rejected(self) -> None:
+        script = (
+            self.repo
+            / ".github"
+            / "skills"
+            / "misra-risk-review"
+            / "scripts"
+            / "normalize_sarif.py"
+        )
+        script.unlink()
+        self.assertIn("SKILL_SCRIPT_SET", self.codes())
+
+    def test_log_analysis_output_contract_is_required(self) -> None:
+        skill = (
+            self.repo
+            / ".github"
+            / "skills"
+            / "firmware-log-analysis"
+            / "SKILL.md"
+        )
+        original = skill.read_text(encoding="utf-8")
+        for marker in (
+            "GUIDE_SYMPTOMS",
+            "CONFIRM_DIRECTION",
+            "Usage Symptom Questions",
+            "Usage Symptom Profile",
+            "Direction Confirmation",
+            "IDENTIFY_PROBLEM",
+            "EVIDENCE_CHECK",
+            "AWAIT_EVIDENCE",
+            "Normalized Events",
+        ):
+            with self.subTest(marker=marker):
+                skill.write_text(
+                    original.replace(marker, "REMOVED_REQUIRED_BEHAVIOR"),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("SKILL_BODY_CONTRACT", self.codes())
+        skill.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_invalid_project_profile_is_rejected(self) -> None:
+        shutil.copyfile(
+            FIXTURES / "negative" / "invalid-profile.yml",
+            self.repo / ".github" / "embedded-project.yml",
+        )
+        self.assertIn("PROFILE_SCHEMA", self.codes())
+
+    def test_crlf_is_rejected(self) -> None:
+        readme = self.repo / "README.md"
+        text = readme.read_text(encoding="utf-8")
+        readme.write_bytes(text.replace("\r\n", "\n").replace("\n", "\r\n").encode("utf-8"))
+        self.assertIn("TEXT_LF", self.codes())
+
+    def test_missing_bilingual_section_is_rejected(self) -> None:
+        self.install_negative_markdown("broken-bilingual.md")
+        self.assertIn("BILINGUAL_SECTIONS", self.codes())
+
+    def test_project_markdown_requires_bilingual_sections(self) -> None:
+        shutil.copyfile(
+            FIXTURES / "negative" / "broken-bilingual.md",
+            self.repo / ".project" / "rules" / "broken-bilingual.md",
+        )
+        self.assertIn("BILINGUAL_SECTIONS", self.codes())
+
+    def test_unresolved_todo_sync_in_prose_is_rejected(self) -> None:
+        self.install_negative_markdown("todo-sync.md")
+        self.assertIn("TODO_SYNC", self.codes())
+
+    def test_broken_local_markdown_link_is_rejected(self) -> None:
+        self.install_negative_markdown("broken-link.md")
+        self.assertIn("LINK_MISSING", self.codes())
+
+    def test_valid_local_markdown_anchors_are_accepted(self) -> None:
+        docs = self.repo / "docs"
+        shutil.copyfile(
+            FIXTURES / "markdown" / "anchor-target.md",
+            docs / "anchor-target.md",
+        )
+        shutil.copyfile(
+            FIXTURES / "markdown" / "anchor-links-valid.md",
+            docs / "anchor-links-valid.md",
+        )
+        self.assertEqual([], self.diagnostics())
+
+    def test_missing_local_markdown_anchor_is_rejected(self) -> None:
+        docs = self.repo / "docs"
+        shutil.copyfile(
+            FIXTURES / "markdown" / "anchor-target.md",
+            docs / "anchor-target.md",
+        )
+        self.install_negative_markdown("broken-anchor.md")
+        self.assertIn("LINK_ANCHOR_MISSING", self.codes())
+
+    def test_documented_todo_sync_inside_code_is_allowed(self) -> None:
+        readme = self.repo / "README.md"
+        readme.write_text(
+            readme.read_text(encoding="utf-8")
+            + "\n<!-- The policy token is intentionally quoted: `TODO(sync)`. -->\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+        self.assertNotIn("TODO_SYNC", self.codes())
+
+
+if __name__ == "__main__":
+    unittest.main()
