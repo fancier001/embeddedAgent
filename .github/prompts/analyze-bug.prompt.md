@@ -1,6 +1,6 @@
 ---
 name: analyze-bug
-description: 理解错误、验证根因假设并输出证据化 Bug 分析 / Understand errors, test root-cause hypotheses, and report evidence-backed bug analysis
+description: Understand errors, test root-cause hypotheses, and report evidence-backed bug analysis / 理解错误、验证根因假设并输出证据化 Bug 分析
 agent: BugResolver
 argument-hint: Bug 描述、原始错误、复现步骤、是否修复及 Git Delivery / Bug description, error, reproduction, fix authorization, and Git Delivery
 ---
