@@ -683,6 +683,9 @@ class CustomizationValidatorTests(unittest.TestCase):
             "handoff prompts, buttons, Router prompts",
             "zero Han-script characters",
             "Never copy a bilingual button label",
+            "Next Action has a separate language-rendering gate",
+            "no Han, CJK punctuation, or fullwidth characters",
+            "the `START_NEW_ISSUE` values above are mandatory",
         ):
             with self.subTest(marker=marker):
                 contract.write_text(
@@ -759,6 +762,29 @@ class CustomizationValidatorTests(unittest.TestCase):
                 self.assertIn("AGENT_BODY_CONTRACT", self.codes())
             agent.write_text(original, encoding="utf-8", newline="\n")
 
+    def test_all_agents_require_next_action_language_render_gate(self) -> None:
+        for name in (
+            "orchestrator.agent.md",
+            "bug-resolver.agent.md",
+            "embedded-developer.agent.md",
+            "quality-reviewer.agent.md",
+            "doc-keeper.agent.md",
+            "next-action-router.agent.md",
+        ):
+            agent = self.repo / ".github" / "agents" / name
+            original = agent.read_text(encoding="utf-8")
+            with self.subTest(agent=name):
+                agent.write_text(
+                    original.replace(
+                        "NEXT ACTION LANGUAGE RENDER GATE",
+                        "REMOVED_NEXT_ACTION_LANGUAGE_RENDER_GATE",
+                    ),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("AGENT_BODY_CONTRACT", self.codes())
+            agent.write_text(original, encoding="utf-8", newline="\n")
+
     def test_initial_english_bug_message_regression_is_documented(self) -> None:
         smoke_test = (
             self.repo / "tests" / "agent-kit" / "manual" / "vscode-smoke-test.md"
@@ -810,6 +836,27 @@ class CustomizationValidatorTests(unittest.TestCase):
             english_example,
         )
         self.assertIn("click `Next Action`", english_example)
+
+        initial_issue_example = contract.split(
+            "For initial issue input, emit:", 1
+        )[1].split("```md", 1)[1].split("```", 1)[0]
+        forbidden = r"[\u3000-\u303f\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff00-\uffef]"
+        self.assertIsNone(re.search(forbidden, initial_issue_example))
+        self.assertIn(
+            "`Goal` (required, `analysis only` or `analyze and fix`)",
+            initial_issue_example,
+        )
+        self.assertIn(
+            "Goal: <analysis only|analyze and fix>; Problem: <description>",
+            initial_issue_example,
+        )
+        self.assertIn(
+            "Copy, complete, and send the Reply Template in the current input",
+            initial_issue_example,
+        )
+        self.assertIn("Current State: INTAKE", initial_issue_example)
+        self.assertNotIn("Current State: CLOSE", initial_issue_example)
+        self.assertIn("On Success: GUIDE_SYMPTOMS -> SCOPE", initial_issue_example)
 
     def test_close_issue_handoff_is_required_after_delivery(self) -> None:
         agent = self.repo / ".github" / "agents" / "embedded-developer.agent.md"
