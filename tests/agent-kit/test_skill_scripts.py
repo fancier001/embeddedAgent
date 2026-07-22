@@ -12,10 +12,10 @@ from pathlib import Path
 import yaml
 
 
-AGENT_KIT_ROOT = Path(__file__).resolve().parents[1]
-PROJECT_ROOT = AGENT_KIT_ROOT.parents[1]
+TEST_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = TEST_ROOT.parents[1]
 SKILLS = PROJECT_ROOT / ".github" / "skills"
-SARIF_FIXTURES = AGENT_KIT_ROOT / "tests" / "fixtures" / "sarif"
+SARIF_FIXTURES = TEST_ROOT / "fixtures" / "sarif"
 
 
 def run_script(

@@ -20,7 +20,7 @@
 
 ### äº§å“è®¾è®¡
 
-äº”ä¸ª agent å¯¹åº”ç¨³å®šèŒè´£ï¼Œè€Œé‡å¤æµç¨‹æ”¾åœ¨ prompt å’ŒæŒ‰éœ€åŠ è½½çš„ skill ä¸­ã€‚Agent personaã€VS Code approvals å’Œå®¿ä¸» sandbox æ˜¯ä¸‰å±‚ä¸åŒæ§åˆ¶ï¼šè§’è‰²è¯´æ˜çº¦æŸè¡Œä¸ºï¼Œå·¥å…·åˆ—è¡¨ç¼©å°èƒ½åŠ›é¢ï¼Œå®¡æ‰¹ä¸ sandbox æ‰æ§åˆ¶çœŸå®å‘½ä»¤å’Œæ–‡ä»¶è¾¹ç•Œã€‚
+äº”ä¸ªä¸šåŠ¡ Agent å¯¹åº”ç¨³å®šèŒè´£ï¼Œå…±äº«çŠ¶æ€ã€æŠ¥å‘Šã€Next Action å’Œ Git äº¤ä»˜åªåœ¨ `agent-contracts.md` å®šä¹‰ï¼›Prompt åªé€‚é…è¾“å…¥ï¼ŒæŒ‰éœ€ Skill åªæè¿°ä¸“é¡¹æ­¥éª¤ã€‚Agent personaã€VS Code approvals å’Œå®¿ä¸» sandbox æ˜¯ä¸‰å±‚ä¸åŒæ§åˆ¶ï¼šè§’è‰²è¯´æ˜çº¦æŸè¡Œä¸ºï¼Œå·¥å…·åˆ—è¡¨ç¼©å°èƒ½åŠ›é¢ï¼Œå®¡æ‰¹ä¸ sandbox æ‰æ§åˆ¶çœŸå®å‘½ä»¤å’Œæ–‡ä»¶è¾¹ç•Œã€‚
 
 è‡ªåŠ¨é—­ç¯ä½¿ç”¨ subagentï¼š
 
@@ -83,7 +83,7 @@ VS Code çš„äººå·¥ handoff ä¸ä¼šè‡ªåŠ¨è¿”å›ä¸Šä¸€ managerï¼Œå› æ­¤ `BugResolver
 
 è¿›å…¥ EmbeddedDeveloper å¹¶çœ‹åˆ° `Commit Delivery Confirmation` åï¼Œæœ€åä¸€æ­¥ä¸æ˜¯å¦ä¸€ä¸ª handoff æŒ‰é’®ã€‚ç”¨æˆ·å…ˆæ ¸å¯¹é€æ–‡ä»¶ä¿®æ”¹å†…å®¹ï¼Œå¯å›å¤ `ç¡®è®¤ä¿®æ”¹å¹¶æäº¤ï¼ŒæŒ‰ commit æ¨¡å¼æ‰§è¡Œ` å®Œæˆæˆæƒï¼Œæˆ–å›å¤ `è°ƒæ•´ä¿®æ”¹: <è¦æ±‚>` è¿›å…¥åˆ å‡å’Œé‡æ–°éªŒè¯æµç¨‹ï¼›æœ€ç»ˆç¡®è®¤åå½“å‰ EmbeddedDeveloper éšå³ç›´æ¥æ‰§è¡Œ preflightã€æ˜¾å¼æš‚å­˜å’Œ commitã€‚åº•éƒ¨ä»æ˜¾ç¤ºçš„â€œç‹¬ç«‹è¯„å®¡ / æ–‡æ¡£åŒæ­¥â€æ˜¯è¯¥ Agent çš„å›ºå®šåç»­ handoffï¼Œä¸æ˜¯æäº¤ç¡®è®¤æŒ‰é’®ï¼›Developer ä¸å¾—å†å£°ç§°è¦å§”æ´¾ç»™è‡ªå·±ã€‚
 
-æ¯ä¸ªä¸šåŠ¡ Agent ç»“æœéƒ½åŒ…å«å”¯ä¸€åŠ¨æ€ Next Actionï¼šCurrent Stateã€Actionã€Ownerã€UI Routeã€Dispatch Targetã€Required Inputã€Instructionã€On Successã€‚è§’è‰²åˆ‡æ¢ä½¿ç”¨ `NEXT_ACTION_BUTTON + HANDOFF:<ç²¾ç¡®åŸºç¡€æŒ‰é’®æ ‡ç­¾>`ï¼›è¾“å…¥/ç¡®è®¤ä½¿ç”¨ `CURRENT_INPUT + NONE` å’Œå¯å¤åˆ¶ Instructionï¼›å¤–éƒ¨æ“ä½œä½¿ç”¨ `EXTERNAL + NONE` å¹¶åˆ—å‡ºå‘½ä»¤ã€å·¥ä½œç›®å½•å’Œå›ä¼ è¯æ®ï¼›ç»ˆæ€ä½¿ç”¨ `NONE + NONE`ã€‚ç»Ÿä¸€æŒ‰é’®ç‚¹å‡»åªæˆæƒå®‰å…¨è·¯ç”±ï¼Œä¸ä»£æ›¿ Jiraã€ä¿®æ”¹å†…å®¹ã€commitã€push æˆ–å¤–éƒ¨å‘½ä»¤ç¡®è®¤ã€‚
+æ¯ä¸ªä¸šåŠ¡ Agent ç»“æœéƒ½åŒ…å«å”¯ä¸€åŠ¨æ€ Next Actionï¼šCurrent Stateã€Actionã€Ownerã€UI Routeã€Dispatch Targetã€Input Requiredã€Required Inputã€Reply Templateã€Instructionã€On Successã€‚éœ€è¦å›å¤æ—¶æ˜¾ç¤º `Input Required: YES`ï¼Œé€é¡¹åˆ—å‡ºå­—æ®µã€æ ¼å¼å’Œå¯å¤åˆ¶æ¨¡æ¿ï¼Œå¹¶æ˜ç¡®è¦æ±‚åœ¨å½“å‰è¾“å…¥æ¡†å›å¤ï¼›æ— éœ€å›å¤æ—¶æ˜¾ç¤º `Input Required: NO` å¹¶æ˜ç¡®æç¤ºç‚¹å‡»â€œæ‰§è¡Œä¸‹ä¸€æ­¥â€æˆ–æ— éœ€æ“ä½œã€‚ç»Ÿä¸€æŒ‰é’®ç‚¹å‡»åªæˆæƒå®‰å…¨è·¯ç”±ï¼Œä¸ä»£æ›¿ Jiraã€ä¿®æ”¹å†…å®¹ã€commitã€push æˆ–å¤–éƒ¨å‘½ä»¤ç¡®è®¤ã€‚
 
 ä¿®å¤ã€éªŒè¯ã€ç‹¬ç«‹è¯„å®¡ã€å¿…è¦æ–‡æ¡£å’Œæ‰€é€‰ Git äº¤ä»˜å‡å¤„ç†å®Œæˆåï¼ŒEmbeddedDeveloper çš„ `é—®é¢˜å·²è§£å†³ / Close Issue` handoff è¿”å› BugResolverã€‚BugResolver è¾“å‡ºé—­ç¯æŠ¥å‘Šã€æ¸…é™¤é—®é¢˜çº§ Jira/æ ¹å› /èŒƒå›´/æˆæƒç­‰çŠ¶æ€ï¼Œå†ç”¨ `START_NEW_ISSUE` è¿›å…¥æ–°é—®é¢˜ï¼›æå‰ç‚¹å‡»è¯¥ handoff ä¼šè¿”å› `BLOCKED`ã€‚
 
@@ -129,359 +129,4 @@ push é¢„æ£€åªé€šè¿‡å½“å‰é¡¹ç›® `.git` çš„ local config è§£æ current branchã€
 3. è°ƒæ•´ `.github/embedded-project.yml`ï¼›æœªçŸ¥å€¼ä¿æŒ `auto`ï¼Œä¸è¦å¡«å†™æœªç»ç¡®è®¤çš„ç¡¬ä»¶äº‹å®ã€‚
 4. ä½¿ç”¨ `.project` æ—¶è°ƒæ•´ `project.yml`ã€é€‚ç”¨è§„åˆ™å’Œ Git policyï¼›æŒ‰éœ€ç»´æŠ¤ `denied_paths`ã€åˆ†æ”¯å’Œæ£€æŸ¥ï¼Œä¸ä½¿ç”¨è·¯å¾„ç™½åå•å®šä¹‰ commit å†…å®¹ã€‚å…ˆä¿ç•™ `automation.commit/push: false`ï¼Œç¡®è®¤è‡ªåŠ¨äº¤ä»˜æ¡ä»¶åå†ä¸º `auto` å¯ç”¨ï¼›è¿™ä¸ä¼šé˜»æ­¢ç”¨æˆ·ç¡®è®¤çš„ commit/pushã€‚ä¸å¾—åœ¨ policy ä¸­å†™ remoteã€URL æˆ–ç›®æ ‡åˆ†æ”¯ã€‚
 5. ç”¨ VS Code ç›´æ¥æ‰“å¼€å›ºä»¶ä»“åº“æ ¹ç›®å½•å¹¶ä¿¡ä»»å·¥ä½œåŒºã€‚è‹¥åªæ‰“å¼€çˆ¶ç›®å½•ï¼ŒVS Code ä¸ä¼šè‡ªåŠ¨å‘ç°è¯¥ `.github`ã€‚
-6. å¯ç”¨ GitHub Copilot Chatï¼Œç¡®è®¤ custom agentsã€prompt filesã€Agent Skills å’Œ `agent/runSubagent` å¯ç”¨ï¼›ä¸éœ€è¦å¯ç”¨é€’å½’ subagentã€‚
-7. åœ¨ Chat çš„ Customizations/Diagnostics ä¸­ç¡®è®¤äº”ä¸ª agentã€å…­ä¸ª prompt å’Œ instructions å‡æ— é”™è¯¯ï¼Œå¹¶è¿è¡Œ Kit validator æ£€æŸ¥ `.project` å¼•ç”¨å’Œ Git policyã€‚
-
-Orchestrator ä¸ BugResolver frontmatter ä¸­çš„ `agents` allowlist å¯èƒ½ä¾èµ–ç›®æ ‡ VS Code ä¸ GitHub Copilot ç¯å¢ƒä¸­çš„ Experimental custom-agent/subagent æ”¯æŒã€‚æœ¬ Kit ä¸å£°æ˜æœªç»éªŒè¯çš„æœ€ä½ç‰ˆæœ¬ï¼›è¯·åœ¨å®é™…ç›®æ ‡ç¯å¢ƒè¿è¡Œ Customizations/Diagnosticsï¼Œå¹¶åˆ†åˆ«ç”¨ä¸€æ¬¡é€šç”¨å§”æ´¾å’Œ Bug ä¿®å¤å§”æ´¾çƒŸæµ‹ç¡®è®¤ allowlist ç”Ÿæ•ˆã€‚
-
-æœ¬ä»“åº“ä¸æä¾›è‡ªåŠ¨è¦†ç›–å®‰è£…è„šæœ¬ã€‚å‡çº§æ—¶æŒ‰ç›®å½•æ¯”è¾ƒå’Œåˆå¹¶ï¼Œå°¤å…¶ä¿æŠ¤é¡¹ç›®ç”»åƒã€`.project/` é¡¹ç›®è§„èŒƒã€å…¨å±€è§„åˆ™å’Œæœ¬åœ° prompt å®šåˆ¶ã€‚
-
-### ä½¿ç”¨
-
-æ¨èå…¥å£ï¼š
-
-```text
-é€‰æ‹© Orchestratorï¼šä¸º W25Q128 å¢åŠ  SPI é©±åŠ¨ï¼›å…ˆå¤ç”¨ç°æœ‰ HALï¼Œå®Œæˆä¸»æœºæ„å»ºã€æµ‹è¯•å’Œç‹¬ç«‹è¯„å®¡ã€‚ç¼ºå°‘åŒ¹é… datasheet æ—¶åœæ­¢ï¼Œä¸è¦çŒœå¯„å­˜å™¨å€¼ã€‚
-```
-
-æ–œæ å‘½ä»¤ï¼š
-
-- `/new-driver <driver_request>`ï¼šç”± Orchestrator å®Œæˆé©±åŠ¨é¢„æ£€ã€å®ç°ã€éªŒè¯å’Œè¯„å®¡ã€‚
-- `/implement-feature <feature_request>`ï¼šç”± Orchestrator å®Œæˆåº”ç”¨è¡Œä¸ºå»ºæ¨¡ã€å®ç°ã€è¿½è¸ªã€éªŒè¯å’Œè¯„å®¡ã€‚
-- `/analyze-bug <bug_input>`ï¼šç”± BugResolver å…ˆå¼•å¯¼å¹¶è§„èŒƒåŒ–ä½¿ç”¨ç°è±¡ï¼Œå¿…è¦æ—¶ç¡®è®¤åˆ†ææ–¹å‘ï¼Œå†è¯†åˆ«é—®é¢˜ã€è¿½è¸ªä»£ç /é…ç½®ä¸Šä¸‹æ–‡å’ŒéªŒè¯æ ¹å› å‡è®¾ï¼›ç¼ºèµ„æ–™æ—¶ä¸»åŠ¨é›†ä¸­ç´¢è¯ï¼Œç”¨æˆ·æˆæƒæ—¶ç»§ç»­åè°ƒä¿®å¤ä¸è´¨é‡è¯„ä¼°ã€‚
-- `/analyze-log <log_input>`ï¼šå³ä½¿å·²æœ‰æ—¥å¿—ä¹Ÿå…ˆè¡¥é½ä½¿ç”¨åœºæ™¯å’Œæ–¹å‘ï¼Œå†åˆ†æå¤šäº§å“å½¢æ€æ—¥å¿—ã€äº‹ä»¶å…³è”ã€ELF/MAPã€äº§ç‰©èº«ä»½å’Œè¯æ®æ—¶é—´çº¿ã€‚
-- `/misra-review <review_target>`ï¼šç”± QualityReviewer åš MISRA-oriented é£é™©ç­›æŸ¥ã€‚
-- `/verify-change <change_target>`ï¼šç”± Orchestrator å®¡è®¡ baselineã€æ„å»ºã€æµ‹è¯•ã€è¯„å®¡å’Œæ–‡æ¡£é—¨ç¦ã€‚
-
-ç›´æ¥æ¨¡å¼ï¼š
-
-- åªå®ç°ä»£ç ï¼šé€‰æ‹© `EmbeddedDeveloper`ï¼Œæä¾› Goalã€Scopeã€çº¦æŸå’ŒéªŒæ”¶æ¡ä»¶ã€‚
-- åˆ†ææˆ–è§£å†³ Bug/æ—¥å¿—é—®é¢˜ï¼šé€‰æ‹© `BugResolver`ï¼Œå¯å…ˆæä¾›å·²æœ‰çš„åŸå§‹é”™è¯¯æˆ–æ—¥å¿—ï¼›Agent ä¼šå¼•å¯¼è¡¥é½å®é™…ä½¿ç”¨ç›®æ ‡ã€æ­¥éª¤ã€é¢„æœŸ/å®é™…ã€é¢‘ç‡/è¾¹ç•Œã€ç¯å¢ƒå’Œå½±å“ï¼Œæ–¹å‘æ¸…æ™°åè¯†åˆ«é—®é¢˜ï¼Œå¹¶åœ¨æœ¬åœ°å‘ç°åé›†ä¸­è¯·æ±‚ä»ç¼ºå°‘çš„æœ€å°è¯æ®ã€‚éœ€è¦è§£å†³æ—¶æ˜ç¡®æ˜¯å¦æˆæƒä¿®æ”¹ã€‚
-- åªåšç‹¬ç«‹è´¨é‡è¯„ä¼°ï¼šé€‰æ‹© `QualityReviewer`ï¼Œæä¾›éœ€æ±‚ã€çœŸå® diff/files å’Œå¯ç”¨æ„å»º/æµ‹è¯•/é™æ€åˆ†æè¯æ®ã€‚
-- åªç»´æŠ¤æ–‡æ¡£ï¼šé€‰æ‹© `DocKeeper`ï¼Œæä¾›å·²ç»ç¡®è®¤çš„æºç /API/æµ‹è¯•æˆ–æ ¹å› è¯æ®ã€‚
-- Git äº¤ä»˜ï¼šTask Brief çš„ `Git Delivery` åªå†™ `none`ã€`commit`ã€`commit-and-push` æˆ– `auto`ã€‚`commit`/`commit-and-push` é€šè¿‡ç”¨æˆ·ç¡®è®¤æˆæƒï¼›åªæœ‰ `auto` éœ€è¦åœ¨ `.project` policy ä¸­å¯ç”¨ä¸¤ä¸ª `automation` å¼€å…³ã€‚remoteã€URL å’Œç›®æ ‡åˆ†æ”¯å§‹ç»ˆç”±å½“å‰é¡¹ç›® `.git` è§£æã€‚å½“å‰ managerï¼ˆOrchestrator æˆ– BugResolverï¼‰åªåœ¨é—¨ç¦å’Œç‹¬ç«‹è¯„å®¡åå•ç‹¬å§”æ´¾ `EmbeddedDeveloper` äº¤ä»˜ã€‚`auto` é€‰æ‹©ä¸ç­‰äºå†…å®¹ç¡®è®¤ï¼šé¢„è§ˆå¿…é¡»æ˜¾ç¤º `Commit Content Confirmation: PENDING`ï¼Œç”¨æˆ·ç”¨å½“å‰ fingerprint ç¡®è®¤åï¼Œé¢„æ£€æ‰å¯è¿”å› `content_confirmation.status: CONFIRMED` å’Œ `AUTO_COMMIT_AND_PUSH`ï¼›å¦åˆ™ä¸å¾—è‡ªåŠ¨æš‚å­˜æˆ– commitã€‚
-
-### å®‰å…¨ä¸æƒé™
-
-- `BugResolver`ã€`EmbeddedDeveloper` å’Œ `QualityReviewer` çš„ `execute` éƒ½å— VS Code å®¡æ‰¹è®¾ç½®çº¦æŸã€‚BugResolver åªè¿è¡Œåªè¯»è¯Šæ–­ä¸ç¬¦å·åŒ–ï¼›Reviewer åªè¿è¡Œ Git åªè¯»ã€æ„å»º/æµ‹è¯•å®¡è®¡å’Œé™æ€åˆ†æã€‚
-- flashã€eraseã€fuseã€resetã€HILã€è®¾å¤‡ç”µæºã€å‘å¸ƒå’Œå¤–éƒ¨éƒ¨ç½²å§‹ç»ˆéœ€è¦æ˜ç¡®äººå·¥æˆæƒï¼›ç”»åƒä¸­å­˜åœ¨å‘½ä»¤ä¸ç­‰äºæˆæƒã€‚
-- `.project` Git policy åªå®šä¹‰çº¦æŸï¼Œä¸ç­‰äºæˆæƒã€‚commit/push å¿…é¡»æ˜¾å¼æš‚å­˜æœ¬ä»»åŠ¡è·¯å¾„ï¼›ç¦æ­¢ä¿æŠ¤åˆ†æ”¯ã€force pushã€`push -u`ã€è‡ªå®šä¹‰ refspec å’Œè‡ªåŠ¨ä¿®æ”¹ `.git/config`ã€‚
-- DocKeeper çš„ Web ä»…ç”¨äºå®˜æ–¹æˆ–ä¾›åº”å•†å…¬å¼€èµ„æ–™ï¼Œä¸å¾—ä¸Šä¼ ç§æœ‰æºç ã€æ—¥å¿—ã€å®¢æˆ·æ•°æ®æˆ–å‡­æ®ã€‚
-- åŒä¸€ checkout ä¸å¹¶è¡Œè¿è¡Œå†™ä»»åŠ¡ã€‚æœªæ¥åªæœ‰ä¸€ä»»åŠ¡ä¸€ worktree/branch éš”ç¦»åæ‰èƒ½è€ƒè™‘å¹¶è¡Œå†™å…¥ã€‚
-- Agent ä¸èƒ½æ›¿ä»£äººå·¥ä»£ç è¯„å®¡ã€ç¡¬ä»¶éªŒè¯ã€åŠŸèƒ½å®‰å…¨è¯„ä¼°æˆ–æ­£å¼ MISRA åˆè§„å·¥å…·ã€‚
-- Skill è„šæœ¬ç»Ÿä¸€ä½¿ç”¨é€€å‡ºç  `0` æˆåŠŸã€`2` è¾“å…¥é”™è¯¯ã€`3` è¯æ®ä¸è¶³ã€`4` å¤–éƒ¨å·¥å…·å¤±è´¥ã€‚`profile_gates.py` åªç”Ÿæˆ/éªŒè¯é—¨ç¦è¯æ®ï¼Œä¸æ‰§è¡Œç”»åƒå‘½ä»¤ï¼›hardware æ°¸ä¸è¿›å…¥ host é—¨ç¦ã€‚
-
-### éªŒè¯ Kit
-
-å®‰è£…å¼€å‘ä¾èµ–å¹¶è¿è¡Œé™æ€éªŒè¯ï¼š
-
-```sh
-python -m pip install -r .github/agent-kit/requirements-dev.txt
-python .github/agent-kit/scripts/validate_customizations.py --root .
-python -m unittest discover -s .github/agent-kit/tests -p "test_*.py"
-```
-
-æ„å»ºä¸»æœºç¤ºä¾‹ï¼š
-
-```sh
-cmake -S examples/minimal-firmware -B build/minimal-firmware
-cmake --build build/minimal-firmware
-ctest --test-dir build/minimal-firmware --output-on-failure
-```
-
-CI åœ¨ Windows å’Œ Ubuntu ä¸Šæ‰§è¡Œä¸Šè¿°éªŒè¯ã€‚çœŸå®äº¤äº’è¿˜éœ€æŒ‰ç…§ [VS Code Manual Smoke Test](docs/manual-smoke-test.md) æ£€æŸ¥ agent å‘ç°ã€é¡¹ç›®çº¦æŸè°ƒç”¨ã€å—æ§ Git äº¤ä»˜ã€è‡ªåŠ¨ç¼–æ’ã€ç¼ºèµ„æ–™ã€baseline å¤±è´¥ã€ç¼ºé™·è¯„å®¡ã€ELF ä¸åŒ¹é…å’Œç¡¬ä»¶å®¡æ‰¹ã€‚
-
-### ç›®å½•
-
-```text
-.github/
-â”œâ”€â”€ copilot-instructions.md
-â”œâ”€â”€ embedded-project.yml
-â”œâ”€â”€ agent-contracts.md
-â”œâ”€â”€ agents/                  # å›ºå®šäº”ä¸ª agent
-â”œâ”€â”€ agent-kit/               # Kit è‡ªæ£€è„šæœ¬ã€æµ‹è¯•ã€fixtures å’Œå¼€å‘ä¾èµ–
-â”œâ”€â”€ instructions/            # Cã€åŒè¯­å’Œ Kit é…ç½®è§„åˆ™
-â”œâ”€â”€ prompts/                 # å…­ä¸ªè–„ slash å…¥å£
-â”œâ”€â”€ skills/                  # äº”ä¸ªæŒ‰éœ€å·¥ä½œæµåŠç¡®å®šæ€§è„šæœ¬
-â””â”€â”€ workflows/validate.yml
-.project/
-â”œâ”€â”€ project.yml              # é¡¹ç›®çº¦æŸæ¸…å•ä¸æ‰©å±•å…¥å£
-â”œâ”€â”€ README.md                # åŒè¯­ä½¿ç”¨è¯´æ˜
-â”œâ”€â”€ rules/                   # æŒ‰ä»“åº“è·¯å¾„è°ƒç”¨çš„é¡¹ç›®ç‰¹å®šè§„èŒƒ
-â””â”€â”€ git/
-    â”œâ”€â”€ delivery.yml         # è‡ªåŠ¨åŒ–ã€èŒƒå›´ã€å®‰å…¨ã€åˆ†æ”¯ä¸æ£€æŸ¥ï¼›ä¸å« push ç›®æ ‡
-    â””â”€â”€ commit.template      # ä¸¥æ ¼ commit æ¶ˆæ¯æ¨¡æ¿
-docs/                        # äº§å“å½¢æ€ä¸äººå·¥çƒŸæµ‹
-examples/minimal-firmware/   # CMake/CTest + fake HAL
-```
-
-### åŒè¯­è§„èŒƒ
-
-READMEã€`docs/`ã€`.github/` å’Œ `.project/` ä¸­çš„ first-party Markdown ä½¿ç”¨ï¼š
-
-```md
-# <Document Title>
-
-> ä¸­æ–‡ï¼šæœ¬æ–‡æ¡£é‡‡ç”¨å›ºå®šåŒè¯­ç»“æ„ã€‚æ›´æ–°ä¸­æ–‡æˆ–è‹±æ–‡å†…å®¹æ—¶ï¼Œå¿…é¡»åŒæ­¥æ›´æ–°å¦ä¸€éƒ¨åˆ†ï¼Œä¿æŒä¸¤éƒ¨åˆ†è¯­ä¹‰ä¸€è‡´ã€‚
->
-> English: This document uses a fixed bilingual structure. When either the Chinese or English content is updated, the other section must be updated as well to keep both sections semantically aligned.
-
-## ä¸­æ–‡ / Chinese
-
-<å®Œæ•´ä¸­æ–‡å†…å®¹>
-
-## English
-
-<Complete English content>
-```
-
-vendorã€generatedã€ç¬¬ä¸‰æ–¹æ–‡æ¡£å’Œè®¸å¯è¯åŸæ–‡ä¸è‡ªåŠ¨åŒè¯­åŒ–ã€‚å‘å¸ƒé—¨ç¦ä¸æ¥å—æœªå½’å±çš„ `TODO(sync)`ã€‚
-
-### æ‰©å±•åŸåˆ™
-
-- ä¸ä¸ºæ–°æµç¨‹éšæ„å¢åŠ ç¬¬å…­ä¸ª agentï¼›å…ˆæ‰©å±•ç°æœ‰è§’è‰²çš„æ¨¡å¼æˆ–æ–°å¢æŒ‰éœ€ skillã€‚
-- Prompt ç”¨äºäººå·¥å…¥å£å’Œ agent è·¯ç”±ï¼›å¤æ‚æ£€æŸ¥è¡¨ã€æ¨¡æ¿å’Œè„šæœ¬æ”¾ skillã€‚
-- å…±äº«è§„åˆ™åªç»´æŠ¤ä¸€ä»½ï¼Œå¹¶ç”± agent/skill é“¾æ¥ï¼Œé¿å…ä¸Šä¸‹æ–‡é‡å¤ã€‚
-- é¡¹ç›®ä¸“å±è§„èŒƒæ”¾åœ¨ `.project/` å¹¶é€šè¿‡æ¸…å•æ³¨å†Œï¼›å…¶ä»–ç»“æ„åŒ–é›†æˆä½¿ç”¨å‘½åç©ºé—´åŒ– `extensions`ï¼ŒæœªçŸ¥æ‰©å±•ä¿æŒå¯ä¿ç•™ä½†ä¸è‡ªåŠ¨æ‰§è¡Œã€‚
-- æœ¬ Kit æ˜ç¡®ä»¥ VS Code ä¸ºå®Œæ•´æ”¯æŒç›®æ ‡ã€‚GitHub cloud/CLI å¯èƒ½å¿½ç•¥ handoff æˆ– VS Code-specific allowlistï¼Œä¸å±äº v1 éªŒæ”¶èŒƒå›´ã€‚
-
-## English
-
-### Overview
-
-`embedded-multi-agent` is a VS Code-first, repository-embedded, MCP-free Agent Kit for Embedded C. It provides exactly five directly selectable custom agents and uses a shallow manager pattern for driver and application-logic requirements, implementation, verification, review, and documentation:
-
-- `Orchestrator`: the default entry point and general delivery orchestrator.
-- `BugResolver`: the dedicated orchestrator for guiding usage symptoms, understanding bugs, validating root cause, and closing authorized repairs.
-- `EmbeddedDeveloper`: the sole routine functional-code writer.
-- `QualityReviewer`: responsible only for independent read-only quality assessment.
-- `DocKeeper`: the maintainer of team documentation, the project profile, and captured knowledge.
-
-The kit is versioned with the firmware repository. It follows existing project facts before applying template defaults. It adapts to bare-metal, RTOS, communication-module SDK, Embedded Linux, and hybrid products, but it does not include board-programming authority, MCP, private toolchains, or vendor documentation.
-
-### Product Design
-
-The five agents represent stable responsibilities, while repeated workflows live in prompts and on-demand skills. Agent persona, VS Code approvals, and the host sandbox are separate control layers: role text constrains behavior, tool lists reduce the capability surface, and approvals plus sandboxing control actual commands and file boundaries.
-
-Automatic closure uses subagents:
-
-```text
-User
-  â”œâ”€â”€â–¶ Orchestrator â”€â”€ ordinary work â”€â”€â–¶ EmbeddedDeveloper
-  â”‚          â”œâ”€â”€ quality review â”€â”€â”€â”€â”€â”€â”€â–¶ QualityReviewer
-  â”‚          â””â”€â”€ documentation â”€â”€â”€â”€â”€â”€â”€â”€â–¶ DocKeeper
-  â”‚
-  â””â”€â”€â–¶ BugResolver â”€â”€ diagnosis/root cause
-             â”œâ”€â”€ authorized fix â”€â”€â”€â”€â”€â”€â”€â–¶ EmbeddedDeveloper
-             â”œâ”€â”€ quality gate â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¶ QualityReviewer
-             â””â”€â”€ docs when needed â”€â”€â”€â”€â”€â–¶ DocKeeper
-```
-
-The five business agents' existing base handoffs are static, always visible, and remain `send: false` manual fallback role entries. Each set ends with `æ‰§è¡Œä¸‹ä¸€æ­¥ / Next Action`, a `send: true` handoff to the hidden `NextActionRouter`. The Router reads the latest unique Next Action, executes safe role routing, or emits exact instructions for missing input, external work, and protected confirmations. Once active, the Router itself exposes five `send:false` static return buttons for Orchestrator, BugResolver, EmbeddedDeveloper, QualityReviewer, and DocKeeper so the footer never becomes empty. A mismatched early base/return-button click is blocked by the target agent's gates.
-
-### Five Business Agents and the Hidden Router
-
-| Agent | Tools | Allowed writes | Main output |
-| --- | --- | --- | --- |
-| `Orchestrator` | `agent`, `read`, `search` | None | Task Briefs, orchestration state, quality gates, and final synthesis |
-| `BugResolver` | `agent`, `read`, `search`, `execute` | None | Usage-symptom guidance, direction confirmation, problem-identification card, log timeline, evidence-backed root cause, active evidence request, and repair closure |
-| `EmbeddedDeveloper` | `edit`, `read`, `search`, `execute` | In-scope functional code, tests, and build configuration | Minimal diff, APIs, baseline/build/test evidence |
-| `QualityReviewer` | `read`, `search`, `execute` | None | High-signal quality findings, MISRA risks, and verdict |
-| `DocKeeper` | `read`, `search`, `edit`, `web` | README, `docs/`, project profile, and authorized comments | Design, How-to, Reference, ADR, FAQ, and closure records |
-| `NextActionRouter` | `agent`, `read`, `search` | None | Hidden persistent routing, input/external instructions, and loop protection |
-
-The five business agents remain directly selectable. `NextActionRouter` is `user-invocable:false` and is entered only by the unified button, then persists until input, external work, a blocker, or a terminal state. Its five static return buttons are manual recovery entries with `send:false`; they neither auto-submit nor replace missing input or Git authorization.
-
-### Workflow Status and Quality Gates
-
-Common statuses are:
-
-- `COMPLETE`: every required gate passed.
-- `CONDITIONAL`: the user explicitly accepted remaining risk.
-- `BLOCKED`: a decision, document, tool, or permission is missing, so safe progress is impossible.
-- `FAILED`: verification failed or BLOCKER/MAJOR findings remain after two rework rounds.
-- `INSUFFICIENT_EVIDENCE`: review/bug/fault analysis only; available evidence cannot support a conclusion.
-
-The standard Orchestrator delivery flow is:
-
-```text
-INTAKE â†’ PREFLIGHT â†’ PLAN â†’ IMPLEMENT â†’ VERIFY â†’ REVIEW
-                                              â”‚
-                       up to two REWORK rounds â—€â”€â”€â”€â”˜
-                                              â”‚
-                DOCUMENT (as needed) â†’ DELIVERY â†’ CLOSE
-```
-
-Bug requests enter `BugResolver` through `/analyze-bug`, `/analyze-log`, direct selection, or Orchestrator's manual handoff; the two managers are never auto-nested. Its diagnostic path is `INTAKE â†’ GUIDE_SYMPTOMS â†’ CONFIRM_DIRECTION (when needed) â†’ SCOPE â†’ NORMALIZE_ERROR â†’ IDENTIFY_PROBLEM â†’ TRACE_CONTEXT â†’ REPRODUCE_BASELINE â†’ EVIDENCE_CHECK â†’ AWAIT_EVIDENCE / HYPOTHESES â†’ VALIDATE_CAUSE â†’ DECIDE`. After the user explicitly authorizes a fix, it continues through `PLAN_FIX â†’ IMPLEMENT â†’ VERIFY â†’ QUALITY_REVIEW â†’ REWORK â†’ DOCUMENT â†’ DELIVERY â†’ CLOSE â†’ RESET â†’ INTAKE`.
-
-BugResolver preserves explicit `Git Delivery` and commit metadata through `DELIVERY`. If a repair request omitted the delivery choice, all pre-delivery work uses `none` to prevent early writes. After all gates pass it creates one `Commit Delivery Confirmation` and proposes `commit` as the recommended default pending confirmation. A recommendation is not authorization and Git remains unchanged before confirmation. `commit-and-push`/`auto` require an explicit choice; explicit `none` records a skip.
-
-Jira ID is the only commit field that is always user-supplied; the agent never guesses it from a branch or path. Project comes from `.project/project.yml` or confirmed task context when resolvable. Function block, Summary, Change Type, reason, root cause, solution, AI usage, affected function, applicable project, RN, and Test Notes are generated from the confirmed root cause, actual diff, tests, review, and documentation evidence. The agent shows one complete preview; the user need only reply with Jira ID plus confirmation, or name corrections. Without confirmation the result is `BLOCKED` and Git remains unchanged.
-
-AI fields reflect actual participation. Use `Y` with one truthful primary scenario and detail when AI materially participated in code generation, inspection, refactoring, tests, or documentation. When AI did not participate at all, use exactly `<AI-Tool-Used>: N`, `<AI-Tool-Scenario>: /`, and `<AI-Tool-Detail>: /`; `N/A` is no longer valid for AI=`N`.
-
-A manual VS Code handoff does not automatically return to the previous manager, so `BugResolver`, `QualityReviewer`, and `DocKeeper` each expose a `Git æäº¤äº¤ä»˜ / Git Delivery` button. Delivery can follow a PASS quality review directly, or follow DocKeeper when documentation runs first. The button only switches to `EmbeddedDeveloper`; Developer still verifies every PASS result, task authorization, strict commit metadata, project policy, and Documentation=`PASS` or a justified `NOT_RUN` for every delivery mode, and performs no Git write when prerequisites are missing.
-
-After entering EmbeddedDeveloper and seeing `Commit Delivery Confirmation`, the final step is not another handoff button. Review the per-file changes, then reply `confirm changes and commit`, or reply `adjust changes: <request>` to reduce and reverify them. After final confirmation, the current EmbeddedDeveloper runs preflight, explicit staging, and commit directly. The persistent Quality Review / Document Changes buttons are static follow-up handoffs for that agent, not commit confirmation actions. Developer never delegates to itself.
-
-Every business-agent result contains one dynamic Next Action with Current State, Action, Owner, UI Route, Dispatch Target, Required Input, Instruction, and On Success. Role transitions use `NEXT_ACTION_BUTTON + HANDOFF:<exact base-button label>`; input/confirmation uses `CURRENT_INPUT + NONE` with a copy-ready Instruction; external work uses `EXTERNAL + NONE` with command, working directory, and return evidence; terminal states use `NONE + NONE`. Clicking the unified button authorizes safe routing only and never substitutes for Jira, change-content, commit, push, or external-command confirmation.
-
-After repair, verification, independent review, required documentation, and selected Git delivery are handled, EmbeddedDeveloper's `é—®é¢˜å·²è§£å†³ / Close Issue` handoff returns to BugResolver. BugResolver emits the closure report, clears issue-level Jira/root-cause/scope/authorization state, and enters a fresh issue through `START_NEW_ISSUE`; an early handoff returns `BLOCKED`.
-
-BugResolver first uses Usage Symptom Profile to understand the user's goal, actual operations, expected/actual behavior, frequency/boundaries, environment, impact, and recovery. When direction-changing symptoms are missing, it asks them together through one Usage Symptom Questions table with at most five questions in the first set and permits `Unknown`. It asks for direction confirmation only when symptoms indicate different modules/root-cause paths or conflict; it does not trace deeply or delegate Developer before confirmation, and proceeds directly when the scenario is clear. It then emits Problem Identification grounded in that Profile to separate the observed problem, category, suspected subsystem, severity, and evidence confidence.
-
-When critical evidence is missing, BugResolver searches the repository and finishes safe preliminary analysis before requesting the smallest logs, versions, configuration, or ELF/MAP/dump artifacts once through a separate Evidence Request table. Symptom questions and evidence requests never mix. Until evidence arrives, it neither confirms root cause, repeats the request, nor invokes Developer. Log analysis covers bare-metal, RTOS, module SDK, Embedded Linux, and hybrid systems while preserving original offsets and clock domains; it never invents a unified timeline without reliable timing evidence.
-
-Command evidence includes the exact command, exit code, and relevant output. An unexecuted check is `NOT_RUN`, not a pass.
-
-### Project Profile
-
-[`.github/embedded-project.yml`](.github/embedded-project.yml) is the entry point for project facts. After installation, confirm:
-
-- `product_form`, MCU/SoC, RTOS, toolchain, and C standard.
-- Source/driver/application/services/middleware/protocols/test/docs/vendor/generated paths; absent application path fields are equivalent to `auto`.
-- Host-side `commands.configure`, `commands.build`, `commands.test`, and `commands.static_analysis` commands.
-- Hardware commands isolated under `commands.hardware.flash`, `commands.hardware.erase`, `commands.hardware.fuse`, `commands.hardware.reset`, and `commands.hardware.hil`; they are disabled by default and require explicit approval.
-- ELF, MAP, log, and static-analysis report locations.
-- MISRA edition, deviation file, and hardware-document revision.
-
-Fields may remain `auto`, in which case agents discover them from the repository. Profile/repository conflicts are reported as configuration drift. See [Embedded Product Forms](docs/product-forms.md) for detailed review areas.
-
-### Project-Level Constraints
-
-The optional root [`.project/`](.project/README.md) directory is a sibling of `.github/` and stores target-project conventions, path policy, Git delivery policy, and extensions. Its absence returns `NOT_CONFIGURED` for legacy compatibility. When present, [`.project/project.yml`](.project/project.yml) registers rule files and `applies_to` globs under `rules`; agents load only matching rules, and the directory is validated strictly.
-
-`python .github/agent-kit/scripts/project_policy.py rules --root . --path <repo-relative-path>` deterministically emits applicable rules and Git policy. Repeat `--path` for multiple paths, or use `--all` for audit.
-
-The default [Git delivery policy](.project/git/delivery.yml) defines automation, `denied_paths`, commit template/checks, and push branch/check rules, but cannot store a remote, URL, or target ref. Commit content is detected from `Task Change Baseline`, the task-change ledger, and the current actual diff, never from a YAML path allowlist; legacy `allowed_paths` is parsed for compatibility only. Both `automation` switches default to off and gate only `auto`; user-confirmed `commit`/`commit-and-push` ignore them. Task Brief `Git Delivery` accepts only `none`, `commit`, `commit-and-push`, or `auto`. Even after selecting `auto`, the exact Commit Content fingerprint must be confirmed before automatic commit; missing or stale confirmation makes read-only preflight return `CONFIRM_COMMIT_CONTENT`. The strict [commit template](.project/git/commit.template) is copied into the repository and has no runtime dependency on an external drive.
-
-Before commit, `Commit Content` shows each file's Git state, added/deleted counts, truthful summary, excluded paths, and fingerprint. The user may reply `confirm changes and commit`, or ask to remove a file, narrow a hunk, or reduce the implementation. The latter enters `ADJUST_CHANGESET`, changes only current-task work, and reruns affected verification, independent review, and confirmation without reusing the old confirmation.
-
-Push preflight resolves the current branch, branch remote/merge, and one push URL only from this project's local `.git` config. Global/system config, environment, `.project`, and user text cannot override it. Missing upstream, detached HEAD, multiple push URLs, protected branches, paths matching `denied_paths`, or fingerprint drift block delivery; the tool itself performs no commit or push.
-
-`Git Delivery: auto` decides only after the repair, tests, required checks, independent review, and required documentation pass. Missing required message metadata blocks for input; no diff means no delivery; any unmet automatic-upload prerequisite leaves Git unchanged and makes the agent output only the complete commit content. It explicitly stages, creates one commit, and pushes after fingerprint/SHA revalidation only when policy enables both commit and push, the index starts empty, changes exactly match the repair scope, HEAD equals the local upstream, and the target is safe and unique. A push failure keeps the local commit without automatic rollback.
-
-`extensions` may hold namespaced project-integration configuration, and `.project/` may contain other subdirectories and content, so project rules can grow without changing the five-agent structure.
-
-### Installation
-
-1. Place this kit at the target firmware repository root and merge `.github` rather than overwriting configuration. Install sibling `.project` only when project-level rules are wanted; legacy projects may omit it.
-2. Manually merge `.github/copilot-instructions.md` and preserve the target project's existing rules.
-3. Adjust `.github/embedded-project.yml`. Keep unknown values as `auto`; do not enter unconfirmed hardware facts.
-4. When using `.project`, adjust `project.yml`, applicable rules, and Git policy. Maintain denied paths, branches, and checks as needed; do not define commit content through a path allowlist. Leave `automation.commit/push: false` until automatic-delivery conditions are confirmed, then enable them only for `auto`; this does not block user-confirmed commit/push. Never add a remote, URL, or target branch to policy.
-5. Open the firmware repository root directly in VS Code and trust the workspace. Opening only its parent prevents automatic `.github` discovery.
-6. Enable GitHub Copilot Chat and confirm that custom agents, prompt files, Agent Skills, and `agent/runSubagent` are available. Recursive subagents are not required.
-7. Confirm in Chat Customizations/Diagnostics that all five agents, six prompts, and instructions load without errors, then run the Kit validator for `.project` references and Git policy.
-
-The `agents` allowlists in the Orchestrator and BugResolver frontmatter may depend on Experimental custom-agent/subagent support in the target VS Code and GitHub Copilot environment. This kit does not claim an unverified minimum version; run Customizations/Diagnostics in the actual target environment and perform both a general delegation smoke test and a bug-resolution delegation smoke test to confirm that the allowlists are honored.
-
-The repository intentionally has no overwriting installation script. Compare and merge directories during upgrades, especially the profile, `.project/` rules, global rules, and local prompt customizations.
-
-### Usage
-
-Recommended entry point:
-
-```text
-Select Orchestrator: Add an SPI driver for W25Q128, reusing the existing HAL and completing host build, tests, and independent review. Stop rather than guessing register values if a matching datasheet is unavailable.
-```
-
-Slash commands:
-
-- `/new-driver <driver_request>`: Orchestrator performs driver preflight, implementation, verification, and review.
-- `/implement-feature <feature_request>`: Orchestrator performs application behavior modeling, implementation, traceability, verification, and review.
-- `/analyze-bug <bug_input>`: BugResolver first guides and normalizes usage symptoms, confirms direction only when needed, then identifies the problem, traces code/configuration context, tests root-cause hypotheses, actively requests missing evidence as one set, and coordinates repair plus quality assessment when authorized.
-- `/analyze-log <log_input>`: even with logs supplied, BugResolver establishes usage context and direction before analyzing multi-product logs, event correlation, ELF/MAP artifacts, artifact identity, and the evidence timeline.
-- `/misra-review <review_target>`: QualityReviewer performs MISRA-oriented risk screening.
-- `/verify-change <change_target>`: Orchestrator audits baseline, build, tests, review, and documentation gates.
-
-Direct mode:
-
-- Implementation only: select `EmbeddedDeveloper` and provide the Goal, Scope, constraints, and acceptance criteria.
-- Bug/log analysis or resolution: select `BugResolver` and provide any available original error or log. The agent guides you to complete the real goal, steps, expected/actual behavior, frequency/boundaries, environment, and impact; once direction is clear, it identifies the problem, discovers local context, and asks once for the remaining minimum evidence. State whether changes are authorized when resolution is required.
-- Independent quality assessment only: select `QualityReviewer` and provide requirements, the real diff/files, and available build/test/static-analysis evidence.
-- Documentation only: select `DocKeeper` and provide confirmed source/API/test or root-cause evidence.
-- Git delivery: set Task Brief `Git Delivery` to only `none`, `commit`, `commit-and-push`, or `auto`. User confirmation authorizes `commit`/`commit-and-push`; only `auto` requires both `.project` automation switches. The remote, URL, and target branch always come from this project's `.git`. The current manager delegates a separate delivery task to `EmbeddedDeveloper` only after gates and independent review. Selecting `auto` is not content confirmation: the preview shows `Commit Content Confirmation: PENDING`, and only a user-confirmed current fingerprint may produce `content_confirmation.status: CONFIRMED` plus `AUTO_COMMIT_AND_PUSH`. Otherwise no automatic staging or commit is allowed.
-
-### Safety and Permissions
-
-- VS Code approval settings govern `execute` for BugResolver, EmbeddedDeveloper, and QualityReviewer. BugResolver runs only read-only diagnostics and symbolization; Reviewer runs only read-only Git, build/test audit, and static analysis.
-- Flash, erase, fuse, reset, HIL, device power, release, and external deployment always require explicit human authorization. A command's presence in the profile is not authorization.
-- A `.project` Git policy constrains work but is not authorization. Commit/push stages only explicit task paths; protected branches, force push, `push -u`, custom refspecs, and automatic `.git/config` changes are forbidden.
-- DocKeeper uses the web only for official or vendor public sources and never uploads private source, logs, customer data, or credentials.
-- Do not run write tasks concurrently in one checkout. Parallel writing may be considered only after one-task-per-worktree/branch isolation exists.
-- Agents do not replace human code review, hardware verification, functional-safety assessment, or formal MISRA compliance tools.
-- Skill scripts use exit code `0` for success, `2` for invalid input, `3` for insufficient evidence, and `4` for external-tool failure. `profile_gates.py` only plans/validates gate evidence and never executes profile commands; hardware never enters host gates.
-
-### Validate the Kit
-
-Install development dependencies and run static validation:
-
-```sh
-python -m pip install -r .github/agent-kit/requirements-dev.txt
-python .github/agent-kit/scripts/validate_customizations.py --root .
-python -m unittest discover -s .github/agent-kit/tests -p "test_*.py"
-```
-
-Build the host example:
-
-```sh
-cmake -S examples/minimal-firmware -B build/minimal-firmware
-cmake --build build/minimal-firmware
-ctest --test-dir build/minimal-firmware --output-on-failure
-```
-
-CI runs these checks on Windows and Ubuntu. Real interaction also requires the [VS Code Manual Smoke Test](docs/manual-smoke-test.md), covering discovery, project-constraint invocation, controlled Git delivery, automatic orchestration, missing documents, baseline failure, seeded-defect review, ELF mismatch, and hardware approval.
-
-### Layout
-
-```text
-.github/
-â”œâ”€â”€ copilot-instructions.md
-â”œâ”€â”€ embedded-project.yml
-â”œâ”€â”€ agent-contracts.md
-â”œâ”€â”€ agents/                  # exactly five agents
-â”œâ”€â”€ agent-kit/               # kit self-check scripts, tests, fixtures, and dev dependencies
-â”œâ”€â”€ instructions/            # C, bilingual, and kit configuration rules
-â”œâ”€â”€ prompts/                 # six thin slash entries
-â”œâ”€â”€ skills/                  # five on-demand workflows with deterministic scripts
-â””â”€â”€ workflows/validate.yml
-.project/
-â”œâ”€â”€ project.yml              # project constraint manifest and extension entry point
-â”œâ”€â”€ README.md                # bilingual usage guide
-â”œâ”€â”€ rules/                   # project-specific rules invoked by repository path
-â””â”€â”€ git/
-    â”œâ”€â”€ delivery.yml         # automation, scope, safety, branch rules, and checks; no target
-    â””â”€â”€ commit.template      # strict commit message template
-docs/                        # product forms and manual smoke test
-examples/minimal-firmware/   # CMake/CTest + fake HAL
-```
-
-### Bilingual Rules
-
-First-party Markdown in the README, `docs/`, `.github/`, and `.project/` uses:
-
-```md
-# <Document Title>
-
-> ä¸­æ–‡ï¼šæœ¬æ–‡æ¡£é‡‡ç”¨å›ºå®šåŒè¯­ç»“æ„ã€‚æ›´æ–°ä¸­æ–‡æˆ–è‹±æ–‡å†…å®¹æ—¶ï¼Œå¿…é¡»åŒæ­¥æ›´æ–°å¦ä¸€éƒ¨åˆ†ï¼Œä¿æŒä¸¤éƒ¨åˆ†è¯­ä¹‰ä¸€è‡´ã€‚
->
-> English: This document uses a fixed bilingual structure. When either the Chinese or English content is updated, the other section must be updated as well to keep both sections semantically aligned.
-
-## ä¸­æ–‡ / Chinese
-
-<å®Œæ•´ä¸­æ–‡å†…å®¹>
-
-## English
-
-<Complete English content>
-```
-
-Vendor, generated, third-party documentation, and license text are not automatically bilingualized. The release gate does not accept an unowned `TODO(sync)`.
-
-### Extension Principles
-
-- Do not add a sixth agent casually for a new workflow; extend an existing role mode or add an on-demand skill first.
-- Prompts provide manual entry and agent routing; complex checklists, templates, and scripts belong in skills.
-- Maintain shared rules once and link them from agents and skills to avoid repeated context.
-- Put project-specific rules under `.project/` and register them through the manifest. Use namespaced `extensions` for other structured integrations; preserve unknown extensions without executing them automatically.
-- The kit fully supports VS Code only. GitHub cloud/CLI may ignore handoffs or VS Code-specific allowlists and are outside v1 acceptance.
+6. å¯ç”¨ GitHub Copilot Chatï¼Œç¡®è®¤ custom agentsã€prompt filesã€Agent Skills å’Œ `agent/runSubç¿u¶‰Ëkºwµçy™±¥Ğì¥Ğ‘½•Ì¹½ĞÑÉ…”‘••Á±ä½È‘•±•…Ñ”•Ù•±½Á•È‰•™½É”½¹™¥Éµ…Ñ¥½¸°…¹ÁÉ½••‘Ì‘¥É•Ñ±äİ¡•¸Ñ¡”Í•¹…É¥¼¥Ì±•…È¸%ĞÑ¡•¸•µ¥ÑÌAÉ½‰±•´%‘•¹Ñ¥™¥…Ñ¥½¸É½Õ¹‘•¥¸Ñ¡…ĞAÉ½™¥±”Ñ¼Í•Á…É…Ñ”Ñ¡”½‰Í•ÉÙ•ÁÉ½‰±•´°…Ñ•½Éä°ÍÕÍÁ•Ñ•ÍÕ‰ÍåÍÑ•´°Í•Ù•É¥Ñä°…¹•Ù¥‘•¹”½¹™¥‘•¹”¸()]¡•¸É¥Ñ¥…°•Ù¥‘•¹”¥Ìµ¥ÍÍ¥¹œ°	ÕI•Í½±Ù•ÈÍ•…É¡•ÌÑ¡”É•Á½Í¥Ñ½Éä…¹™¥¹¥Í¡•ÌÍ…™”ÁÉ•±¥µ¥¹…Éä…¹…±åÍ¥Ì‰•™½É”É•ÅÕ•ÍÑ¥¹œÑ¡”Íµ…±±•ÍĞ±½Ì°Ù•ÉÍ¥½¹Ì°½¹™¥ÕÉ…Ñ¥½¸°½È1½5@½‘ÕµÀ…ÉÑ¥™…ÑÌ½¹”Ñ¡É½Õ „Í•Á…É…Ñ”Ù¥‘•¹”I•ÅÕ•ÍĞÑ…‰±”¸MåµÁÑ½´ÅÕ•ÍÑ¥½¹Ì…¹•Ù¥‘•¹”É•ÅÕ•ÍÑÌ¹•Ù•Èµ¥à¸U¹Ñ¥°•Ù¥‘•¹”…ÉÉ¥Ù•Ì°¥Ğ¹•¥Ñ¡•È½¹™¥ÉµÌÉ½½Ğ…ÕÍ”°É•Á•…ÑÌÑ¡”É•ÅÕ•ÍĞ°¹½È¥¹Ù½­•Ì•Ù•±½Á•È¸1½œ…¹…±åÍ¥Ì½Ù•ÉÌ‰…É”µµ•Ñ…°°IQ=L°µ½‘Õ±”M,°µ‰•‘‘•1¥¹Õà°…¹¡å‰É¥ÍåÍÑ•µÌİ¡¥±”ÁÉ•Í•ÉÙ¥¹œ½É¥¥¹…°½™™Í•ÑÌ…¹±½¬‘½µ…¥¹Ìì¥Ğ¹•Ù•È¥¹Ù•¹ÑÌ„Õ¹¥™¥•Ñ¥µ•±¥¹”İ¥Ñ¡½ÕĞÉ•±¥…‰±”Ñ¥µ¥¹œ•Ù¥‘•¹”¸()½µµ…¹•Ù¥‘•¹”¥¹±Õ‘•ÌÑ¡”•á…Ğ½µµ…¹°•á¥Ğ½‘”°…¹É•±•Ù…¹Ğ½ÕÑÁÕĞ¸¸Õ¹•á•ÕÑ•¡•¬¥Ì9=Q}IU9€°¹½Ğ„Á…ÍÌ¸((ŒŒŒAÉ½©•ĞAÉ½™¥±”()m€¹¥Ñ¡Õˆ½•µ‰•‘‘•µÁÉ½©•Ğ¹åµ±t ¹¥Ñ¡Õˆ½•µ‰•‘‘•µÁÉ½©•Ğ¹åµ°¤¥ÌÑ¡”•¹ÑÉäÁ½¥¹Ğ™½ÈÁÉ½©•Ğ™…ÑÌ¸™Ñ•È¥¹ÍÑ…±±…Ñ¥½¸°½¹™¥É´è((´ÁÉ½‘ÕÑ}™½Éµ€°5T½M½°IQ=L°Ñ½½±¡…¥¸°…¹ÍÑ…¹‘…É¸(´M½ÕÉ”½‘É¥Ù•È½…ÁÁ±¥…Ñ¥½¸½Í•ÉÙ¥•Ì½µ¥‘‘±•İ…É”½ÁÉ½Ñ½½±Ì½Ñ•ÍĞ½‘½Ì½Ù•¹‘½È½•¹•É…Ñ•Á…Ñ¡Ìì…‰Í•¹Ğ…ÁÁ±¥…Ñ¥½¸Á…Ñ ™¥•±‘Ì…É”•ÅÕ¥Ù…±•¹ĞÑ¼…ÕÑ½€¸(´!½ÍĞµÍ¥‘”½µµ…¹‘Ì¹½¹™¥ÕÉ•€°½µµ…¹‘Ì¹‰Õ¥±‘€°½µµ…¹‘Ì¹Ñ•ÍÑ€°…¹½µµ…¹‘Ì¹ÍÑ…Ñ¥}…¹…±åÍ¥Í€½µµ…¹‘Ì¸(´!…É‘İ…É”½µµ…¹‘Ì¥Í½±…Ñ•Õ¹‘•È½µµ…¹‘Ì¹¡…É‘İ…É”¹™±…Í¡€°½µµ…¹‘Ì¹¡…É‘İ…É”¹•É…Í•€°½µµ…¹‘Ì¹¡…É‘İ…É”¹™ÕÍ•€°½µµ…¹‘Ì¹¡…É‘İ…É”¹É•Í•Ñ€°…¹½µµ…¹‘Ì¹¡…É‘İ…É”¹¡¥±€ìÑ¡•ä…É”‘¥Í…‰±•‰ä‘•™…Õ±Ğ…¹É•ÅÕ¥É”•áÁ±¥¥Ğ…ÁÁÉ½Ù…°¸(´1°5@°±½œ°…¹ÍÑ…Ñ¥Œµ…¹…±åÍ¥ÌÉ•Á½ÉĞ±½…Ñ¥½¹Ì¸(´5%MI•‘¥Ñ¥½¸°‘•Ù¥…Ñ¥½¸™¥±”°…¹¡…É‘İ…É”µ‘½Õµ•¹ĞÉ•Ù¥Í¥½¸¸()¥•±‘Ìµ…äÉ•µ…¥¸…ÕÑ½€°¥¸İ¡¥ …Í”…•¹ÑÌ‘¥Í½Ù•ÈÑ¡•´™É½´Ñ¡”É•Á½Í¥Ñ½Éä¸AÉ½™¥±”½É•Á½Í¥Ñ½Éä½¹™±¥ÑÌ…É”É•Á½ÉÑ•…Ì½¹™¥ÕÉ…Ñ¥½¸‘É¥™Ğ¸M•”mµ‰•‘‘•AÉ½‘ÕĞ½ÉµÍt¡‘½Ì½ÁÉ½‘ÕĞµ™½ÉµÌ¹µ¤™½È‘•Ñ…¥±•É•Ù¥•Ü…É•…Ì¸((ŒŒŒAÉ½©•Ğµ1•Ù•°½¹ÍÑÉ…¥¹ÑÌ()Q¡”½ÁÑ¥½¹…°É½½Ğm€¹ÁÉ½©•Ğ½t ¹ÁÉ½©•Ğ½I5¹µ¤‘¥É•Ñ½Éä¥Ì„Í¥‰±¥¹œ½˜€¹¥Ñ¡Õˆ½€…¹ÍÑ½É•ÌÑ…É•ĞµÁÉ½©•Ğ½¹Ù•¹Ñ¥½¹Ì°Á…Ñ Á½±¥ä°¥Ğ‘•±¥Ù•ÉäÁ½±¥ä°…¹•áÑ•¹Í¥½¹Ì¸%ÑÌ…‰Í•¹”É•ÑÕÉ¹Ì9=Q}=9%UI€™½È±•…ä½µÁ…Ñ¥‰¥±¥Ñä¸]¡•¸ÁÉ•Í•¹Ğ°m€¹ÁÉ½©•Ğ½ÁÉ½©•Ğ¹åµ±t ¹ÁÉ½©•Ğ½ÁÉ½©•Ğ¹åµ°¤É•¥ÍÑ•ÉÌÉÕ±”™¥±•Ì…¹…ÁÁ±¥•Í}Ñ½€±½‰ÌÕ¹‘•ÈÉÕ±•Í€ì…•¹ÑÌ±½…½¹±äµ…Ñ¡¥¹œÉÕ±•Ì°…¹Ñ¡”‘¥É•Ñ½Éä¥ÌÙ…±¥‘…Ñ•ÍÑÉ¥Ñ±ä¸()ÁåÑ¡½¸€¹¥Ñ¡Õˆ½…•¹Ğµ­¥Ğ½ÍÉ¥ÁÑÌ½ÁÉ½©•Ñ}Á½±¥ä¹ÁäÉÕ±•Ì€´µÉ½½Ğ€¸€´µÁ…Ñ €ñÉ•Á¼µÉ•±…Ñ¥Ù”µÁ…Ñ ù€‘•Ñ•Éµ¥¹¥ÍÑ¥…±±ä•µ¥ÑÌ…ÁÁ±¥…‰±”ÉÕ±•Ì…¹¥ĞÁ½±¥ä¸I•Á•…Ğ€´µÁ…Ñ¡€™½ÈµÕ±Ñ¥Á±”Á…Ñ¡Ì°½ÈÕÍ”€´µ…±±€™½È…Õ‘¥Ğ¸()Q¡”‘•™…Õ±Ğm¥Ğ‘•±¥Ù•ÉäÁ½±¥åt ¹ÁÉ½©•Ğ½¥Ğ½‘•±¥Ù•Éä¹åµ°¤‘•™¥¹•Ì…ÕÑ½µ…Ñ¥½¸°‘•¹¥•‘}Á…Ñ¡Í€°½µµ¥ĞÑ•µÁ±…Ñ”½¡•­Ì°…¹ÁÕÍ ‰É…¹ ½¡•¬ÉÕ±•Ì°‰ÕĞ…¹¹½ĞÍÑ½É”„É•µ½Ñ”°UI0°½ÈÑ…É•ĞÉ•˜¸½µµ¥Ğ½¹Ñ•¹Ğ¥Ì‘•Ñ•Ñ•™É½´Q…Í¬¡…¹”	…Í•±¥¹•€°Ñ¡”Ñ…Í¬µ¡…¹”±•‘•È°…¹Ñ¡”ÕÉÉ•¹Ğ…ÑÕ…°‘¥™˜°¹•Ù•È™É½´„e50Á…Ñ …±±½İ±¥ÍĞì±•…ä…±±½İ•‘}Á…Ñ¡Í€¥ÌÁ…ÉÍ•™½È½µÁ…Ñ¥‰¥±¥Ñä½¹±ä¸	½Ñ …ÕÑ½µ…Ñ¥½¹€Íİ¥Ñ¡•Ì‘•™…Õ±ĞÑ¼½™˜…¹…Ñ”½¹±ä…ÕÑ½€ìÕÍ•Èµ½¹™¥Éµ•½µµ¥Ñ€½½µµ¥Ğµ…¹µÁÕÍ¡€¥¹½É”Ñ¡•´¸Q…Í¬	É¥•˜¥Ğ•±¥Ù•Éå€…•ÁÑÌ½¹±ä¹½¹•€°½µµ¥Ñ€°½µµ¥Ğµ…¹µÁÕÍ¡€°½È…ÕÑ½€¸Ù•¸…™Ñ•ÈÍ•±•Ñ¥¹œ…ÕÑ½€°Ñ¡”•á…Ğ½µµ¥Ğ½¹Ñ•¹Ğ™¥¹•ÉÁÉ¥¹ĞµÕÍĞ‰”½¹™¥Éµ•‰•™½É”…ÕÑ½µ…Ñ¥Œ½µµ¥Ğìµ¥ÍÍ¥¹œ½ÈÍÑ…±”½¹™¥Éµ…Ñ¥½¸µ…­•ÌÉ•…µ½¹±äÁÉ•™±¥¡ĞÉ•ÑÕÉ¸=9%I5}=55%Q}=9Q9Q€¸Q¡”ÍÑÉ¥Ğm½µµ¥ĞÑ•µÁ±…Ñ•t ¹ÁÉ½©•Ğ½¥Ğ½½µµ¥Ğ¹Ñ•µÁ±…Ñ”¤¥Ì½Á¥•¥¹Ñ¼Ñ¡”É•Á½Í¥Ñ½Éä…¹¡…Ì¹¼ÉÕ¹Ñ¥µ”‘•Á•¹‘•¹ä½¸…¸•áÑ•É¹…°‘É¥Ù”¸()	•™½É”½µµ¥Ğ°½µµ¥Ğ½¹Ñ•¹Ñ€Í¡½İÌ•… ™¥±”Ì¥ĞÍÑ…Ñ”°…‘‘•½‘•±•Ñ•½Õ¹ÑÌ°ÑÉÕÑ¡™Õ°ÍÕµµ…Éä°•á±Õ‘•Á…Ñ¡Ì°…¹™¥¹•ÉÁÉ¥¹Ğ¸Q¡”ÕÍ•Èµ…äÉ•Á±ä½¹™¥É´¡…¹•Ì…¹½µµ¥Ñ€°½È…Í¬Ñ¼É•µ½Ù”„™¥±”°¹…ÉÉ½Ü„¡Õ¹¬°½ÈÉ•‘Õ”Ñ¡”¥µÁ±•µ•¹Ñ…Ñ¥½¸¸Q¡”±…ÑÑ•È•¹Ñ•ÉÌ)UMQ}!9MQ€°¡…¹•Ì½¹±äÕÉÉ•¹ĞµÑ…Í¬İ½É¬°…¹É•ÉÕ¹Ì…™™•Ñ•Ù•É¥™¥…Ñ¥½¸°¥¹‘•Á•¹‘•¹ĞÉ•Ù¥•Ü°…¹½¹™¥Éµ…Ñ¥½¸İ¥Ñ¡½ÕĞÉ•ÕÍ¥¹œÑ¡”½±½¹™¥Éµ…Ñ¥½¸¸()AÕÍ ÁÉ•™±¥¡ĞÉ•Í½±Ù•ÌÑ¡”ÕÉÉ•¹Ğ‰É…¹ °‰É…¹ É•µ½Ñ”½µ•É”°…¹½¹”ÁÕÍ UI0½¹±ä™É½´Ñ¡¥ÌÁÉ½©•ĞÌ±½…°€¹¥Ñ€½¹™¥œ¸±½‰…°½ÍåÍÑ•´½¹™¥œ°•¹Ù¥É½¹µ•¹Ğ°€¹ÁÉ½©•Ñ€°…¹ÕÍ•ÈÑ•áĞ…¹¹½Ğ½Ù•ÉÉ¥‘”¥Ğ¸5¥ÍÍ¥¹œÕÁÍÑÉ•…´°‘•Ñ…¡•!°µÕ±Ñ¥Á±”ÁÕÍ UI1Ì°ÁÉ½Ñ•Ñ•‰É…¹¡•Ì°Á…Ñ¡Ìµ…Ñ¡¥¹œ‘•¹¥•‘}Á…Ñ¡Í€°½È™¥¹•ÉÁÉ¥¹Ğ‘É¥™Ğ‰±½¬‘•±¥Ù•ÉäìÑ¡”Ñ½½°¥ÑÍ•±˜Á•É™½ÉµÌ¹¼½µµ¥Ğ½ÈÁÕÍ ¸()¥Ğ•±¥Ù•Éäè…ÕÑ½€‘•¥‘•Ì½¹±ä…™Ñ•ÈÑ¡”É•Á…¥È°Ñ•ÍÑÌ°É•ÅÕ¥É•¡•­Ì°¥¹‘•Á•¹‘•¹ĞÉ•Ù¥•Ü°…¹É•ÅÕ¥É•‘½Õµ•¹Ñ…Ñ¥½¸Á…ÍÌ¸5¥ÍÍ¥¹œÉ•ÅÕ¥É•µ•ÍÍ…”µ•Ñ…‘…Ñ„‰±½­Ì™½È¥¹ÁÕĞì¹¼‘¥™˜µ•…¹Ì¹¼‘•±¥Ù•Éäì…¹äÕ¹µ•Ğ…ÕÑ½µ…Ñ¥ŒµÕÁ±½…ÁÉ•É•ÅÕ¥Í¥Ñ”±•…Ù•Ì¥ĞÕ¹¡…¹•…¹µ…­•ÌÑ¡”…•¹Ğ½ÕÑÁÕĞ½¹±äÑ¡”½µÁ±•Ñ”½µµ¥Ğ½¹Ñ•¹Ğ¸%Ğ•áÁ±¥¥Ñ±äÍÑ…•Ì°É•…Ñ•Ì½¹”½µµ¥Ğ°…¹ÁÕÍ¡•Ì…™Ñ•È™¥¹•ÉÁÉ¥¹Ğ½M!É•Ù…±¥‘…Ñ¥½¸½¹±äİ¡•¸Á½±¥ä•¹…‰±•Ì‰½Ñ ½µµ¥Ğ…¹ÁÕÍ °Ñ¡”¥¹‘•àÍÑ…ÉÑÌ•µÁÑä°¡…¹•Ì•á…Ñ±äµ…Ñ Ñ¡”É•Á…¥ÈÍ½Á”°!•ÅÕ…±ÌÑ¡”±½…°ÕÁÍÑÉ•…´°…¹Ñ¡”Ñ…É•Ğ¥ÌÍ…™”…¹Õ¹¥ÅÕ”¸ÁÕÍ ™…¥±ÕÉ”­••ÁÌÑ¡”±½…°½µµ¥Ğİ¥Ñ¡½ÕĞ…ÕÑ½µ…Ñ¥ŒÉ½±±‰…¬¸()•áÑ•¹Í¥½¹Í€µ…ä¡½±¹…µ•ÍÁ…•ÁÉ½©•Ğµ¥¹Ñ•É…Ñ¥½¸½¹™¥ÕÉ…Ñ¥½¸°…¹€¹ÁÉ½©•Ğ½€µ…ä½¹Ñ…¥¸½Ñ¡•ÈÍÕ‰‘¥É•Ñ½É¥•Ì…¹½¹Ñ•¹Ğ°Í¼ÁÉ½©•ĞÉÕ±•Ì…¸É½Üİ¥Ñ¡½ÕĞ¡…¹¥¹œÑ¡”™¥Ù”µ…•¹ĞÍÑÉÕÑÕÉ”¸((ŒŒŒ%¹ÍÑ…±±…Ñ¥½¸((Ä¸A±…”Ñ¡¥Ì­¥Ğ…ĞÑ¡”Ñ…É•Ğ™¥Éµİ…É”É•Á½Í¥Ñ½ÉäÉ½½Ğ…¹µ•É”€¹¥Ñ¡Õ‰€É…Ñ¡•ÈÑ¡…¸½Ù•ÉİÉ¥Ñ¥¹œ½¹™¥ÕÉ…Ñ¥½¸¸%¹ÍÑ…±°Í¥‰±¥¹œ€¹ÁÉ½©•Ñ€½¹±äİ¡•¸ÁÉ½©•Ğµ±•Ù•°ÉÕ±•Ì…É”İ…¹Ñ•ì±•…äÁÉ½©•ÑÌµ…ä½µ¥Ğ¥Ğ¸(È¸5…¹Õ…±±äµ•É”€¹¥Ñ¡Õˆ½½Á¥±½Ğµ¥¹ÍÑÉÕÑ¥½¹Ì¹µ‘€…¹ÁÉ•Í•ÉÙ”Ñ¡”Ñ…É•ĞÁÉ½©•ĞÌ•á¥ÍÑ¥¹œÉÕ±•Ì¸(Ì¸‘©ÕÍĞ€¹¥Ñ¡Õˆ½•µ‰•‘‘•µÁÉ½©•Ğ¹åµ±€¸-••ÀÕ¹­¹½İ¸Ù…±Õ•Ì…Ì…ÕÑ½€ì‘¼¹½Ğ•¹Ñ•ÈÕ¹½¹™¥Éµ•¡…É‘İ…É”™…ÑÌ¸(Ğ¸]¡•¸ÕÍ¥¹œ€¹ÁÉ½©•Ñ€°…‘©ÕÍĞÁÉ½©•Ğ¹åµ±€°…ÁÁ±¥…‰±”ÉÕ±•Ì°…¹¥ĞÁ½±¥ä¸5…¥¹Ñ…¥¸‘•¹¥•Á…Ñ¡Ì°‰É…¹¡•Ì°…¹¡•­Ì…Ì¹••‘•ì‘¼¹½Ğ‘•™¥¹”½µµ¥Ğ½¹Ñ•¹ĞÑ¡É½Õ „Á…Ñ …±±½İ±¥ÍĞ¸1•…Ù”…ÕÑ½µ…Ñ¥½¸¹½µµ¥Ğ½ÁÕÍ è™…±Í•€Õ¹Ñ¥°…ÕÑ½µ…Ñ¥Œµ‘•±¥Ù•Éä½¹‘¥Ñ¥½¹Ì…É”½¹™¥Éµ•°Ñ¡•¸•¹…‰±”Ñ¡•´½¹±ä™½È…ÕÑ½€ìÑ¡¥Ì‘½•Ì¹½Ğ‰±½¬ÕÍ•Èµ½¹™¥Éµ•½µµ¥Ğ½ÁÕÍ ¸9•Ù•È…‘„É•µ½Ñ”°UI0°½ÈÑ…É•Ğ‰É…¹ Ñ¼Á½±¥ä¸(Ô¸=Á•¸Ñ¡”™¥Éµİ…É”É•Á½Í¥Ñ½ÉäÉ½½Ğ‘¥É•Ñ±ä¥¸YL½‘”…¹ÑÉÕÍĞÑ¡”İ½É­ÍÁ…”¸=Á•¹¥¹œ½¹±ä¥ÑÌÁ…É•¹ĞÁÉ•Ù•¹ÑÌ…ÕÑ½µ…Ñ¥Œ€¹¥Ñ¡Õ‰€‘¥Í½Ù•Éä¸(Ø¸¹…‰±”¥Ñ!Õˆ½Á¥±½Ğ¡…Ğ…¹½¹™¥É´Ñ¡…ĞÕÍÑ½´…•¹ÑÌ°ÁÉ½µÁĞ™¥±•Ì°•¹ĞM­¥±±Ì°…¹…•¹Ğ½ÉÕ¹MÕ‰…•¹Ñ€…É”…Ù…¥±…‰±”¸I•ÕÉÍ¥Ù”ÍÕ‰…•¹ÑÌ…É”¹½ĞÉ•ÅÕ¥É•¸(Ü¸½¹™¥É´¥¸¡…ĞÕÍÑ½µ¥é…Ñ¥½¹Ì½¥…¹½ÍÑ¥ÌÑ¡…Ğ…±°™¥Ù”…•¹ÑÌ°Í¥àÁÉ½µÁÑÌ°…¹¥¹ÍÑÉÕÑ¥½¹Ì±½…İ¥Ñ¡½ÕĞ•ÉÉ½ÉÌ°Ñ¡•¸ÉÕ¸Ñ¡”-¥ĞÙ…±¥‘…Ñ½È™½È€¹ÁÉ½©•Ñ€É•™•É•¹•Ì…¹¥ĞÁ½±¥ä¸()Q¡”…•¹ÑÍ€…±±½İ±¥ÍÑÌ¥¸Ñ¡”=É¡•ÍÑÉ…Ñ½È…¹	ÕI•Í½±Ù•È™É½¹Ñµ…ÑÑ•Èµ…ä‘•Á•¹½¸áÁ•É¥µ•¹Ñ…°ÕÍÑ½´µ…•¹Ğ½ÍÕ‰…•¹ĞÍÕÁÁ½ÉĞ¥¸Ñ¡”Ñ…É•ĞYL½‘”…¹¥Ñ!Õˆ½Á¥±½Ğ•¹Ù¥É½¹µ•¹Ğ¸Q¡¥Ì­¥Ğ‘½•Ì¹½Ğ±…¥´…¸Õ¹Ù•É¥™¥•µ¥¹¥µÕ´Ù•ÉÍ¥½¸ìÉÕ¸ÕÍÑ½µ¥é…Ñ¥½¹Ì½¥…¹½ÍÑ¥Ì¥¸Ñ¡”…ÑÕ…°Ñ…É•Ğ•¹Ù¥É½¹µ•¹Ğ…¹Á•É™½É´‰½Ñ „•¹•É…°‘•±•…Ñ¥½¸Íµ½­”Ñ•ÍĞ…¹„‰ÕœµÉ•Í½±ÕÑ¥½¸‘•±•…Ñ¥½¸Íµ½­”Ñ•ÍĞÑ¼½¹™¥É´Ñ¡…ĞÑ¡”…±±½İ±¥ÍÑÌ…É”¡½¹½É•¸()Q¡”É•Á½Í¥Ñ½Éä¥¹Ñ•¹Ñ¥½¹…±±ä¡…Ì¹¼½Ù•ÉİÉ¥Ñ¥¹œ¥¹ÍÑ…±±…Ñ¥½¸ÍÉ¥ÁĞ¸½µÁ…É”…¹µ•É”‘¥É•Ñ½É¥•Ì‘ÕÉ¥¹œÕÁÉ…‘•Ì°•ÍÁ•¥…±±äÑ¡”ÁÉ½™¥±”°€¹ÁÉ½©•Ğ½€ÉÕ±•Ì°±½‰…°ÉÕ±•Ì°…¹±½…°ÁÉ½µÁĞÕÍÑ½µ¥é…Ñ¥½¹Ì¸((ŒŒŒUÍ…”()I•½µµ•¹‘••¹ÑÉäÁ½¥¹Ğè()Ñ•áĞ)M•±•Ğ=É¡•ÍÑÉ…Ñ½Èè‘…¸MA$‘É¥Ù•È™½È\ÈÕDÄÈà°É•ÕÍ¥¹œÑ¡”•á¥ÍÑ¥¹œ!0…¹½µÁ±•Ñ¥¹œ¡½ÍĞ‰Õ¥±°Ñ•ÍÑÌ°…¹¥¹‘•Á•¹‘•¹ĞÉ•Ù¥•Ü¸MÑ½ÀÉ…Ñ¡•ÈÑ¡…¸Õ•ÍÍ¥¹œÉ•¥ÍÑ•ÈÙ…±Õ•Ì¥˜„µ…Ñ¡¥¹œ‘…Ñ…Í¡••Ğ¥ÌÕ¹…Ù…¥±…‰±”¸)€()M±…Í ½µµ…¹‘Ìè((´€½¹•Üµ‘É¥Ù•È€ñ‘É¥Ù•É}É•ÅÕ•ÍĞù€è=É¡•ÍÑÉ…Ñ½ÈÁ•É™½ÉµÌ‘É¥Ù•ÈÁÉ•™±¥¡Ğ°¥µÁ±•µ•¹Ñ…Ñ¥½¸°Ù•É¥™¥…Ñ¥½¸°…¹É•Ù¥•Ü¸(´€½¥µÁ±•µ•¹Ğµ™•…ÑÕÉ”€ñ™•…ÑÕÉ•}É•ÅÕ•ÍĞù€è=É¡•ÍÑÉ…Ñ½ÈÁ•É™½ÉµÌ…ÁÁ±¥…Ñ¥½¸‰•¡…Ù¥½Èµ½‘•±¥¹œ°¥µÁ±•µ•¹Ñ…Ñ¥½¸°ÑÉ…•…‰¥±¥Ñä°Ù•É¥™¥…Ñ¥½¸°…¹É•Ù¥•Ü¸(´€½…¹…±åé”µ‰Õœ€ñ‰Õ}¥¹ÁÕĞù€è	ÕI•Í½±Ù•È™¥ÉÍĞÕ¥‘•Ì…¹¹½Éµ…±¥é•ÌÕÍ…”ÍåµÁÑ½µÌ°½¹™¥ÉµÌ‘¥É•Ñ¥½¸½¹±äİ¡•¸¹••‘•°Ñ¡•¸¥‘•¹Ñ¥™¥•ÌÑ¡”ÁÉ½‰±•´°ÑÉ…•Ì½‘”½½¹™¥ÕÉ…Ñ¥½¸½¹Ñ•áĞ°Ñ•ÍÑÌÉ½½Ğµ…ÕÍ”¡åÁ½Ñ¡•Í•Ì°…Ñ¥Ù•±äÉ•ÅÕ•ÍÑÌµ¥ÍÍ¥¹œ•Ù¥‘•¹”…Ì½¹”Í•Ğ°…¹½½É‘¥¹…Ñ•ÌÉ•Á…¥ÈÁ±ÕÌÅÕ…±¥Ñä…ÍÍ•ÍÍµ•¹Ğİ¡•¸…ÕÑ¡½É¥é•¸(´€½…¹…±åé”µ±½œ€ñ±½}¥¹ÁÕĞù€è•Ù•¸İ¥Ñ ±½ÌÍÕÁÁ±¥•°	ÕI•Í½±Ù•È•ÍÑ…‰±¥Í¡•ÌÕÍ…”½¹Ñ•áĞ…¹‘¥É•Ñ¥½¸‰•™½É”…¹…±åé¥¹œµÕ±Ñ¤µÁÉ½‘ÕĞ±½Ì°•Ù•¹Ğ½ÉÉ•±…Ñ¥½¸°1½5@…ÉÑ¥™…ÑÌ°…ÉÑ¥™…Ğ¥‘•¹Ñ¥Ñä°…¹Ñ¡”•Ù¥‘•¹”Ñ¥µ•±¥¹”¸(´€½µ¥ÍÉ„µÉ•Ù¥•Ü€ñÉ•Ù¥•İ}Ñ…É•Ğù€èEÕ…±¥ÑåI•Ù¥•İ•ÈÁ•É™½ÉµÌ5%MIµ½É¥•¹Ñ•É¥Í¬ÍÉ••¹¥¹œ¸(´€½Ù•É¥™äµ¡…¹”€ñ¡…¹•}Ñ…É•Ğù€è=É¡•ÍÑÉ…Ñ½È…Õ‘¥ÑÌ‰…Í•±¥¹”°‰Õ¥±°Ñ•ÍÑÌ°É•Ù¥•Ü°…¹‘½Õµ•¹Ñ…Ñ¥½¸…Ñ•Ì¸()¥É•Ğµ½‘”è((´%µÁ±•µ•¹Ñ…Ñ¥½¸½¹±äèÍ•±•Ğµ‰•‘‘•‘•Ù•±½Á•É€…¹ÁÉ½Ù¥‘”Ñ¡”½…°°M½Á”°½¹ÍÑÉ…¥¹ÑÌ°…¹…•ÁÑ…¹”É¥Ñ•É¥„¸(´	Õœ½±½œ…¹…±åÍ¥Ì½ÈÉ•Í½±ÕÑ¥½¸èÍ•±•Ğ	ÕI•Í½±Ù•É€…¹ÁÉ½Ù¥‘”…¹ä…Ù…¥±…‰±”½É¥¥¹…°•ÉÉ½È½È±½œ¸Q¡”…•¹ĞÕ¥‘•Ìå½ÔÑ¼½µÁ±•Ñ”Ñ¡”É•…°½…°°ÍÑ•ÁÌ°•áÁ•Ñ•½…ÑÕ…°‰•¡…Ù¥½È°™É•ÅÕ•¹ä½‰½Õ¹‘…É¥•Ì°•¹Ù¥É½¹µ•¹Ğ°…¹¥µÁ…Ğì½¹”‘¥É•Ñ¥½¸¥Ì±•…È°¥Ğ¥‘•¹Ñ¥™¥•ÌÑ¡”ÁÉ½‰±•´°‘¥Í½Ù•ÉÌ±½…°½¹Ñ•áĞ°…¹…Í­Ì½¹”™½ÈÑ¡”É•µ…¥¹¥¹œµ¥¹¥µÕ´•Ù¥‘•¹”¸MÑ…Ñ”İ¡•Ñ¡•È¡…¹•Ì…É”…ÕÑ¡½É¥é•İ¡•¸É•Í½±ÕÑ¥½¸¥ÌÉ•ÅÕ¥É•¸(´%¹‘•Á•¹‘•¹ĞÅÕ…±¥Ñä…ÍÍ•ÍÍµ•¹Ğ½¹±äèÍ•±•ĞEÕ…±¥ÑåI•Ù¥•İ•É€…¹ÁÉ½Ù¥‘”É•ÅÕ¥É•µ•¹ÑÌ°Ñ¡”É•…°‘¥™˜½™¥±•Ì°…¹…Ù…¥±…‰±”‰Õ¥±½Ñ•ÍĞ½ÍÑ…Ñ¥Œµ…¹…±åÍ¥Ì•Ù¥‘•¹”¸(´½Õµ•¹Ñ…Ñ¥½¸½¹±äèÍ•±•Ğ½-••Á•É€…¹ÁÉ½Ù¥‘”½¹™¥Éµ•Í½ÕÉ”½A$½Ñ•ÍĞ½ÈÉ½½Ğµ…ÕÍ”•Ù¥‘•¹”¸(´¥Ğ‘•±¥Ù•ÉäèÍ•ĞQ…Í¬	É¥•˜¥Ğ•±¥Ù•Éå€Ñ¼½¹±ä¹½¹•€°½µµ¥Ñ€°½µµ¥Ğµ…¹µÁÕÍ¡€°½È…ÕÑ½€¸UÍ•È½¹™¥Éµ…Ñ¥½¸…ÕÑ¡½É¥é•Ì½µµ¥Ñ€½½µµ¥Ğµ…¹µÁÕÍ¡€ì½¹±ä…ÕÑ½€É•ÅÕ¥É•Ì‰½Ñ €¹ÁÉ½©•Ñ€…ÕÑ½µ…Ñ¥½¸Íİ¥Ñ¡•Ì¸Q¡”É•µ½Ñ”°UI0°…¹Ñ…É•Ğ‰É…¹ …±İ…åÌ½µ”™É½´Ñ¡¥ÌÁÉ½©•ĞÌ€¹¥Ñ€¸Q¡”ÕÉÉ•¹Ğµ…¹…•È‘•±•…Ñ•Ì„Í•Á…É…Ñ”‘•±¥Ù•ÉäÑ…Í¬Ñ¼µ‰•‘‘•‘•Ù•±½Á•É€½¹±ä…™Ñ•È…Ñ•Ì…¹¥¹‘•Á•¹‘•¹ĞÉ•Ù¥•Ü¸M•±•Ñ¥¹œ…ÕÑ½€¥Ì¹½Ğ½¹Ñ•¹Ğ½¹™¥Éµ…Ñ¥½¸èÑ¡”ÁÉ•Ù¥•ÜÍ¡½İÌ½µµ¥Ğ½¹Ñ•¹Ğ½¹™¥Éµ…Ñ¥½¸èA9%9€°…¹½¹±ä„ÕÍ•Èµ½¹™¥Éµ•ÕÉÉ•¹Ğ™¥¹•ÉÁÉ¥¹Ğµ…äÁÉ½‘Õ”½¹Ñ•¹Ñ}½¹™¥Éµ…Ñ¥½¸¹ÍÑ…ÑÕÌè=9%I5€Á±ÕÌUQ=}=55%Q}9}AUM!€¸=Ñ¡•Éİ¥Í”¹¼…ÕÑ½µ…Ñ¥ŒÍÑ…¥¹œ½È½µµ¥Ğ¥Ì…±±½İ•¸((ŒŒŒM…™•Ñä…¹A•Éµ¥ÍÍ¥½¹Ì((´YL½‘”…ÁÁÉ½Ù…°Í•ÑÑ¥¹Ì½Ù•É¸•á•ÕÑ•€™½È	ÕI•Í½±Ù•È°µ‰•‘‘•‘•Ù•±½Á•È°…¹EÕ…±¥ÑåI•Ù¥•İ•È¸	ÕI•Í½±Ù•ÈÉÕ¹Ì½¹±äÉ•…µ½¹±ä‘¥…¹½ÍÑ¥Ì…¹Íåµ‰½±¥é…Ñ¥½¸ìI•Ù¥•İ•ÈÉÕ¹Ì½¹±äÉ•…µ½¹±ä¥Ğ°‰Õ¥±½Ñ•ÍĞ…Õ‘¥Ğ°…¹ÍÑ…Ñ¥Œ…¹…±åÍ¥Ì¸(´±…Í °•É…Í”°™ÕÍ”°É•Í•Ğ°!%0°‘•Ù¥”Á½İ•È°É•±•…Í”°…¹•áÑ•É¹…°‘•Á±½åµ•¹Ğ…±İ…åÌÉ•ÅÕ¥É”•áÁ±¥¥Ğ¡Õµ…¸…ÕÑ¡½É¥é…Ñ¥½¸¸½µµ…¹ÌÁÉ•Í•¹”¥¸Ñ¡”ÁÉ½™¥±”¥Ì¹½Ğ…ÕÑ¡½É¥é…Ñ¥½¸¸(´€¹ÁÉ½©•Ñ€¥ĞÁ½±¥ä½¹ÍÑÉ…¥¹Ìİ½É¬‰ÕĞ¥Ì¹½Ğ…ÕÑ¡½É¥é…Ñ¥½¸¸½µµ¥Ğ½ÁÕÍ ÍÑ…•Ì½¹±ä•áÁ±¥¥ĞÑ…Í¬Á…Ñ¡ÌìÁÉ½Ñ•Ñ•‰É…¹¡•Ì°™½É”ÁÕÍ °ÁÕÍ €µÕ€°ÕÍÑ½´É•™ÍÁ•Ì°…¹…ÕÑ½µ…Ñ¥Œ€¹¥Ğ½½¹™¥€¡…¹•Ì…É”™½É‰¥‘‘•¸¸(´½-••Á•ÈÕÍ•ÌÑ¡”İ•ˆ½¹±ä™½È½™™¥¥…°½ÈÙ•¹‘½ÈÁÕ‰±¥ŒÍ½ÕÉ•Ì…¹¹•Ù•ÈÕÁ±½…‘ÌÁÉ¥Ù…Ñ”Í½ÕÉ”°±½Ì°ÕÍÑ½µ•È‘…Ñ„°½ÈÉ•‘•¹Ñ¥…±Ì¸(´¼¹½ĞÉÕ¸İÉ¥Ñ”Ñ…Í­Ì½¹ÕÉÉ•¹Ñ±ä¥¸½¹”¡•­½ÕĞ¸A…É…±±•°İÉ¥Ñ¥¹œµ…ä‰”½¹Í¥‘•É•½¹±ä…™Ñ•È½¹”µÑ…Í¬µÁ•Èµİ½É­ÑÉ•”½‰É…¹ ¥Í½±…Ñ¥½¸•á¥ÍÑÌ¸(´•¹ÑÌ‘¼¹½ĞÉ•Á±…”¡Õµ…¸½‘”É•Ù¥•Ü°¡…É‘İ…É”Ù•É¥™¥…Ñ¥½¸°™Õ¹Ñ¥½¹…°µÍ…™•Ñä…ÍÍ•ÍÍµ•¹Ğ°½È™½Éµ…°5%MI½µÁ±¥…¹”Ñ½½±Ì¸(´M­¥±°ÍÉ¥ÁÑÌÕÍ”•á¥Ğ½‘”€Á€™½ÈÍÕ•ÍÌ°€É€™½È¥¹Ù…±¥¥¹ÁÕĞ°€Í€™½È¥¹ÍÕ™™¥¥•¹Ğ•Ù¥‘•¹”°…¹€Ñ€™½È•áÑ•É¹…°µÑ½½°™…¥±ÕÉ”¸ÁÉ½™¥±•}…Ñ•Ì¹Áå€½¹±äÁ±…¹Ì½Ù…±¥‘…Ñ•Ì…Ñ”•Ù¥‘•¹”…¹¹•Ù•È•á•ÕÑ•ÌÁÉ½™¥±”½µµ…¹‘Ìì¡…É‘İ…É”¹•Ù•È•¹Ñ•ÉÌ¡½ÍĞ…Ñ•Ì¸((ŒŒŒY…±¥‘…Ñ”Ñ¡”-¥Ğ()%¹ÍÑ…±°‘•Ù•±½Áµ•¹Ğ‘•Á•¹‘•¹¥•Ì…¹ÉÕ¸ÍÑ…Ñ¥ŒÙ…±¥‘…Ñ¥½¸è()Í )ÁåÑ¡½¸€µ´Á¥À¥¹ÍÑ…±°€µÈÑ•ÍÑÌ½…•¹Ğµ­¥Ğ½É•ÅÕ¥É•µ•¹ÑÌ¹ÑáĞ)ÁåÑ¡½¸€¹¥Ñ¡Õˆ½…•¹Ğµ­¥Ğ½ÍÉ¥ÁÑÌ½Ù…±¥‘…Ñ•}ÕÍÑ½µ¥é…Ñ¥½¹Ì¹Áä€´µÉ½½Ğ€¸)ÁåÑ¡½¸€µ´Õ¹¥ÑÑ•ÍĞ‘¥Í½Ù•È€µÌÑ•ÍÑÌ½…•¹Ğµ­¥Ğ€µÀ€‰Ñ•ÍÑ|¨¹Áäˆ)€()	Õ¥±Ñ¡”¡½ÍĞ•á…µÁ±”è()Í )µ…­”€µL•á…µÁ±•Ì½µ¥¹¥µ…°µ™¥Éµİ…É”€µ‰Õ¥±½µ¥¹¥µ…°µ™¥Éµİ…É”)µ…­”€´µ‰Õ¥±‰Õ¥±½µ¥¹¥µ…°µ™¥Éµİ…É”)Ñ•ÍĞ€´µÑ•ÍĞµ‘¥È‰Õ¥±½µ¥¹¥µ…°µ™¥Éµİ…É”€´µ½ÕÑÁÕĞµ½¸µ™…¥±ÕÉ”)€()$ÉÕ¹ÌÑ¡•Í”¡•­Ì½¸]¥¹‘½İÌ…¹U‰Õ¹ÑÔ¸I•…°¥¹Ñ•É…Ñ¥½¸…±Í¼É•ÅÕ¥É•ÌÑ¡”mYL½‘”5…¹Õ…°Mµ½­”Q•ÍÑt¡Ñ•ÍÑÌ½…•¹Ğµ­¥Ğ½µ…¹Õ…°½ÙÍ½‘”µÍµ½­”µÑ•ÍĞ¹µ¤°½Ù•É¥¹œ‘¥Í½Ù•Éä°ÁÉ½©•Ğµ½¹ÍÑÉ…¥¹Ğ¥¹Ù½…Ñ¥½¸°½¹ÑÉ½±±•¥Ğ‘•±¥Ù•Éä°…ÕÑ½µ…Ñ¥Œ½É¡•ÍÑÉ…Ñ¥½¸°µ¥ÍÍ¥¹œ‘½Õµ•¹ÑÌ°‰…Í•±¥¹”™…¥±ÕÉ”°Í••‘•µ‘•™•ĞÉ•Ù¥•Ü°1µ¥Íµ…Ñ °…¹¡…É‘İ…É”…ÁÁÉ½Ù…°¸((ŒŒŒ1…å½ÕĞ()Ñ•áĞ(¹¥Ñ¡Õˆ¼+ŠRsŠRŠR ½Á¥±½Ğµ¥¹ÍÑÉÕÑ¥½¹Ì¹µ+ŠRsŠRŠR •µ‰•‘‘•µÁÉ½©•Ğ¹åµ°+ŠRsŠRŠR …•¹Ğµ½¹ÑÉ…ÑÌ¹µ+ŠRsŠRŠR …•¹ÑÌ¼€€€€€€€€€€€€€€€€€€Œ™¥Ù”‰ÕÍ¥¹•ÍÌ…•¹ÑÌÁ±ÕÌ½¹”¡¥‘‘•¸É½ÕÑ•È+ŠRsŠRŠR …•¹Ğµ­¥Ğ¼€€€€€€€€€€€€€€€Œ­¥ĞÉÕ¹Ñ¥µ”…¹Í•±˜µ¡•¬ÍÉ¥ÁÑÌ+ŠRsŠRŠR ¥¹ÍÑÉÕÑ¥½¹Ì¼€€€€€€€€€€€€Œ°‰¥±¥¹Õ…°°…¹­¥Ğ½¹™¥ÕÉ…Ñ¥½¸ÉÕ±•Ì+ŠRsŠRŠR ÁÉ½µÁÑÌ¼€€€€€€€€€€€€€€€€€ŒÍ¥àÑ¡¥¸Í±…Í •¹ÑÉ¥•Ì+ŠRsŠRŠR Í­¥±±Ì¼€€€€€€€€€€€€€€€€€€Œ™¥Ù”½¸µ‘•µ…¹İ½É­™±½İÌİ¥Ñ ‘•Ñ•Éµ¥¹¥ÍÑ¥ŒÍÉ¥ÁÑÌ+ŠRSŠRŠR İ½É­™±½İÌ½Ù…±¥‘…Ñ”¹åµ°(¹ÁÉ½©•Ğ¼+ŠRsŠRŠR ÁÉ½©•Ğ¹åµ°€€€€€€€€€€€€€€ŒÁÉ½©•Ğ½¹ÍÑÉ…¥¹Ğµ…¹¥™•ÍĞ…¹•áÑ•¹Í¥½¸•¹ÑÉäÁ½¥¹Ğ+ŠRsŠRŠR I5¹µ€€€€€€€€€€€€€€€€Œ‰¥±¥¹Õ…°ÕÍ…”Õ¥‘”+ŠRsŠRŠR ÉÕ±•Ì¼€€€€€€€€€€€€€€€€€€€ŒÁÉ½©•ĞµÍÁ•¥™¥ŒÉÕ±•Ì¥¹Ù½­•‰äÉ•Á½Í¥Ñ½ÉäÁ…Ñ +ŠRSŠRŠR ¥Ğ¼(€€€ƒŠRsŠRŠR ‘•±¥Ù•Éä¹åµ°€€€€€€€€€Œ…ÕÑ½µ…Ñ¥½¸°Í½Á”°Í…™•Ñä°‰É…¹ ÉÕ±•Ì°…¹¡•­Ìì¹¼Ñ…É•Ğ(€€€ƒŠRSŠRŠR ½µµ¥Ğ¹Ñ•µÁ±…Ñ”€€€€€€ŒÍÑÉ¥Ğ½µµ¥Ğµ•ÍÍ…”Ñ•µÁ±…Ñ”)‘½Ì¼€€€€€€€€€€€€€€€€€€€€€€€€ŒÁÉ½‘ÕĞ‘½Õµ•¹Ñ…Ñ¥½¸)Ñ•ÍÑÌ½…•¹Ğµ­¥Ğ¼€€€€€€€€€€€€€ŒÕ¹¥ĞÑ•ÍÑÌ°™¥áÑÕÉ•Ì°‘•Á•¹‘•¹¥•Ì°…¹µ…¹Õ…°Íµ½­”Ñ•ÍĞ)•á…µÁ±•Ì½µ¥¹¥µ…°µ™¥Éµİ…É”¼€€€Œ5…­”½Q•ÍĞ€¬™…­”!0)€((ŒŒŒ	¥±¥¹Õ…°IÕ±•Ì()¥ÉÍĞµÁ…ÉÑä5…É­‘½İ¸¥¸Ñ¡”I5°‘½Ì½€°€¹¥Ñ¡Õˆ½€°…¹€¹ÁÉ½©•Ğ½€ÕÍ•Ìè()µ(Œ€ñ½Õµ•¹ĞQ¥Ñ±”ø((øƒ’â·šZ¾òkšr³šZš†¦R£–në–ºk–>3¢¾·îOšzšnÓšZÃ’â·šZš"[¢.ÇšZ––ºçš^Û¾ò3–ş¦†ï–B3š¶—šnÓšZÃ–>›’â¦£–"¾ò3’şwš2’â“¦£–"¢¾·’æ'’â¢Ó(ø(ø¹±¥Í èQ¡¥Ì‘½Õµ•¹ĞÕÍ•Ì„™¥á•‰¥±¥¹Õ…°ÍÑÉÕÑÕÉ”¸]¡•¸•¥Ñ¡•ÈÑ¡”¡¥¹•Í”½È¹±¥Í ½¹Ñ•¹Ğ¥ÌÕÁ‘…Ñ•°Ñ¡”½Ñ¡•ÈÍ•Ñ¥½¸µÕÍĞ‰”ÕÁ‘…Ñ•…Ìİ•±°Ñ¼­••À‰½Ñ Í•Ñ¥½¹ÌÍ•µ…¹Ñ¥…±±ä…±¥¹•¸((ŒŒƒ’â·šZ€¼¡¥¹•Í”((ó–º3šVÓ’â·šZ––ºäø((ŒŒ¹±¥Í ((ñ½µÁ±•Ñ”¹±¥Í ½¹Ñ•¹Ğø)€()Y•¹‘½È°•¹•É…Ñ•°Ñ¡¥ÉµÁ…ÉÑä‘½Õµ•¹Ñ…Ñ¥½¸°…¹±¥•¹Í”Ñ•áĞ…É”¹½Ğ…ÕÑ½µ…Ñ¥…±±ä‰¥±¥¹Õ…±¥é•¸Q¡”É•±•…Í”…Ñ”‘½•Ì¹½Ğ…•ÁĞ…¸Õ¹½İ¹•Q=<¡Íå¹Œ¥€¸((ŒŒŒáÑ•¹Í¥½¸AÉ¥¹¥Á±•Ì((´¼¹½Ğ…‘„Í¥áÑ …•¹Ğ…ÍÕ…±±ä™½È„¹•Üİ½É­™±½Üì•áÑ•¹…¸•á¥ÍÑ¥¹œÉ½±”µ½‘”½È…‘…¸½¸µ‘•µ…¹Í­¥±°™¥ÉÍĞ¸(´AÉ½µÁÑÌÁÉ½Ù¥‘”µ…¹Õ…°•¹ÑÉä…¹…•¹ĞÉ½ÕÑ¥¹œì½µÁ±•à¡•­±¥ÍÑÌ°Ñ•µÁ±…Ñ•Ì°…¹ÍÉ¥ÁÑÌ‰•±½¹œ¥¸Í­¥±±Ì¸(´5…¥¹Ñ…¥¸Í¡…É•ÉÕ±•Ì½¹”…¹±¥¹¬Ñ¡•´™É½´…•¹ÑÌ…¹Í­¥±±ÌÑ¼…Ù½¥É•Á•…Ñ•½¹Ñ•áĞ¸(´AÕĞÁÉ½©•ĞµÍÁ•¥™¥ŒÉÕ±•ÌÕ¹‘•È€¹ÁÉ½©•Ğ½€…¹É•¥ÍÑ•ÈÑ¡•´Ñ¡É½Õ Ñ¡”µ…¹¥™•ÍĞ¸UÍ”¹…µ•ÍÁ…••áÑ•¹Í¥½¹Í€™½È½Ñ¡•ÈÍÑÉÕÑÕÉ•¥¹Ñ•É…Ñ¥½¹ÌìÁÉ•Í•ÉÙ”Õ¹­¹½İ¸•áÑ•¹Í¥½¹Ìİ¥Ñ¡½ÕĞ•á•ÕÑ¥¹œÑ¡•´…ÕÑ½µ…Ñ¥…±±ä¸(´Q¡”­¥Ğ™Õ±±äÍÕÁÁ½ÉÑÌYL½‘”½¹±ä¸¥Ñ!Õˆ±½Õ½1$µ…ä¥¹½É”¡…¹‘½™™Ì½ÈYL½‘”µÍÁ•¥™¥Œ…±±½İ±¥ÍÑÌ…¹…É”½ÕÑÍ¥‘”ØÄ…•ÁÑ…¹”¸
