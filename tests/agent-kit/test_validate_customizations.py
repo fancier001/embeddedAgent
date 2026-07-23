@@ -692,6 +692,11 @@ class CustomizationValidatorTests(unittest.TestCase):
             "byte-for-byte identical",
             "empty inline-code span",
             "`<HW-Test>`",
+            "POLICY LOAD EVIDENCE GATE",
+            "Template Source",
+            "Template Load: PASS",
+            "Message Validation: PASS",
+            "generic `[Jira: summary]` format",
         ):
             with self.subTest(marker=marker):
                 contract.write_text(
@@ -798,6 +803,9 @@ class CustomizationValidatorTests(unittest.TestCase):
             "COMMIT PREVIEW COMPLETENESS GATE",
             "byte-for-byte identical",
             "empty inline-code spans",
+            "POLICY LOAD EVIDENCE GATE",
+            "Message Validation: PASS",
+            "generic fallback",
         ):
             with self.subTest(marker=marker):
                 agent.write_text(
