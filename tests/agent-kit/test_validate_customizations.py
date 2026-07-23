@@ -686,6 +686,17 @@ class CustomizationValidatorTests(unittest.TestCase):
             "Next Action has a separate language-rendering gate",
             "no Han, CJK punctuation, or fullwidth characters",
             "the `START_NEW_ISSUE` values above are mandatory",
+            "COMMIT PREVIEW COMPLETENESS GATE",
+            "`## Commit Message Preview`",
+            "single `text` fenced code block",
+            "byte-for-byte identical",
+            "empty inline-code span",
+            "`<HW-Test>`",
+            "POLICY LOAD EVIDENCE GATE",
+            "Template Source",
+            "Template Load: PASS",
+            "Message Validation: PASS",
+            "generic `[Jira: summary]` format",
         ):
             with self.subTest(marker=marker):
                 contract.write_text(
@@ -784,6 +795,26 @@ class CustomizationValidatorTests(unittest.TestCase):
                 )
                 self.assertIn("AGENT_BODY_CONTRACT", self.codes())
             agent.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_embedded_developer_requires_complete_commit_preview_gate(self) -> None:
+        agent = self.repo / ".github" / "agents" / "embedded-developer.agent.md"
+        original = agent.read_text(encoding="utf-8")
+        for marker in (
+            "COMMIT PREVIEW COMPLETENESS GATE",
+            "byte-for-byte identical",
+            "empty inline-code spans",
+            "POLICY LOAD EVIDENCE GATE",
+            "Message Validation: PASS",
+            "generic fallback",
+        ):
+            with self.subTest(marker=marker):
+                agent.write_text(
+                    original.replace(marker, "REMOVED_COMMIT_PREVIEW_GATE"),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("AGENT_BODY_CONTRACT", self.codes())
+        agent.write_text(original, encoding="utf-8", newline="\n")
 
     def test_initial_english_bug_message_regression_is_documented(self) -> None:
         smoke_test = (

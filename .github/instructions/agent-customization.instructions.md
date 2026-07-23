@@ -20,6 +20,8 @@ description: Agent Kit 结构、权限和去重规则 / Agent Kit structure, per
 - Next Action 需要用户输入时必须显式使用 `Input Required: YES`，逐项给出 `Required Input` 和可复制 `Reply Template`；无需输入时使用 `Input Required: NO` 并明确提示点击下一步或无需操作。
 - 所有 Agent 在首次回复的第一个字符前先解析或传递 `Chat Language`。有 Latin-script 自然语言单词且无 Han 自然语言文本时必须使用 `en-US`，Jira ID 等标识符不得覆盖该结果。当该值为 `en` 或 `en-*` 时，发送前扫描完整草稿，出现 Agent 生成的 Han 字符必须丢弃并重新生成。`Dispatch Target` 只使用共享契约定义的纯 ASCII 稳定 ID。
 - Next Action 在计算语义动作后必须按 `Chat Language` 独立渲染。`en` 或 `en-*` 块的所有生成字段值只使用英文词表和 ASCII 标点；出现 Han、CJK/全角标点、中文允许值或中文模板时必须丢弃并重新渲染整块。
+- Jira 有效时，Commit Delivery Confirmation 必须在单个 `text` fenced code block 中显示经校验的完整模板消息；禁止缺字段、摘要替代模板、空行内代码、空路径/对象和截断值，实际 commit 消息必须与确认预览逐字节一致。
+- 任何 commit preview 前必须完成 `LOAD_POLICY` 并记录 Template Source、Template Load PASS 和有序字段；Jira 有效后还需记录 `project_policy.py message` 退出码 0 和 Message Validation PASS。证据缺失时阻塞，禁止通用格式回退。
 - Prompt 不声明 `tools`，必须把 `${input:...}` 交给目标 Agent；需要 Skill 时直接链接其规范文件。
 - Skill 目录名与小写连字符 `name` 一致，附属资源从 `SKILL.md` 直接链接；确定性脚本留在对应 Skill 的 `scripts/`。
 - `.project/project.yml` 是项目级约束唯一入口；规则通过 `rules` 注册，Git policy 通过 `git_policy` 引用，集成扩展写入 `extensions`。
@@ -36,6 +38,8 @@ description: Agent Kit 结构、权限和去重规则 / Agent Kit structure, per
 - A Next Action that needs user input uses `Input Required: YES` with itemized `Required Input` and a copy-ready `Reply Template`; otherwise it uses `Input Required: NO` and explicitly tells the user to click Next Action or take no action.
 - Every Agent resolves or preserves `Chat Language` before the first character of the first response. Latin-script natural-language words with no Han natural-language text require `en-US`; identifiers such as Jira IDs never override that result. For `en` or `en-*`, scan the complete draft before sending and discard/regenerate it when any agent-generated portion contains a Han-script character. `Dispatch Target` uses only the ASCII stable IDs defined by the shared contract.
 - Render Next Action separately after computing the semantic action. For `en` or `en-*`, every generated field value uses English vocabulary and ASCII punctuation; Han, CJK/fullwidth punctuation, Chinese allowed values, or a Chinese template invalidates and rerenders the whole block.
+- When Jira is valid, Commit Delivery Confirmation shows the complete validated template message in one `text` fenced code block. Missing fields, a synopsis in place of the template, empty inline-code spans, empty paths/objects, and truncated values are invalid; the actual commit message is byte-for-byte identical to the confirmed preview.
+- Before any commit preview, complete `LOAD_POLICY` and record Template Source, Template Load PASS, and ordered fields. After Jira is valid, also record `project_policy.py message` exit 0 and Message Validation PASS. Missing evidence blocks preview, and generic fallback formats are forbidden.
 - Prompts declare no `tools`, pass `${input:...}` to the target Agent, and directly link a required Skill specification.
 - A Skill directory matches its lowercase-hyphen `name`, links supporting resources directly from `SKILL.md`, and keeps deterministic helpers in its own `scripts/` directory.
 - `.project/project.yml` is the sole project-policy entry point. Register rules through `rules`, reference Git policy through `git_policy`, and place integration data under `extensions`.
