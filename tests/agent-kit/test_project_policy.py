@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import os
 import shutil
 import subprocess
@@ -18,6 +19,7 @@ FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "commit"
 sys.path.insert(0, str(PROJECT_ROOT / ".github" / "agent-kit" / "scripts"))
 
 from project_policy import (  # noqa: E402
+    COMMIT_CONTRACT_REVISION,
     DECISION_AUTO_UPLOAD,
     DECISION_CONFIRM_AUTO_CONTENT,
     DECISION_MESSAGE_ONLY,
@@ -29,7 +31,9 @@ from project_policy import (  # noqa: E402
     git_plan,
     resolve_push_target,
     resolve_rules,
+    render_preview_markdown,
     validate_message,
+    validated_preview,
 )
 
 
@@ -147,6 +151,40 @@ class CommitMessageTests(unittest.TestCase):
         result = self.validate(self.valid_text)
         self.assertEqual("PASS", result["status"], result["errors"])
         self.assertEqual(["QDM047-5567", "QDM047-5566"], result["jira_ids"])
+
+    def test_validated_preview_returns_exact_hashed_message_and_markdown(self) -> None:
+        message = self.repo / "preview.txt"
+        message_bytes = self.valid_text.encode("utf-8")
+        message.write_bytes(message_bytes)
+        result = dict(validated_preview(self.repo, message))
+        self.assertEqual("PASS", result["status"], result["errors"])
+        self.assertEqual(COMMIT_CONTRACT_REVISION, result["contract_revision"])
+        self.assertEqual(self.valid_text, result["message"])
+        self.assertEqual(hashlib.sha256(message_bytes).hexdigest(), result["message_sha256"])
+        template_bytes = (self.repo / result["template"]).read_bytes()
+        self.assertEqual(
+            hashlib.sha256(template_bytes).hexdigest(), result["template_sha256"]
+        )
+        rendered = render_preview_markdown(result)
+        self.assertIn("Commit Contract Revision: strict-template-v2", rendered)
+        self.assertIn("## Commit Message Preview", rendered)
+        self.assertIn(f"```text\n{self.valid_text}", rendered)
+
+    def test_screenshot_conventional_commit_never_produces_a_preview(self) -> None:
+        message = self.repo / "invalid-preview.txt"
+        message.write_bytes(
+            (FIXTURE_ROOT / "invalid-conventional-ikversion.txt").read_bytes()
+        )
+        result = dict(validated_preview(self.repo, message))
+        self.assertEqual("BLOCKED", result["status"])
+        self.assertEqual(COMMIT_CONTRACT_REVISION, result["contract_revision"])
+        self.assertNotIn("message", result)
+        codes = {item["code"] for item in result["errors"]}
+        self.assertIn("FORBIDDEN_CONVENTIONAL_SUBJECT", codes)
+        self.assertIn("BARE_JIRA_FIELD", codes)
+        self.assertIn("JIRA_REQUIRED", codes)
+        with self.assertRaises(PolicyInputError):
+            render_preview_markdown(result)
 
     def test_configured_primary_and_aliases_control_subject_project(self) -> None:
         manifest_path = self.repo / ".project" / "project.yml"
