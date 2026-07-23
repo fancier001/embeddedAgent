@@ -201,6 +201,8 @@ GIT_DELIVERY_HANDOFF_PROMPT_MARKERS = (
     "Commit Content",
     "ADJUST_CHANGESET",
     "Change Confirmation: PENDING",
+    "full template-shaped Commit Message Preview",
+    "no empty inline-code spans",
     "CONFIRM_PUSH",
     "MANUAL_PUSH",
 )
@@ -322,6 +324,9 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "CHAT LANGUAGE OUTPUT GATE",
             "FIRST-RESPONSE PRECHECK",
             "NEXT ACTION LANGUAGE RENDER GATE",
+            "COMMIT PREVIEW COMPLETENESS GATE",
+            "byte-for-byte identical",
+            "empty inline-code spans",
         }
     ),
     "quality-reviewer.agent.md": frozenset(
@@ -460,6 +465,12 @@ REQUIRED_SHARED_CONTRACT_MARKERS = frozenset(
         "Next Action has a separate language-rendering gate",
         "no Han, CJK punctuation, or fullwidth characters",
         "the `START_NEW_ISSUE` values above are mandatory",
+        "COMMIT PREVIEW COMPLETENESS GATE",
+        "`## Commit Message Preview`",
+        "single `text` fenced code block",
+        "byte-for-byte identical",
+        "empty inline-code span",
+        "`<HW-Test>`",
     }
 )
 
