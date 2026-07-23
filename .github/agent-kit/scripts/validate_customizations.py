@@ -277,6 +277,7 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "Chat Language",
             "CHAT LANGUAGE OUTPUT GATE",
             "FIRST-RESPONSE PRECHECK",
+            "NEXT ACTION LANGUAGE RENDER GATE",
         }
     ),
     "bug-resolver.agent.md": frozenset(
@@ -299,6 +300,7 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "Chat Language",
             "CHAT LANGUAGE OUTPUT GATE",
             "FIRST-RESPONSE PRECHECK",
+            "NEXT ACTION LANGUAGE RENDER GATE",
         }
     ),
     "embedded-developer.agent.md": frozenset(
@@ -319,6 +321,7 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "Chat Language",
             "CHAT LANGUAGE OUTPUT GATE",
             "FIRST-RESPONSE PRECHECK",
+            "NEXT ACTION LANGUAGE RENDER GATE",
         }
     ),
     "quality-reviewer.agent.md": frozenset(
@@ -332,6 +335,7 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "Chat Language",
             "CHAT LANGUAGE OUTPUT GATE",
             "FIRST-RESPONSE PRECHECK",
+            "NEXT ACTION LANGUAGE RENDER GATE",
         }
     ),
     "doc-keeper.agent.md": frozenset(
@@ -344,6 +348,7 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "Chat Language",
             "CHAT LANGUAGE OUTPUT GATE",
             "FIRST-RESPONSE PRECHECK",
+            "NEXT ACTION LANGUAGE RENDER GATE",
         }
     ),
     "next-action-router.agent.md": frozenset(
@@ -363,6 +368,7 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "Chat Language",
             "CHAT LANGUAGE OUTPUT GATE",
             "FIRST-RESPONSE PRECHECK",
+            "NEXT ACTION LANGUAGE RENDER GATE",
         }
     ),
 }
@@ -451,6 +457,9 @@ REQUIRED_SHARED_CONTRACT_MARKERS = frozenset(
         "handoff prompts, buttons, Router prompts",
         "zero Han-script characters",
         "Never copy a bilingual button label",
+        "Next Action has a separate language-rendering gate",
+        "no Han, CJK punctuation, or fullwidth characters",
+        "the `START_NEW_ISSUE` values above are mandatory",
     }
 )
 
