@@ -32,21 +32,15 @@ except ImportError as exc:  # pragma: no cover - exercised by CLI environments
 EXIT_INPUT = 2
 EXIT_BLOCKED = 3
 EXIT_EXTERNAL = 4
-COMMIT_CONTRACT_REVISION = "strict-template-v2"
 DECISION_AUTO_UPLOAD = "AUTO_COMMIT_AND_PUSH"
 DECISION_CONFIRM_AUTO_CONTENT = "CONFIRM_COMMIT_CONTENT"
 DECISION_MESSAGE_ONLY = "OUTPUT_COMMIT_MESSAGE"
 DECISION_NO_DELIVERY = "NO_DELIVERY"
+PROJECT_POLICY_REQUIRED = "PROJECT_POLICY_REQUIRED"
 FORBIDDEN_PUSH_KEYS = frozenset(
     {"remote", "url", "push_url", "pushurl", "target_branch", "target_ref"}
 )
 SUBJECT_PATTERN = re.compile(r"^<([^<>]+)><([^<>]+)>:\s+(.+?)$")
-CONVENTIONAL_SUBJECT_PATTERN = re.compile(
-    r"^(?:build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)"
-    r"(?:\([^()\r\n]+\))?!?:",
-    re.IGNORECASE,
-)
-BARE_JIRA_PATTERN = re.compile(r"^Jira\s*:", re.IGNORECASE)
 FIELD_PATTERN = re.compile(r"^<([^<>]+)>:\s?(.*)$")
 PLACEHOLDER_PATTERN = re.compile(r"<[^<>]+>")
 TEST_MARKER = "<<<Test Notes>>>"
@@ -94,6 +88,25 @@ class ParsedField:
 
 def _json_result(status: str, **items: Any) -> dict[str, Any]:
     return {"status": status, **items}
+
+
+def _project_policy_required(operation: str) -> dict[str, Any]:
+    message = (
+        ".project/project.yml and its referenced Git delivery policy are required "
+        f"for {operation}; Git delivery is fail-closed"
+    )
+    return _json_result(
+        "BLOCKED",
+        code=PROJECT_POLICY_REQUIRED,
+        reasons=[message],
+        errors=[
+            {
+                "code": PROJECT_POLICY_REQUIRED,
+                "line": 1,
+                "message": message,
+            }
+        ],
+    )
 
 
 def _normalized_root(root: Path | str) -> Path:
@@ -515,14 +528,6 @@ def _message_entries(text: str) -> tuple[dict[str, str], list[ParsedField], list
                 "message": "subject must be <Project><Function block>: <Summary>",
             }
         )
-        if CONVENTIONAL_SUBJECT_PATTERN.match(lines[first].strip()):
-            errors.append(
-                {
-                    "code": "FORBIDDEN_CONVENTIONAL_SUBJECT",
-                    "line": first + 1,
-                    "message": "Conventional Commit subjects are forbidden by the repository template",
-                }
-            )
     else:
         subject = {
             "project": subject_match.group(1).strip(),
@@ -556,13 +561,9 @@ def _message_entries(text: str) -> tuple[dict[str, str], list[ParsedField], list
             continue
         errors.append(
             {
-                "code": "BARE_JIRA_FIELD" if BARE_JIRA_PATTERN.match(stripped) else "UNKNOWN_LINE",
+                "code": "UNKNOWN_LINE",
                 "line": index + 1,
-                "message": (
-                    "Jira must use the repository field <Jira ID>:<value>"
-                    if BARE_JIRA_PATTERN.match(stripped)
-                    else f"unrecognized non-indented line: {stripped}"
-                ),
+                "message": f"unrecognized non-indented line: {stripped}",
             }
         )
     entries = [
@@ -624,7 +625,7 @@ def validate_message(root: Path | str, message_path: Path | str) -> Mapping[str,
     root_path = _normalized_root(root)
     loaded = load_manifest(root_path)
     if loaded is None:
-        return _json_result("NOT_CONFIGURED", errors=[], subject={})
+        return _project_policy_required("commit message validation")
     manifest_path, manifest = loaded
     loaded_policy = load_policy(root_path, loaded)
     assert loaded_policy is not None
@@ -783,50 +784,6 @@ def validate_message(root: Path | str, message_path: Path | str) -> Mapping[str,
         errors=errors,
         template=template_path.relative_to(root_path).as_posix(),
         policy=policy_path.relative_to(root_path).as_posix(),
-    )
-
-
-def validated_preview(root: Path | str, message_path: Path | str) -> Mapping[str, Any]:
-    """Return an exact, hashed preview only after strict template validation passes."""
-    root_path = _normalized_root(root)
-    result = dict(validate_message(root_path, message_path))
-    result["contract_revision"] = COMMIT_CONTRACT_REVISION
-    if result.get("status") != "PASS":
-        return result
-
-    message_file = Path(message_path).resolve()
-    template_file = root_path / str(result["template"])
-    try:
-        message_bytes = message_file.read_bytes()
-        template_bytes = template_file.read_bytes()
-        message_text = message_bytes.decode("utf-8")
-    except (OSError, UnicodeError) as exc:
-        raise PolicyInputError(f"cannot build commit preview: {exc}") from exc
-    result.update(
-        {
-            "message_sha256": hashlib.sha256(message_bytes).hexdigest(),
-            "template_sha256": hashlib.sha256(template_bytes).hexdigest(),
-            "message": message_text,
-        }
-    )
-    return result
-
-
-def render_preview_markdown(result: Mapping[str, Any]) -> str:
-    """Render validator-owned stdout that the Agent can paste without reconstruction."""
-    if result.get("status") != "PASS" or not isinstance(result.get("message"), str):
-        raise PolicyInputError("a markdown preview requires a validated PASS message")
-    message = str(result["message"])
-    terminal_newline = "" if message.endswith("\n") else "\n"
-    return (
-        f"Commit Contract Revision: {result['contract_revision']}\n"
-        f"Template Source: {result['template']}\n"
-        f"Template SHA-256: {result['template_sha256']}\n"
-        f"Message SHA-256: {result['message_sha256']}\n\n"
-        "## Commit Message Preview\n\n"
-        "```text\n"
-        f"{message}{terminal_newline}"
-        "```\n"
     )
 
 
@@ -1231,7 +1188,11 @@ def git_plan(
     root_path = _normalized_root(root)
     loaded = load_manifest(root_path)
     if loaded is None:
-        return _json_result("NOT_CONFIGURED", operation=operation, reasons=[])
+        return {
+            **_project_policy_required(f"Git {operation} preflight"),
+            "operation": operation,
+            "delivery": delivery,
+        }
     loaded_policy = load_policy(root_path, loaded)
     assert loaded_policy is not None
     policy_path, policy = loaded_policy
@@ -1269,6 +1230,7 @@ def git_plan(
     outgoing_commits: list[str] = []
     outgoing_paths: list[str] = []
     commit_content: Mapping[str, Any] | None = None
+    content_confirmation: Mapping[str, Any] | None = None
 
     if operation == "auto":
         if delivery != "auto":
@@ -1500,6 +1462,7 @@ def git_plan(
         outgoing_commits=outgoing_commits,
         outgoing_paths=outgoing_paths,
         commit_content=commit_content,
+        content_confirmation=content_confirmation,
         checks=checks,
     )
 
@@ -1517,15 +1480,6 @@ def _build_parser() -> argparse.ArgumentParser:
     message = subparsers.add_parser("message", help="validate one completed commit message")
     message.add_argument("--root", type=Path, default=Path.cwd())
     message.add_argument("--file", type=Path, required=True, dest="message_file")
-
-    preview = subparsers.add_parser(
-        "preview", help="validate and render one exact commit-message preview"
-    )
-    preview.add_argument("--root", type=Path, default=Path.cwd())
-    preview.add_argument("--file", type=Path, required=True, dest="message_file")
-    preview.add_argument(
-        "--format", choices=("json", "markdown"), default="json", dest="preview_format"
-    )
 
     plan = subparsers.add_parser("git-plan", help="perform read-only Git delivery preflight")
     plan.add_argument("--root", type=Path, default=Path.cwd())
@@ -1548,8 +1502,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             result = resolve_rules(args.root, args.paths or [], include_all=args.all)
         elif args.command == "message":
             result = validate_message(args.root, args.message_file)
-        elif args.command == "preview":
-            result = validated_preview(args.root, args.message_file)
         else:
             result = git_plan(
                 args.root,
@@ -1567,14 +1519,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     except GitReadError as exc:
         print(json.dumps(_json_result("BLOCKED", reasons=[str(exc)]), ensure_ascii=False))
         return EXIT_EXTERNAL
-    if (
-        args.command == "preview"
-        and args.preview_format == "markdown"
-        and result.get("status") == "PASS"
-    ):
-        print(render_preview_markdown(result), end="")
-    else:
-        print(json.dumps(result, ensure_ascii=False, indent=2))
+    print(json.dumps(result, ensure_ascii=False, indent=2))
     return EXIT_BLOCKED if result["status"] == "BLOCKED" else 0
 
 

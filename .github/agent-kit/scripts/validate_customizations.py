@@ -201,10 +201,6 @@ GIT_DELIVERY_HANDOFF_PROMPT_MARKERS = (
     "Commit Content",
     "ADJUST_CHANGESET",
     "Change Confirmation: PENDING",
-    "full template-shaped Commit Message Preview",
-    "no empty inline-code spans",
-    "Run LOAD_POLICY before any preview",
-    "Template Load: PASS",
     "CONFIRM_PUSH",
     "MANUAL_PUSH",
 )
@@ -299,6 +295,13 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "## Problem Identification",
             "## Evidence Request",
             "`PLAN_FIX`",
+            "`COMMIT`",
+            "core.hooksPath=.githooks",
+            "BugResolver 可执行",
+            "BugResolver may execute",
+            "Commit Content Confirmation: PENDING",
+            "确认提交内容",
+            "confirm commit content",
             "Task Change Baseline",
             "`Root Cause`",
             "Chat Language",
@@ -320,24 +323,23 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "`DETECT_COMMIT_SCOPE`",
             "`CONFIRM_DELIVERY`",
             "`AUTO_DECIDE`",
+            "`STAGE`",
+            "`COMMIT`",
             "`CONFIRM_PUSH`",
+            "BLOCKED / PROJECT_POLICY_REQUIRED",
+            ".githooks/commit-msg",
+            "core.hooksPath=.githooks",
+            "`git add -- <task-paths>`",
+            "`git commit`",
+            "`--no-verify`",
+            "Commit Content Confirmation: PENDING",
+            "确认提交内容",
+            "confirm commit content",
             "Task Change Baseline",
             "Chat Language",
             "CHAT LANGUAGE OUTPUT GATE",
             "FIRST-RESPONSE PRECHECK",
             "NEXT ACTION LANGUAGE RENDER GATE",
-            "COMMIT PREVIEW COMPLETENESS GATE",
-            "byte-for-byte identical",
-            "empty inline-code spans",
-            "POLICY LOAD EVIDENCE GATE",
-            "Message Validation: PASS",
-            "generic fallback",
-            "STRICT COMMIT OUTPUT SHAPE GATE",
-            "FORBIDDEN COMMIT SHAPES",
-            "strict-template-v2",
-            "project_policy.py preview",
-            "fix(ikversion):",
-            "bare `Jira:`",
         }
     ),
     "quality-reviewer.agent.md": frozenset(
@@ -428,9 +430,11 @@ REQUIRED_PRODUCT_FILES = (
     ".github/instructions/c-code.instructions.md",
     ".github/instructions/markdown-bilingual.instructions.md",
     ".github/agent-kit/scripts/project_policy.py",
+    ".githooks/commit-msg",
 )
 REQUIRED_TEST_FILES = (
     "tests/agent-kit/requirements.txt",
+    "tests/agent-kit/test_commit_hook.py",
     "tests/agent-kit/test_project_policy.py",
     "tests/agent-kit/test_skill_scripts.py",
     "tests/agent-kit/test_validate_customizations.py",
@@ -453,16 +457,28 @@ REQUIRED_SHARED_CONTRACT_MARKERS = frozenset(
         "EXTERNAL",
         "`ADJUST_CHANGESET`",
         "Change Confirmation: PENDING",
-        "confirm changes and commit",
+        "Commit Content Confirmation: PENDING",
+        "确认提交内容",
+        "confirm commit content",
+        "完整 commit message",
+        "complete commit message",
         "per-file `entries`",
         "`CONFIRM_PUSH`",
         "`MANUAL_PUSH`",
         "`START_NEW_ISSUE`",
         "NOT_RUN — Not required: <reason>",
         "`CONFIRM_COMMIT_CONTENT`",
+        "`COMMIT`",
+        "BLOCKED / PROJECT_POLICY_REQUIRED",
+        ".githooks/commit-msg",
+        "core.hooksPath=.githooks",
+        "`git add -- <task-paths>`",
+        "BugResolver 可执行",
+        "BugResolver may execute",
+        "禁止未带版本化 hook 的 `git commit`",
+        "A `git commit` without the versioned hook is forbidden",
         "--expected-content-fingerprint",
         "content_confirmation.status: CONFIRMED",
-        "Commit Content Confirmation: PENDING",
         "返回编排 / Return to Orchestrator",
         "five static fallback handoffs",
         "在输出首个字符之前",
@@ -476,25 +492,26 @@ REQUIRED_SHARED_CONTRACT_MARKERS = frozenset(
         "Next Action has a separate language-rendering gate",
         "no Han, CJK punctuation, or fullwidth characters",
         "the `START_NEW_ISSUE` values above are mandatory",
-        "COMMIT PREVIEW COMPLETENESS GATE",
-        "`## Commit Message Preview`",
-        "single `text` fenced code block",
-        "byte-for-byte identical",
-        "empty inline-code span",
-        "`<HW-Test>`",
-        "POLICY LOAD EVIDENCE GATE",
-        "Template Source",
-        "Template Load: PASS",
-        "Message Validation: PASS",
-        "generic `[Jira: summary]` format",
-        "STRICT COMMIT OUTPUT SHAPE GATE",
-        "strict-template-v2",
-        "project_policy.py preview",
-        "fix(ikversion):",
-        "bare `Jira:`",
-        "Message SHA-256",
     }
 )
+REQUIRED_GIT_DELIVERY_FILE_MARKERS: Mapping[str, frozenset[str]] = {
+    ".github/agent-kit/scripts/project_policy.py": frozenset(
+        {
+            'PROJECT_POLICY_REQUIRED = "PROJECT_POLICY_REQUIRED"',
+            "def _project_policy_required(",
+            "def validate_message(",
+            "def git_plan(",
+        }
+    ),
+    ".githooks/commit-msg": frozenset(
+        {
+            "PROJECT_POLICY_PYTHON",
+            "project_policy.py",
+            " message ",
+            'exec "$python_command"',
+        }
+    ),
+}
 
 AGENT_FRONTMATTER_FIELDS = frozenset(
     {
@@ -1007,6 +1024,7 @@ class RepositoryValidator:
 
         self._validate_text_hygiene()
         self._validate_required_files()
+        self._validate_git_delivery_files()
         self._validate_shared_contract()
         self._validate_agents()
         self._validate_skills()
@@ -1087,6 +1105,22 @@ class RepositoryValidator:
                 "TEST_LAYOUT",
                 "test assets belong under tests/agent-kit, outside the runtime tree",
             )
+
+    def _validate_git_delivery_files(self) -> None:
+        for relative, markers in REQUIRED_GIT_DELIVERY_FILE_MARKERS.items():
+            path = self.root / relative
+            if not path.is_file():
+                continue
+            text = self._read_text(path)
+            if text is None:
+                continue
+            for marker in sorted(markers):
+                if marker not in text:
+                    self._add(
+                        path,
+                        "GIT_DELIVERY_CONTRACT",
+                        f"Git delivery file must contain behavior marker {marker!r}",
+                    )
 
     def _validate_shared_contract(self) -> None:
         path = self.root / ".github" / "agent-contracts.md"

@@ -79,9 +79,9 @@ Jira ID 是唯一始终要求用户主动提供的 commit 字段，Agent 不会�
 
 AI 字段按真实参与生成：AI 实质参与代码生成、检查、重构、测试或文档时填写 `Y`、一个真实主要场景和详情；完全未参与时规范填写 `<AI-Tool-Used>: N`、`<AI-Tool-Scenario>: /`、`<AI-Tool-Detail>: /`。`N/A` 不再是 AI=`N` 的合法占位值。
 
-VS Code 的人工 handoff 不会自动返回上一 manager，因此 `BugResolver`、`QualityReviewer` 和 `DocKeeper` 都显式提供 `Git 提交交付 / Git Delivery` 按钮。质量评审 PASS 后可以直接进入交付；若先沉淀文档，DocKeeper 完成后仍可进入同一交付入口。按钮只负责切换到 `EmbeddedDeveloper`，Developer 仍会核对全部 PASS 证据、任务授权、严格 commit metadata、项目 policy，以及所有交付模式统一要求的 Documentation=`PASS` 或带理由的 `NOT_RUN`，条件不足时不会写 Git。
+VS Code 的人工 handoff 不会自动返回上一 manager，因此 `BugResolver`、`QualityReviewer` 和 `DocKeeper` 都保留 `Git 提交交付 / Git Delivery` 按钮作为进入 `EmbeddedDeveloper` 的人工入口。BugResolver 自己管理的修复闭环在全部门禁和用户确认通过后也可直接创建本地 commit；push 和 `auto` 仍交给 EmbeddedDeveloper。
 
-进入 EmbeddedDeveloper 并看到 `Commit Delivery Confirmation` 后，最后一步不是另一个 handoff 按钮。用户先核对逐文件修改内容，可回复 `确认修改并提交，按 commit 模式执行` 完成授权，或回复 `调整修改: <要求>` 进入删减和重新验证流程；最终确认后当前 EmbeddedDeveloper 随即直接执行 preflight、显式暂存和 commit。底部仍显示的“独立评审 / 文档同步”是该 Agent 的固定后续 handoff，不是提交确认按钮；Developer 不得再声称要委派给自己。
+进入 EmbeddedDeveloper 并看到 `Commit Delivery Confirmation` 后，最后一步不是另一个 handoff 按钮。Agent 必须先反馈逐文件修改内容和将原样交给 Git 的完整 commit message，并显示 `Commit Content Confirmation: PENDING`；用户核对后在当前输入框回复 `确认提交内容`，或回复 `调整修改: <要求>` 进入删减和重新验证流程。模式选择、Jira、按钮点击或笼统要求“提交”都不等于内容确认。最终确认后当前 Agent 使用 `git add -- <task-paths>` 显式暂存已确认任务路径并核对完整 staged 内容与预览完全一致，再执行 `git -c core.hooksPath=.githooks commit --file <message-file> --cleanup=verbatim`。文件、diff、范围或消息漂移会使确认失效并重新预览。`commit-msg` hook 是唯一消息门禁，直接调用 `project_policy.py message`；不存在额外提交包装层。
 
 每个业务 Agent 结果都包含唯一动态 Next Action：Current State、Chat Language、Action、Owner、UI Route、Dispatch Target、Input Required、Required Input、Reply Template、Instruction、On Success。`Chat Language` 只来自用户亲自输入并在路由中原样传递；需要回复时显示 `Input Required: YES`，逐项列出字段、格式和可复制模板，并明确要求在当前输入框回复；无需回复时显示 `Input Required: NO` 并明确提示点击“执行下一步”或无需操作。统一按钮点击只授权安全路由，不代替 Jira、修改内容、commit、push 或外部命令确认。
 
@@ -108,13 +108,13 @@ BugResolver 先用 `Usage Symptom Profile` 理解用户目标、实际操作、�
 
 ### 项目级约束
 
-根目录可选的 [`.project/`](.project/README.md) 与 `.github/` 同级，保存目标工程自己的代码规范、路径策略、Git 交付策略和后续扩展；缺失时返回 `NOT_CONFIGURED` 并兼容旧项目。存在时固定入口 [`.project/project.yml`](.project/project.yml) 用 `rules` 注册规则文件及 `applies_to` 路径 glob，Agent 根据 Task Brief 范围和真实 diff 只加载适用规则；整个目录按严格 schema 校验。
+根目录可选的 [`.project/`](.project/README.md) 与 `.github/` 同级，保存目标工程自己的代码规范、路径策略、Git 交付策略和后续扩展。缺失时仅非 Git 规则发现返回 `NOT_CONFIGURED` 以兼容旧项目；`message`、`git-plan` 和 hook 保护的 commit 全部 fail-closed，返回 `BLOCKED / PROJECT_POLICY_REQUIRED`。存在时固定入口 [`.project/project.yml`](.project/project.yml) 用 `rules` 注册规则文件及 `applies_to` 路径 glob，Agent 根据 Task Brief 范围和真实 diff 只加载适用规则；整个目录按严格 schema 校验。
 
 `python .github/agent-kit/scripts/project_policy.py rules --root . --path <repo-relative-path>` 可确定性输出适用规则和 Git policy；重复 `--path` 支持多路径，`--all` 用于审计。
 
-默认 [Git delivery policy](.project/git/delivery.yml) 定义自动化开关、`denied_paths`、commit 模板/检查和 push 分支/检查，但禁止保存 remote、URL 或目标 ref。commit 内容由 `Task Change Baseline`、本任务修改账本和当前真实 diff 检测，不由 YAML 路径白名单决定；旧 `allowed_paths` 仅兼容解析。两个 `automation` 开关默认关闭且只约束 `auto`；用户确认的 `commit`/`commit-and-push` 不受其限制。Task Brief 的 `Git Delivery` 只接受 `none`、`commit`、`commit-and-push`、`auto`。即使已选择 `auto`，自动 commit 前仍必须确认精确 Commit Content fingerprint；缺失或漂移时只读预检返回 `CONFIRM_COMMIT_CONTENT`。严格的 [commit template](.project/git/commit.template) 从用户规范复制进仓库，运行时不依赖外部盘符。
+默认 [Git delivery policy](.project/git/delivery.yml) 定义自动化开关、`denied_paths`、commit 模板/检查和 push 分支/检查，但禁止保存 remote、URL 或目标 ref。commit 内容由 `Task Change Baseline`、本任务修改账本和当前真实 diff 检测，不由 YAML 路径白名单决定；旧 `allowed_paths` 仅兼容解析。两个 `automation` 开关默认关闭且只约束 `auto`；用户确认的 `commit`/`commit-and-push` 不受其限制。Task Brief 的 `Git Delivery` 只接受 `none`、`commit`、`commit-and-push`、`auto`。即使已选择 `auto`，自动 commit 前仍必须确认精确 Commit Content fingerprint；缺失或漂移时只读预检返回 `CONFIRM_COMMIT_CONTENT`。严格的 [commit template](.project/git/commit.template)、版本化 [commit-msg hook](.githooks/commit-msg) 和 [`project_policy.py`](.github/agent-kit/scripts/project_policy.py) 共同构成提交消息门禁；消息规则只在 policy 脚本中实现。
 
-提交前的 `Commit Content` 逐文件显示 Git state、增删统计、真实摘要、排除路径和 fingerprint。用户可回复“确认修改并提交”，也可要求移除文件、缩小 hunk 或减少实现；后者进入 `ADJUST_CHANGESET`，只调整本任务内容并重新运行受影响验证、独立评审和确认，旧确认不会沿用。
+提交前的 `Commit Content` 逐文件显示 Git state、增删统计、真实摘要和排除路径，并同时展示完整 commit message；所有模式都显示 `Commit Content Confirmation: PENDING`，只有 auto 额外显示 fingerprint。用户可回复 `确认提交内容`，也可要求移除文件、缩小 hunk、减少实现或修改消息；后者进入 `ADJUST_CHANGESET`，只调整本任务内容并重新运行受影响验证、独立评审和确认，旧确认不会沿用。
 
 push 预检只通过当前项目 `.git` 的 local config 解析 current branch、branch remote/merge 和唯一 push URL；global/system config、环境变量、`.project` 和用户文本不能覆盖。无 upstream、detached HEAD、多个 push URL、保护分支、命中 `denied_paths` 或 fingerprint 漂移都会阻塞；工具只读，不执行 commit/push。
 
@@ -135,8 +135,6 @@ push 预检只通过当前项目 `.git` 的 local config 解析 current branch�
 Orchestrator 与 BugResolver frontmatter 中的 `agents` allowlist 可能依赖目标 VS Code 与 GitHub Copilot 环境中的 Experimental custom-agent/subagent 支持。本 Kit 不声明未经验证的最低版本；请在实际目标环境运行 Customizations/Diagnostics，并分别用一次通用委派和 Bug 修复委派烟测确认 allowlist 生效。
 
 本仓库不提供自动覆盖安装脚本。升级时按目录比较和合并，尤其保护项目画像、`.project/` 项目规范、全局规则和本地 prompt 定制。
-
-合并本 Kit 仓库的 PR 不会自动更新已经安装到另一个固件仓库中的 Agent。升级提交预览契约时，必须把本 Kit 的 `.github/agents/embedded-developer.agent.md`、`.github/agent-contracts.md`、`.github/agent-kit/scripts/project_policy.py` 和配套 instructions/tests 合并到实际目标仓库，并确认目标文件包含 `strict-template-v2`。同步后关闭旧 Copilot Chat，重新打开一个新会话；已有会话可能继续保留旧的 custom-agent 指令。新会话第一次进入 Git 交付时必须显示 `Commit Contract Revision: strict-template-v2`。若该标记缺失，将其判定为旧安装或旧会话并停止，不得接受其 commit preview。
 
 ### 使用
 
@@ -161,13 +159,13 @@ Orchestrator 与 BugResolver frontmatter 中的 `agents` allowlist 可能依赖�
 - 分析或解决 Bug/日志问题：选择 `BugResolver`，可先提供已有的原始错误或日志；Agent 会引导补齐实际使用目标、步骤、预期/实际、频率/边界、环境和影响，方向清晰后识别问题，并在本地发现后集中请求仍缺少的最小证据。需要解决时明确是否授权修改。
 - 只做独立质量评估：选择 `QualityReviewer`，提供需求、真实 diff/files 和可用构建/测试/静态分析证据。
 - 只维护文档：选择 `DocKeeper`，提供已经确认的源码/API/测试或根因证据。
-- Git 交付：Task Brief 的 `Git Delivery` 只写 `none`、`commit`、`commit-and-push` 或 `auto`。`commit`/`commit-and-push` 通过用户确认授权；只有 `auto` 需要在 `.project` policy 中启用两个 `automation` 开关。remote、URL 和目标分支始终由当前项目 `.git` 解析。当前 manager（Orchestrator 或 BugResolver）只在门禁和独立评审后单独委派 `EmbeddedDeveloper` 交付。`auto` 选择不等于内容确认：预览必须显示 `Commit Content Confirmation: PENDING`，用户用当前 fingerprint 确认后，预检才可返回 `content_confirmation.status: CONFIRMED` 和 `AUTO_COMMIT_AND_PUSH`；否则不得自动暂存或 commit。
+- Git 交付：Task Brief 的 `Git Delivery` 只写 `none`、`commit`、`commit-and-push` 或 `auto`。所有提交模式都必须先反馈逐文件内容与完整 commit message，并等待明确内容确认；`commit`/`commit-and-push` 通过 `确认提交内容` 授权，只有 `auto` 需要在 `.project` policy 中启用两个 `automation` 开关并额外确认当前 fingerprint。remote、URL 和目标分支始终由当前项目 `.git` 解析。BugResolver 可在完整修复闭环后直接创建受 hook 保护的本地 commit；push 和 `auto` 交给 `EmbeddedDeveloper`。`auto` 选择不等于内容确认：用户用当前 fingerprint 确认后，预检才可返回 `content_confirmation.status: CONFIRMED` 和 `AUTO_COMMIT_AND_PUSH`。
 
 ### 安全与权限
 
 - `BugResolver`、`EmbeddedDeveloper` 和 `QualityReviewer` 的 `execute` 都受 VS Code 审批设置约束。BugResolver 只运行只读诊断与符号化；Reviewer 只运行 Git 只读、构建/测试审计和静态分析。
 - flash、erase、fuse、reset、HIL、设备电源、发布和外部部署始终需要明确人工授权；画像中存在命令不等于授权。
-- `.project` Git policy 只定义约束，不等于授权。commit/push 必须显式暂存本任务路径；禁止保护分支、force push、`push -u`、自定义 refspec 和自动修改 `.git/config`。
+- `.project` Git policy 只定义约束，不等于授权。BugResolver 或 EmbeddedDeveloper 只可用 `git add -- <task-paths>` 显式暂存已确认任务路径，禁止全仓库暂存；所有 staged 内容都将进入提交。提交前必须确认版本化 hook 存在，并只使用带 `core.hooksPath=.githooks` 的 `git commit`；禁止 amend、`--no-verify`、无 hook 提交和自动修改 `.git/config`。内容 fingerprint 仅用于 `auto`。
 - DocKeeper 的 Web 仅用于官方或供应商公开资料，不得上传私有源码、日志、客户数据或凭据。
 - 同一 checkout 不并行运行写任务。未来只有一任务一 worktree/branch 隔离后才能考虑并行写入。
 - Agent 不能替代人工代码评审、硬件验证、功能安全评估或正式 MISRA 合规工具。
@@ -206,6 +204,8 @@ CI 在 Windows 和 Ubuntu 上执行上述验证。真实交互还需按照 [VS C
 ├── prompts/                 # 六个薄 slash 入口
 ├── skills/                  # 五个按需工作流及确定性脚本
 └── workflows/validate.yml
+.githooks/
+└── commit-msg               # 版本化、fail-closed 的 commit 消息门禁
 .project/
 ├── project.yml              # 项目约束清单与扩展入口
 ├── README.md                # 双语使用说明
@@ -325,9 +325,9 @@ Jira ID is the only commit field that is always user-supplied; the agent never g
 
 AI fields reflect actual participation. Use `Y` with one truthful primary scenario and detail when AI materially participated in code generation, inspection, refactoring, tests, or documentation. When AI did not participate at all, use exactly `<AI-Tool-Used>: N`, `<AI-Tool-Scenario>: /`, and `<AI-Tool-Detail>: /`; `N/A` is no longer valid for AI=`N`.
 
-A manual VS Code handoff does not automatically return to the previous manager, so `BugResolver`, `QualityReviewer`, and `DocKeeper` each expose a `Git 提交交付 / Git Delivery` button. Delivery can follow a PASS quality review directly, or follow DocKeeper when documentation runs first. The button only switches to `EmbeddedDeveloper`; Developer still verifies every PASS result, task authorization, strict commit metadata, project policy, and Documentation=`PASS` or a justified `NOT_RUN` for every delivery mode, and performs no Git write when prerequisites are missing.
+A manual VS Code handoff does not automatically return to the previous manager, so `BugResolver`, `QualityReviewer`, and `DocKeeper` retain a `Git 提交交付 / Git Delivery` button as a manual entry to `EmbeddedDeveloper`. A BugResolver managing its own repair loop may also create the local commit directly after all gates and user confirmation pass; push and auto remain with EmbeddedDeveloper.
 
-After entering EmbeddedDeveloper and seeing `Commit Delivery Confirmation`, the final step is not another handoff button. Review the per-file changes, then reply `confirm changes and commit`, or reply `adjust changes: <request>` to reduce and reverify them. After final confirmation, the current EmbeddedDeveloper runs preflight, explicit staging, and commit directly. The persistent Quality Review / Document Changes buttons are static follow-up handoffs for that agent, not commit confirmation actions. Developer never delegates to itself.
+After entering EmbeddedDeveloper and seeing `Commit Delivery Confirmation`, the final step is not another handoff button. The Agent first reports exact per-file changes and the complete commit message exactly as Git will receive it, with `Commit Content Confirmation: PENDING`. Review both, then reply `confirm commit content` in the current input, or use `adjust changes: <request>` to reduce and reverify them. Mode selection, Jira, button clicks, and generic commit requests are not content confirmation. After final confirmation, the current Agent stages confirmed task paths with `git add -- <task-paths>`, requires the complete staged content to match the preview exactly, then runs `git -c core.hooksPath=.githooks commit --file <message-file> --cleanup=verbatim`. File, diff, scope, or message drift invalidates confirmation and produces a new preview. The `commit-msg` hook is the sole message gate and directly invokes `project_policy.py message`; there is no commit wrapper.
 
 Every business-agent result contains one dynamic Next Action with Current State, Chat Language, Action, Owner, UI Route, Dispatch Target, Input Required, Required Input, Reply Template, Instruction, and On Success. `Chat Language` comes only from user-authored input and is preserved through routing. When a reply is required, `Input Required: YES` itemizes fields and formats, supplies a copy-ready template, and explicitly says to reply in the current input. Otherwise, `Input Required: NO` explicitly tells the user to click Next Action or take no action. Clicking the unified button authorizes safe routing only and never substitutes for Jira, change-content, commit, push, or external-command confirmation.
 
@@ -354,13 +354,13 @@ Fields may remain `auto`, in which case agents discover them from the repository
 
 ### Project-Level Constraints
 
-The optional root [`.project/`](.project/README.md) directory is a sibling of `.github/` and stores target-project conventions, path policy, Git delivery policy, and extensions. Its absence returns `NOT_CONFIGURED` for legacy compatibility. When present, [`.project/project.yml`](.project/project.yml) registers rule files and `applies_to` globs under `rules`; agents load only matching rules, and the directory is validated strictly.
+The optional root [`.project/`](.project/README.md) directory is a sibling of `.github/` and stores target-project conventions, path policy, Git delivery policy, and extensions. When it is absent, only non-Git rule discovery returns `NOT_CONFIGURED` for legacy compatibility; `message`, `git-plan`, and hook-protected commit fail closed with `BLOCKED / PROJECT_POLICY_REQUIRED`. When present, [`.project/project.yml`](.project/project.yml) registers rule files and `applies_to` globs under `rules`; agents load only matching rules, and the directory is validated strictly.
 
 `python .github/agent-kit/scripts/project_policy.py rules --root . --path <repo-relative-path>` deterministically emits applicable rules and Git policy. Repeat `--path` for multiple paths, or use `--all` for audit.
 
-The default [Git delivery policy](.project/git/delivery.yml) defines automation, `denied_paths`, commit template/checks, and push branch/check rules, but cannot store a remote, URL, or target ref. Commit content is detected from `Task Change Baseline`, the task-change ledger, and the current actual diff, never from a YAML path allowlist; legacy `allowed_paths` is parsed for compatibility only. Both `automation` switches default to off and gate only `auto`; user-confirmed `commit`/`commit-and-push` ignore them. Task Brief `Git Delivery` accepts only `none`, `commit`, `commit-and-push`, or `auto`. Even after selecting `auto`, the exact Commit Content fingerprint must be confirmed before automatic commit; missing or stale confirmation makes read-only preflight return `CONFIRM_COMMIT_CONTENT`. The strict [commit template](.project/git/commit.template) is copied into the repository and has no runtime dependency on an external drive.
+The default [Git delivery policy](.project/git/delivery.yml) defines automation, `denied_paths`, commit template/checks, and push branch/check rules, but cannot store a remote, URL, or target ref. Commit content is detected from `Task Change Baseline`, the task-change ledger, and the current actual diff, never from a YAML path allowlist; legacy `allowed_paths` is parsed for compatibility only. Both `automation` switches default to off and gate only `auto`; user-confirmed `commit`/`commit-and-push` ignore them. Task Brief `Git Delivery` accepts only `none`, `commit`, `commit-and-push`, or `auto`. Even after selecting `auto`, the exact Commit Content fingerprint must be confirmed before automatic commit. The strict [commit template](.project/git/commit.template), versioned [commit-msg hook](.githooks/commit-msg), and [`project_policy.py`](.github/agent-kit/scripts/project_policy.py) form the commit-message gate; message rules exist only in the policy script.
 
-Before commit, `Commit Content` shows each file's Git state, added/deleted counts, truthful summary, excluded paths, and fingerprint. The user may reply `confirm changes and commit`, or ask to remove a file, narrow a hunk, or reduce the implementation. The latter enters `ADJUST_CHANGESET`, changes only current-task work, and reruns affected verification, independent review, and confirmation without reusing the old confirmation.
+Before commit, `Commit Content` shows each file's Git state, added/deleted counts, truthful summary, and excluded paths together with the complete commit message. Every mode shows `Commit Content Confirmation: PENDING`; only auto also shows a fingerprint. The user may reply `confirm commit content`, or ask to remove a file, narrow a hunk, reduce the implementation, or change the message. The latter enters `ADJUST_CHANGESET`, changes only current-task work, and reruns affected verification, independent review, and confirmation without reusing the old confirmation.
 
 Push preflight resolves the current branch, branch remote/merge, and one push URL only from this project's local `.git` config. Global/system config, environment, `.project`, and user text cannot override it. Missing upstream, detached HEAD, multiple push URLs, protected branches, paths matching `denied_paths`, or fingerprint drift block delivery; the tool itself performs no commit or push.
 
@@ -381,8 +381,6 @@ Push preflight resolves the current branch, branch remote/merge, and one push UR
 The `agents` allowlists in the Orchestrator and BugResolver frontmatter may depend on Experimental custom-agent/subagent support in the target VS Code and GitHub Copilot environment. This kit does not claim an unverified minimum version; run Customizations/Diagnostics in the actual target environment and perform both a general delegation smoke test and a bug-resolution delegation smoke test to confirm that the allowlists are honored.
 
 The repository intentionally has no overwriting installation script. Compare and merge directories during upgrades, especially the profile, `.project/` rules, global rules, and local prompt customizations.
-
-Merging a PR in this kit repository does not update an Agent already installed in another firmware repository. A commit-preview contract upgrade must merge this kit's `.github/agents/embedded-developer.agent.md`, `.github/agent-contracts.md`, `.github/agent-kit/scripts/project_policy.py`, and companion instructions/tests into the actual target repository, then verify that the target files contain `strict-template-v2`. Close the old Copilot Chat and start a new conversation after synchronization because an existing conversation may retain old custom-agent instructions. The first Git-delivery response in that new conversation must show `Commit Contract Revision: strict-template-v2`. If it is absent, treat the runtime as a stale installation or stale conversation and stop; do not accept its commit preview.
 
 ### Usage
 
@@ -407,13 +405,13 @@ Direct mode:
 - Bug/log analysis or resolution: select `BugResolver` and provide any available original error or log. The agent guides you to complete the real goal, steps, expected/actual behavior, frequency/boundaries, environment, and impact; once direction is clear, it identifies the problem, discovers local context, and asks once for the remaining minimum evidence. State whether changes are authorized when resolution is required.
 - Independent quality assessment only: select `QualityReviewer` and provide requirements, the real diff/files, and available build/test/static-analysis evidence.
 - Documentation only: select `DocKeeper` and provide confirmed source/API/test or root-cause evidence.
-- Git delivery: set Task Brief `Git Delivery` to only `none`, `commit`, `commit-and-push`, or `auto`. User confirmation authorizes `commit`/`commit-and-push`; only `auto` requires both `.project` automation switches. The remote, URL, and target branch always come from this project's `.git`. The current manager delegates a separate delivery task to `EmbeddedDeveloper` only after gates and independent review. Selecting `auto` is not content confirmation: the preview shows `Commit Content Confirmation: PENDING`, and only a user-confirmed current fingerprint may produce `content_confirmation.status: CONFIRMED` plus `AUTO_COMMIT_AND_PUSH`. Otherwise no automatic staging or commit is allowed.
+- Git delivery: set Task Brief `Git Delivery` to only `none`, `commit`, `commit-and-push`, or `auto`. Every commit mode first reports per-file content plus the complete commit message and waits for explicit content confirmation; `confirm commit content` authorizes `commit`/`commit-and-push`, while only `auto` requires both `.project` automation switches and an additional current-fingerprint confirmation. A BugResolver may create the hook-protected local commit after its complete repair loop; push and auto remain with `EmbeddedDeveloper`. Selecting `auto` is not content confirmation: only a user-confirmed current fingerprint may produce `content_confirmation.status: CONFIRMED` plus `AUTO_COMMIT_AND_PUSH`.
 
 ### Safety and Permissions
 
 - VS Code approval settings govern `execute` for BugResolver, EmbeddedDeveloper, and QualityReviewer. BugResolver runs only read-only diagnostics and symbolization; Reviewer runs only read-only Git, build/test audit, and static analysis.
 - Flash, erase, fuse, reset, HIL, device power, release, and external deployment always require explicit human authorization. A command's presence in the profile is not authorization.
-- A `.project` Git policy constrains work but is not authorization. Commit/push stages only explicit task paths; protected branches, force push, `push -u`, custom refspecs, and automatic `.git/config` changes are forbidden.
+- A `.project` Git policy constrains work but is not authorization. BugResolver or EmbeddedDeveloper may use only `git add -- <task-paths>` to stage confirmed task paths explicitly; repository-wide staging is forbidden and every staged item enters the commit. Require the versioned hook before committing and use only `git commit` with `core.hooksPath=.githooks`; amend, `--no-verify`, hookless commit, and automatic `.git/config` changes are forbidden. Content fingerprints remain auto-only.
 - DocKeeper uses the web only for official or vendor public sources and never uploads private source, logs, customer data, or credentials.
 - Do not run write tasks concurrently in one checkout. Parallel writing may be considered only after one-task-per-worktree/branch isolation exists.
 - Agents do not replace human code review, hardware verification, functional-safety assessment, or formal MISRA compliance tools.
@@ -452,6 +450,8 @@ CI runs these checks on Windows and Ubuntu. Real interaction also requires the [
 ├── prompts/                 # six thin slash entries
 ├── skills/                  # five on-demand workflows with deterministic scripts
 └── workflows/validate.yml
+.githooks/
+└── commit-msg               # versioned, fail-closed commit-message gate
 .project/
 ├── project.yml              # project constraint manifest and extension entry point
 ├── README.md                # bilingual usage guide

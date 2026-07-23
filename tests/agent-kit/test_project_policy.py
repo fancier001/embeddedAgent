@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import hashlib
+import json
 import os
 import shutil
 import subprocess
@@ -19,26 +19,24 @@ FIXTURE_ROOT = Path(__file__).parent / "fixtures" / "commit"
 sys.path.insert(0, str(PROJECT_ROOT / ".github" / "agent-kit" / "scripts"))
 
 from project_policy import (  # noqa: E402
-    COMMIT_CONTRACT_REVISION,
     DECISION_AUTO_UPLOAD,
     DECISION_CONFIRM_AUTO_CONTENT,
     DECISION_MESSAGE_ONLY,
     DECISION_NO_DELIVERY,
     GitReadError,
+    PROJECT_POLICY_REQUIRED,
     PolicyInputError,
     _matches,
     _redact_url,
     git_plan,
     resolve_push_target,
     resolve_rules,
-    render_preview_markdown,
     validate_message,
-    validated_preview,
 )
 
 
 class ProjectRuleTests(unittest.TestCase):
-    def test_missing_project_directory_is_compatible(self) -> None:
+    def test_missing_project_directory_is_compatible_except_git_delivery(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             message = root / "message.txt"
@@ -53,8 +51,61 @@ class ProjectRuleTests(unittest.TestCase):
                 message_file=message,
             )
         self.assertEqual("NOT_CONFIGURED", rules_result["status"])
-        self.assertEqual("NOT_CONFIGURED", message_result["status"])
-        self.assertEqual("NOT_CONFIGURED", plan_result["status"])
+        self.assertEqual("BLOCKED", message_result["status"])
+        self.assertEqual(PROJECT_POLICY_REQUIRED, message_result["code"])
+        self.assertEqual("BLOCKED", plan_result["status"])
+        self.assertEqual(PROJECT_POLICY_REQUIRED, plan_result["code"])
+
+    def test_missing_project_git_delivery_cli_is_blocked_with_nonzero_exit(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            message = root / "message.txt"
+            message.write_text("legacy message\n", encoding="utf-8")
+            script = (
+                PROJECT_ROOT
+                / ".github"
+                / "agent-kit"
+                / "scripts"
+                / "project_policy.py"
+            )
+            commands = (
+                (
+                    "message",
+                    "--root",
+                    str(root),
+                    "--file",
+                    str(message),
+                ),
+                (
+                    "git-plan",
+                    "--root",
+                    str(root),
+                    "--operation",
+                    "commit",
+                    "--delivery",
+                    "commit",
+                    "--message-file",
+                    str(message),
+                    "--path",
+                    "README.md",
+                ),
+            )
+            for arguments in commands:
+                with self.subTest(command=arguments[0]):
+                    completed = subprocess.run(
+                        [sys.executable, str(script), *arguments],
+                        text=True,
+                        encoding="utf-8",
+                        errors="replace",
+                        capture_output=True,
+                        check=False,
+                    )
+                    result = json.loads(completed.stdout)
+                    self.assertNotEqual(0, completed.returncode)
+                    self.assertEqual("BLOCKED", result["status"])
+                    self.assertEqual(PROJECT_POLICY_REQUIRED, result["code"])
 
     def test_rules_are_selected_by_repository_path(self) -> None:
         c_result = resolve_rules(
@@ -151,40 +202,6 @@ class CommitMessageTests(unittest.TestCase):
         result = self.validate(self.valid_text)
         self.assertEqual("PASS", result["status"], result["errors"])
         self.assertEqual(["QDM047-5567", "QDM047-5566"], result["jira_ids"])
-
-    def test_validated_preview_returns_exact_hashed_message_and_markdown(self) -> None:
-        message = self.repo / "preview.txt"
-        message_bytes = self.valid_text.encode("utf-8")
-        message.write_bytes(message_bytes)
-        result = dict(validated_preview(self.repo, message))
-        self.assertEqual("PASS", result["status"], result["errors"])
-        self.assertEqual(COMMIT_CONTRACT_REVISION, result["contract_revision"])
-        self.assertEqual(self.valid_text, result["message"])
-        self.assertEqual(hashlib.sha256(message_bytes).hexdigest(), result["message_sha256"])
-        template_bytes = (self.repo / result["template"]).read_bytes()
-        self.assertEqual(
-            hashlib.sha256(template_bytes).hexdigest(), result["template_sha256"]
-        )
-        rendered = render_preview_markdown(result)
-        self.assertIn("Commit Contract Revision: strict-template-v2", rendered)
-        self.assertIn("## Commit Message Preview", rendered)
-        self.assertIn(f"```text\n{self.valid_text}", rendered)
-
-    def test_screenshot_conventional_commit_never_produces_a_preview(self) -> None:
-        message = self.repo / "invalid-preview.txt"
-        message.write_bytes(
-            (FIXTURE_ROOT / "invalid-conventional-ikversion.txt").read_bytes()
-        )
-        result = dict(validated_preview(self.repo, message))
-        self.assertEqual("BLOCKED", result["status"])
-        self.assertEqual(COMMIT_CONTRACT_REVISION, result["contract_revision"])
-        self.assertNotIn("message", result)
-        codes = {item["code"] for item in result["errors"]}
-        self.assertIn("FORBIDDEN_CONVENTIONAL_SUBJECT", codes)
-        self.assertIn("BARE_JIRA_FIELD", codes)
-        self.assertIn("JIRA_REQUIRED", codes)
-        with self.assertRaises(PolicyInputError):
-            render_preview_markdown(result)
 
     def test_configured_primary_and_aliases_control_subject_project(self) -> None:
         manifest_path = self.repo / ".project" / "project.yml"
@@ -523,8 +540,10 @@ class GitPlanTests(unittest.TestCase):
             delivery="commit",
             paths=[product.relative_to(self.repo).as_posix()],
             message_file=message,
+            expected_content_fingerprint="not-used-for-ordinary-commit",
         )
         self.assertEqual("PASS", result["status"], result["reasons"])
+        self.assertIsNone(result["content_confirmation"])
         self.assertEqual(
             [product.relative_to(self.repo).as_posix()],
             result["commit_content"]["paths"],

@@ -1,0 +1,31 @@
+#!/bin/sh
+set -eu
+
+repository_root=$(git rev-parse --show-toplevel)
+policy_script="$repository_root/.github/agent-kit/scripts/project_policy.py"
+
+if [ -n "${PROJECT_POLICY_PYTHON:-}" ]; then
+    python_command=$PROJECT_POLICY_PYTHON
+else
+    python_command=
+    for candidate in python3 python; do
+        if command -v "$candidate" >/dev/null 2>&1 &&
+            "$candidate" -c "import sys" >/dev/null 2>&1; then
+            python_command=$(command -v "$candidate")
+            break
+        fi
+    done
+    if [ -z "$python_command" ]; then
+        echo "BLOCKED: Python is required to validate the commit message." >&2
+        exit 3
+    fi
+fi
+
+if [ ! -f "$policy_script" ]; then
+    echo "BLOCKED: project_policy.py is missing; commit validation is fail-closed." >&2
+    exit 3
+fi
+
+exec "$python_command" "$policy_script" message \
+    --root "$repository_root" \
+    --file "$1"

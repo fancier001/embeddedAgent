@@ -237,6 +237,16 @@ class CustomizationValidatorTests(unittest.TestCase):
                 "`DELIVERY`",
                 "Task Change Baseline",
             ),
+            "bug-resolver.agent.md": (
+                ".github/agent-contracts.md",
+                "`COMMIT`",
+                "core.hooksPath=.githooks",
+                "BugResolver 可执行",
+                "BugResolver may execute",
+                "Commit Content Confirmation: PENDING",
+                "确认提交内容",
+                "confirm commit content",
+            ),
             "embedded-developer.agent.md": (
                 ".github/agent-contracts.md",
                 "project_policy.py",
@@ -248,7 +258,18 @@ class CustomizationValidatorTests(unittest.TestCase):
                 "`DETECT_COMMIT_SCOPE`",
                 "`CONFIRM_DELIVERY`",
                 "`AUTO_DECIDE`",
+                "`STAGE`",
+                "`COMMIT`",
                 "`CONFIRM_PUSH`",
+                "BLOCKED / PROJECT_POLICY_REQUIRED",
+                ".githooks/commit-msg",
+                "core.hooksPath=.githooks",
+                "`git add -- <task-paths>`",
+                "`git commit`",
+                "`--no-verify`",
+                "Commit Content Confirmation: PENDING",
+                "确认提交内容",
+                "confirm commit content",
                 "Task Change Baseline",
             ),
         }
@@ -632,7 +653,11 @@ class CustomizationValidatorTests(unittest.TestCase):
             "## Next Action",
             "`ADJUST_CHANGESET`",
             "Change Confirmation: PENDING",
-            "confirm changes and commit",
+            "Commit Content Confirmation: PENDING",
+            "确认提交内容",
+            "confirm commit content",
+            "完整 commit message",
+            "complete commit message",
             "per-file `entries`",
             "`CONFIRM_PUSH`",
             "`MANUAL_PUSH`",
@@ -654,9 +679,17 @@ class CustomizationValidatorTests(unittest.TestCase):
             "AGENT_CONTINUE",
             "NOT_RUN — Not required: <reason>",
             "`CONFIRM_COMMIT_CONTENT`",
+            "`COMMIT`",
+            "BLOCKED / PROJECT_POLICY_REQUIRED",
+            ".githooks/commit-msg",
+            "core.hooksPath=.githooks",
+            "`git add -- <task-paths>`",
+            "BugResolver 可执行",
+            "BugResolver may execute",
+            "禁止未带版本化 hook 的 `git commit`",
+            "A `git commit` without the versioned hook is forbidden",
             "--expected-content-fingerprint",
             "content_confirmation.status: CONFIRMED",
-            "Commit Content Confirmation: PENDING",
             "返回编排 / Return to Orchestrator",
             "five static fallback handoffs",
         ):
@@ -670,6 +703,51 @@ class CustomizationValidatorTests(unittest.TestCase):
                     any(code.startswith("SHARED_CONTRACT") for code in self.codes())
                 )
         contract.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_commit_hook_files_and_markers_are_required(self) -> None:
+        required = {
+            ".github/agent-kit/scripts/project_policy.py": (
+                'PROJECT_POLICY_REQUIRED = "PROJECT_POLICY_REQUIRED"',
+                "def _project_policy_required(",
+                "def validate_message(",
+                "def git_plan(",
+            ),
+            ".githooks/commit-msg": (
+                "PROJECT_POLICY_PYTHON",
+                "project_policy.py",
+                " message ",
+                'exec "$python_command"',
+            ),
+        }
+        for relative, markers in required.items():
+            path = self.repo / relative
+            original = path.read_text(encoding="utf-8")
+            for marker in markers:
+                with self.subTest(path=relative, marker=marker):
+                    path.write_text(
+                        original.replace(marker, "REMOVED_GIT_DELIVERY_INVARIANT"),
+                        encoding="utf-8",
+                        newline="\n",
+                    )
+                    self.assertIn("GIT_DELIVERY_CONTRACT", self.codes())
+            path.write_text(original, encoding="utf-8", newline="\n")
+
+        for relative in (
+            ".githooks/commit-msg",
+            "tests/agent-kit/test_commit_hook.py",
+        ):
+            with self.subTest(missing=relative):
+                path = self.repo / relative
+                saved = path.read_bytes()
+                path.unlink()
+                expected = (
+                    "REQUIRED_TEST_FILE"
+                    if relative.startswith("tests/")
+                    else "REQUIRED_FILE"
+                )
+                self.assertIn(expected, self.codes())
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(saved)
 
     def test_shared_contract_requires_chat_language_follow_user(self) -> None:
         contract = self.repo / ".github" / "agent-contracts.md"
@@ -686,23 +764,6 @@ class CustomizationValidatorTests(unittest.TestCase):
             "Next Action has a separate language-rendering gate",
             "no Han, CJK punctuation, or fullwidth characters",
             "the `START_NEW_ISSUE` values above are mandatory",
-            "COMMIT PREVIEW COMPLETENESS GATE",
-            "`## Commit Message Preview`",
-            "single `text` fenced code block",
-            "byte-for-byte identical",
-            "empty inline-code span",
-            "`<HW-Test>`",
-            "POLICY LOAD EVIDENCE GATE",
-            "Template Source",
-            "Template Load: PASS",
-            "Message Validation: PASS",
-            "generic `[Jira: summary]` format",
-            "STRICT COMMIT OUTPUT SHAPE GATE",
-            "strict-template-v2",
-            "project_policy.py preview",
-            "fix(ikversion):",
-            "bare `Jira:`",
-            "Message SHA-256",
         ):
             with self.subTest(marker=marker):
                 contract.write_text(
@@ -801,26 +862,6 @@ class CustomizationValidatorTests(unittest.TestCase):
                 )
                 self.assertIn("AGENT_BODY_CONTRACT", self.codes())
             agent.write_text(original, encoding="utf-8", newline="\n")
-
-    def test_embedded_developer_requires_complete_commit_preview_gate(self) -> None:
-        agent = self.repo / ".github" / "agents" / "embedded-developer.agent.md"
-        original = agent.read_text(encoding="utf-8")
-        for marker in (
-            "COMMIT PREVIEW COMPLETENESS GATE",
-            "byte-for-byte identical",
-            "empty inline-code spans",
-            "POLICY LOAD EVIDENCE GATE",
-            "Message Validation: PASS",
-            "generic fallback",
-        ):
-            with self.subTest(marker=marker):
-                agent.write_text(
-                    original.replace(marker, "REMOVED_COMMIT_PREVIEW_GATE"),
-                    encoding="utf-8",
-                    newline="\n",
-                )
-                self.assertIn("AGENT_BODY_CONTRACT", self.codes())
-        agent.write_text(original, encoding="utf-8", newline="\n")
 
     def test_initial_english_bug_message_regression_is_documented(self) -> None:
         smoke_test = (
