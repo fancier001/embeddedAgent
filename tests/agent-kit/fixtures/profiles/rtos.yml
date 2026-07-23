@@ -10,25 +10,25 @@ target:
   rtos: FreeRTOS
   datasheet: {document_id: auto, revision: auto, path_or_url: auto}
 toolchain: {compiler: auto, compiler_version: auto, c_standard: auto, build_system: auto, cross_compile_prefix: auto}
-paths: {source: auto, drivers: auto, application: auto, services: auto, middleware: auto, protocols: auto, tests: auto, docs: auto, vendor: auto, generated: auwmûÓ^­¢G§²ÚîÆ­yÛX[˜YÙ\‹ˆ™XÛÛ›™XİÙ]™[İ]™[ˆ™XÛÛ›™XİØXİ[Û—İ
-˜Xİ[ÛŠBÂˆYˆ
-
-X[˜YÙ\ˆOH•S
-H
-Xİ[ÛˆOH•S
-JBˆÂˆ™]\›ˆ‘PÓÓ“‘PÕÒS•SQĞT‘ÕSQS•ÂˆBˆÛX\—ØXİ[ÛŠXİ[ÛŠNÂ‚ˆYˆ
-]™[OH‘PÓÓ“‘PÕÑU‘S•ÕTÑT—ÔÕÔ
-BˆÂˆYˆ
-X[˜YÙ\‹Oœİ]HOH‘PÓÓ“‘PÕÔÕUWÔÕÔQ
-BˆÂˆ™]\›ˆ‘PÓÓ“‘PÕÒQÓ“Ô‘QÂˆBˆYˆ
-X[˜YÙ\‹Oœİ]HOH‘PÓÓ“‘PÕÔÕUWÕĞRUS‘ÊBˆÂˆXİ[Û‹O\HH‘PÓÓ“‘PÕĞPÕSÓ—ĞĞSÑSÔ‘U–NÂˆBˆX[˜YÙ\‹Oœİ]HH‘PÓÓ“‘PÕÔÕUWÔÕÔQÂˆ™]\›ˆ‘PÓÓ“‘PÕÒS‘QÂˆB‚ˆİÚ]Ú
-X[˜YÙ\‹Oœİ]JBˆÂˆØ\ÙH‘PÓÓ“‘PÕÔÕUWĞÓÓ“‘PÕQ‚ˆYˆ
-]™[OH‘PÓÓ“‘PÕÑU‘S•ÓS’×ÑÕÓŠBˆÂˆX[˜YÙ\‹Oœ™]WØÛİ[HNÂˆX[˜YÙ\‹Oœİ]HH‘PÓÓ“‘PÕÔÕUWÕĞRUS‘ÎÂˆXİ[Û‹O\HH‘PÓÓ“‘PÕĞPÕSÓ—ÔĞÒQSWÔ‘U–NÂˆXİ[Û‹O™[^WÛ\ÈH™]WÙ[^\×Û\ÖÌNÂˆ™]\›ˆ‘PÓÓ“‘PÕÒS‘QÂˆBˆœ™XZÎÂ‚ˆØ\ÙH‘PÓÓ“‘PÕÔÕUWÕĞRUS‘Î‚ˆYˆ
-]™[OH‘PÓÓ“‘PÕÑU‘S•ÕSQT—ÑVT‘Q
-BˆÂˆX[˜YÙ\‹Oœ™]WØÛİ[
-ÊÎÂˆX[˜YÙ\‹Oœİ]HH‘PÓÓ“‘PÕÔÕUWĞÓÓ“‘PÕS‘ÎÂˆXİ[Û‹O\HH‘PÓÓ“‘PÕĞPÕSÓ—Ô‘TUQTÕĞÓÓ“‘PÕÂˆ™]\›ˆ‘PÓÓ“‘PÕÒS‘QÂˆBˆœ™XZÎÂ‚ˆØ\ÙH‘PÓÓ“‘PÕÔÕUWĞÓÓ“‘PÕS‘Î‚ˆYˆ
-]™[OH‘PÓÓ“‘PÕÑU‘S•ĞÓÓ“‘PÕÔÕPĞÑQQQ
-BˆÂˆX[˜YÙ\‹Oœ™]WØÛİ[HNÂˆX[˜YÙ\‹Oœİ]HH‘PÓÓ“‘PÕÔÕUWĞÓÓ“‘PÕQÂˆ™]\›ˆ‘PÓÓ“‘PÕÒS‘QÂˆBˆYˆ
-]™[OH‘PÓÓ“‘PÕÑU‘S•ĞÓÓ“‘PÕÑRSQ
-BˆÂˆYˆ
-X[˜YÙ\‹Oœ™]WØÛİ[‘PÓÓ“‘PÕÓPVÔ‘U’QTÊBˆÂˆX[˜YÙ\‹Oœİ]HH‘PÓÓ“‘PÕÔÕUWÕĞRUS‘ÎÂˆXİ[Û‹O\HH‘PÓÓ“‘PÕĞPÕSÓ—ÔĞÒQSWÔ‘U–NÂˆXİ[Û‹O™[^WÛ\ÈH™]WÙ[^\×Û\ÖÛX[˜YÙ\‹Oœ™]WØÛİ[NÂˆBˆ[ÙBˆÂˆX[˜YÙ\‹Oœİ]HH‘PÓÓ“‘PÕÔÕUWÑVUTÕQÂˆXİ[Û‹O\HH‘PÓÓ“‘PÕĞPÕSÓ—Ô‘TÔ•ÑVUTÕQÂˆBˆ™]\›ˆ‘PÓÓ“‘PÕÒS‘QÂˆBˆœ™XZÎÂ‚ˆØ\ÙH‘PÓÓ“‘PÕÔÕUWÑVUTÕQ‚ˆØ\ÙH‘PÓÓ“‘PÕÔÕUWÔÕÔQ‚ˆY˜][‚ˆœ™XZÎÂˆBˆ™]\›ˆ‘PÓÓ“‘PÕÒQÓ“Ô‘QÂŸB
+paths: {source: auto, drivers: auto, application: auto, services: auto, middleware: auto, protocols: auto, tests: auto, docs: auto, vendor: auto, generated: auto}
+commands:
+  configure: auto
+  build: auto
+  test: auto
+  static_analysis: auto
+  hardware:
+    flash: {command: auto, enabled: false, requires_explicit_approval: true}
+    erase: {command: auto, enabled: false, requires_explicit_approval: true}
+    fuse: {command: auto, enabled: false, requires_explicit_approval: true}
+    reset: {command: auto, enabled: false, requires_explicit_approval: true}
+    hil: {command: auto, enabled: false, requires_explicit_approval: true}
+artifacts: {elf: auto, map: auto, logs: auto, static_analysis_reports: auto}
+misra: {standard: auto, version: auto, deviations: auto, compliance_claim_allowed: false}
+documentation: {language_policy: bilingual-full, chinese_section: "## ä¸­æ–‡ / Chinese", english_section: "## English", todo_sync_allowed_at_release: false}
+safety: {preserve_dirty_worktree: true, allow_destructive_git: false, allow_automatic_dependency_install: false, allow_physical_hardware_access: false}
+product_form_focus:
+  bare-metal: [mmio]
+  rtos: [task-isr-boundary]
+  module-sdk: [api-urc]
+  embedded-linux: [posix]
+  hybrid: [combine-relevant-product-focus]
