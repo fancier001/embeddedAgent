@@ -136,6 +136,8 @@ Orchestrator 与 BugResolver frontmatter 中的 `agents` allowlist 可能依赖�
 
 本仓库不提供自动覆盖安装脚本。升级时按目录比较和合并，尤其保护项目画像、`.project/` 项目规范、全局规则和本地 prompt 定制。
 
+合并本 Kit 仓库的 PR 不会自动更新已经安装到另一个固件仓库中的 Agent。升级提交预览契约时，必须把本 Kit 的 `.github/agents/embedded-developer.agent.md`、`.github/agent-contracts.md`、`.github/agent-kit/scripts/project_policy.py` 和配套 instructions/tests 合并到实际目标仓库，并确认目标文件包含 `strict-template-v2`。同步后关闭旧 Copilot Chat，重新打开一个新会话；已有会话可能继续保留旧的 custom-agent 指令。新会话第一次进入 Git 交付时必须显示 `Commit Contract Revision: strict-template-v2`。若该标记缺失，将其判定为旧安装或旧会话并停止，不得接受其 commit preview。
+
 ### 使用
 
 推荐入口：
@@ -379,6 +381,8 @@ Push preflight resolves the current branch, branch remote/merge, and one push UR
 The `agents` allowlists in the Orchestrator and BugResolver frontmatter may depend on Experimental custom-agent/subagent support in the target VS Code and GitHub Copilot environment. This kit does not claim an unverified minimum version; run Customizations/Diagnostics in the actual target environment and perform both a general delegation smoke test and a bug-resolution delegation smoke test to confirm that the allowlists are honored.
 
 The repository intentionally has no overwriting installation script. Compare and merge directories during upgrades, especially the profile, `.project/` rules, global rules, and local prompt customizations.
+
+Merging a PR in this kit repository does not update an Agent already installed in another firmware repository. A commit-preview contract upgrade must merge this kit's `.github/agents/embedded-developer.agent.md`, `.github/agent-contracts.md`, `.github/agent-kit/scripts/project_policy.py`, and companion instructions/tests into the actual target repository, then verify that the target files contain `strict-template-v2`. Close the old Copilot Chat and start a new conversation after synchronization because an existing conversation may retain old custom-agent instructions. The first Git-delivery response in that new conversation must show `Commit Contract Revision: strict-template-v2`. If it is absent, treat the runtime as a stale installation or stale conversation and stop; do not accept its commit preview.
 
 ### Usage
 
