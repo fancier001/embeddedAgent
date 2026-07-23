@@ -203,6 +203,8 @@ GIT_DELIVERY_HANDOFF_PROMPT_MARKERS = (
     "Change Confirmation: PENDING",
     "full template-shaped Commit Message Preview",
     "no empty inline-code spans",
+    "Run LOAD_POLICY before any preview",
+    "Template Load: PASS",
     "CONFIRM_PUSH",
     "MANUAL_PUSH",
 )
@@ -327,6 +329,9 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "COMMIT PREVIEW COMPLETENESS GATE",
             "byte-for-byte identical",
             "empty inline-code spans",
+            "POLICY LOAD EVIDENCE GATE",
+            "Message Validation: PASS",
+            "generic fallback",
         }
     ),
     "quality-reviewer.agent.md": frozenset(
@@ -471,6 +476,11 @@ REQUIRED_SHARED_CONTRACT_MARKERS = frozenset(
         "byte-for-byte identical",
         "empty inline-code span",
         "`<HW-Test>`",
+        "POLICY LOAD EVIDENCE GATE",
+        "Template Source",
+        "Template Load: PASS",
+        "Message Validation: PASS",
+        "generic `[Jira: summary]` format",
     }
 )
 
