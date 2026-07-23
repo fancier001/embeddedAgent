@@ -697,6 +697,12 @@ class CustomizationValidatorTests(unittest.TestCase):
             "Template Load: PASS",
             "Message Validation: PASS",
             "generic `[Jira: summary]` format",
+            "STRICT COMMIT OUTPUT SHAPE GATE",
+            "strict-template-v2",
+            "project_policy.py preview",
+            "fix(ikversion):",
+            "bare `Jira:`",
+            "Message SHA-256",
         ):
             with self.subTest(marker=marker):
                 contract.write_text(
