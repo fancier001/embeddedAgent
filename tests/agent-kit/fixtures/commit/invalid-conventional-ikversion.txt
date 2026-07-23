@@ -1,0 +1,8 @@
+fix(ikversion): include customer-project-version in installed files
+
+The ikversion recipe only installed ikotek-project-version to /etc,
+omitting the customer-project-version file that was already present in
+the files/ directory. Add customer-project-version to SRC_URI,
+do_install(), and FILES:${PN} so it is shipped on the target system.
+
+Jira: QDC017-1234

@@ -332,6 +332,12 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
             "POLICY LOAD EVIDENCE GATE",
             "Message Validation: PASS",
             "generic fallback",
+            "STRICT COMMIT OUTPUT SHAPE GATE",
+            "FORBIDDEN COMMIT SHAPES",
+            "strict-template-v2",
+            "project_policy.py preview",
+            "fix(ikversion):",
+            "bare `Jira:`",
         }
     ),
     "quality-reviewer.agent.md": frozenset(
@@ -481,6 +487,12 @@ REQUIRED_SHARED_CONTRACT_MARKERS = frozenset(
         "Template Load: PASS",
         "Message Validation: PASS",
         "generic `[Jira: summary]` format",
+        "STRICT COMMIT OUTPUT SHAPE GATE",
+        "strict-template-v2",
+        "project_policy.py preview",
+        "fix(ikversion):",
+        "bare `Jira:`",
+        "Message SHA-256",
     }
 )
 
