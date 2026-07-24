@@ -2,8 +2,6 @@
 
 > RUNTIME CHAT-LANGUAGE PREFLIGHT — HIGHEST OUTPUT PRIORITY: Before emitting the first character of the first response, inspect only the latest user-authored natural-language message. Latin-script natural-language words with no Han natural-language text require `Chat Language: en-US`, even when Jira IDs or other identifiers are present. For `en` or `en-*`, discard and regenerate any draft whose agent-authored text contains a Han-script character. Never answer in Chinese first and apologize afterward.
 > NEXT ACTION LANGUAGE RENDER GATE: After selecting the semantic action, render every generated Next Action field from `Chat Language`. For `en` or `en-*`, use English vocabulary and ASCII punctuation only; reject and rerender the whole block if it contains Han, CJK punctuation, fullwidth characters, Chinese allowed values, or a Chinese reply template.
-> COMMIT PREVIEW COMPLETENESS GATE: When Jira is available, show the full validated `.project/git/commit.template` message under `## Commit Message Preview` in one `text` fence. Do not omit fields, replace the template with a synopsis, truncate paths or values, or emit empty inline-code spans; the confirmed preview and actual commit message must be byte-for-byte identical.
-> POLICY LOAD EVIDENCE GATE: Before metadata synthesis or any commit preview, read the manifest-resolved policy and actual template and record `Template Source`, `Template Load: PASS`, and ordered fields. After Jira is valid, require `project_policy.py message` exit 0 and `Message Validation: PASS`; missing evidence blocks preview and generic fallback formats are forbidden.
 
 > 中文：本文档采用固定双语结构。更新中文或英文内容时，必须同步更新另一部分，保持两部分语义一致。
 >
@@ -15,7 +13,7 @@
 
 - [Agent 公共契约](agent-contracts.md) 定义 Task Brief、状态、报告、Next Action、Bug 证据和 Git 交付；其他配置只引用，不复制该行为。
 - [项目画像](embedded-project.yml) 保存已确认的工程事实；`auto` 字段必须通过仓库只读探测解析。
-- 可选的 [项目规则清单](../.project/project.yml) 是项目级约束入口。根据 Task Brief、允许范围和真实 diff 加载所有适用规则；缺失时兼容旧项目继续。
+- 可选的 [项目规则清单](../.project/project.yml) 是项目级约束入口。根据 Task Brief、允许范围和真实 diff 加载所有适用规则；缺失时只有非 Git 工作兼容旧项目继续，Git Delivery 必须 fail-closed。
 - 规则、画像和仓库事实冲突时报告配置漂移，并停止依赖冲突事实；不得静默改写配置。
 
 ### 标准工作流
@@ -40,6 +38,7 @@
 - `EmbeddedDeveloper` 是常规功能代码写入者；`QualityReviewer` 独立评审且不改功能代码；`DocKeeper` 只同步已验证事实。
 - 五个业务 Agent 的基础 handoff 是人工恢复入口；唯一自动入口是末尾 `执行下一步 / Next Action`，由只读 `NextActionRouter` 按共享契约路由。
 - Git policy 只约束交付，不产生授权。Jira 必须由用户提供；commit、push、自动交付、内容调整和 fingerprint 漂移均按共享契约处理。
+- BugResolver 或 EmbeddedDeveloper 执行 commit 前必须先反馈逐文件内容和将原样交给 Git 的完整 commit message，标记 `Commit Content Confirmation: PENDING`，并等待用户在当前输入框明确回复 `确认提交内容`；模式选择、Jira、按钮点击或笼统提交要求不构成确认，文件、diff、范围或消息漂移会使确认失效。确认后只可使用 `git add -- <task-paths>` 显式暂存已确认任务路径，禁止全仓库暂存，并要求 staged 内容与预览完全一致。提交必须先确认版本化 `commit-msg` hook 存在，并只运行带 `core.hooksPath=.githooks` 的 `git commit`；hook 唯一调用 `project_policy.py message` 校验。BugResolver 可执行本地 commit，但不得 push。
 - push 目标只从当前仓库本地 Git 配置解析；禁止 force、`push -u`、自定义 refspec、删除远端分支或修改 `.git/config`。
 
 ### 证据与文档
@@ -55,7 +54,7 @@
 
 - The [shared Agent contract](agent-contracts.md) defines Task Briefs, states, reports, Next Action, bug evidence, and Git delivery. Other configuration references this behavior instead of copying it.
 - The [project profile](embedded-project.yml) stores confirmed engineering facts. Resolve `auto` fields through read-only repository discovery.
-- The optional [project rule manifest](../.project/project.yml) is the project-policy entry point. Load every rule matching the Task Brief, allowed scope, and actual diff; continue in legacy-compatible mode when it is absent.
+- The optional [project rule manifest](../.project/project.yml) is the project-policy entry point. Load every rule matching the Task Brief, allowed scope, and actual diff. When it is absent, only non-Git work remains legacy-compatible; Git Delivery is fail-closed.
 - When a rule, profile, and repository fact conflict, report configuration drift and stop relying on the conflicting fact; never silently rewrite configuration.
 
 ### Standard Workflow
@@ -80,6 +79,7 @@
 - `EmbeddedDeveloper` performs normal functional-code writes; `QualityReviewer` reviews independently without changing functional code; `DocKeeper` synchronizes verified facts only.
 - Base handoffs on the five business Agents are manual recovery entries. The only automatic entry is the final `执行下一步 / Next Action`, routed by the read-only `NextActionRouter` under the shared contract.
 - Git policy constrains delivery but grants no authority. Jira is user-supplied; commit, push, automatic delivery, change adjustment, and fingerprint drift follow the shared contract.
+- Before executing a commit, BugResolver or EmbeddedDeveloper must report exact per-file content and the complete commit message exactly as Git will receive it, mark `Commit Content Confirmation: PENDING`, and wait for the user to reply `confirm commit content` explicitly in the current input. Mode selection, Jira, button clicks, and generic commit requests are not confirmation; file, diff, scope, or message drift invalidates confirmation. After confirmation, stage only confirmed task paths with `git add -- <task-paths>`, forbid repository-wide staging, and require staged content to match the preview exactly. Before commit, require the versioned `commit-msg` hook and run `git commit` only with `core.hooksPath=.githooks`; the hook alone calls `project_policy.py message`. BugResolver may execute a local commit but may not push.
 - Resolve push targets only from the current repository's local Git configuration. Never force, use `push -u`, supply custom refspecs, delete remote branches, or modify `.git/config`.
 
 ### Evidence and Documentation
