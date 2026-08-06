@@ -36,6 +36,12 @@ class CustomizationValidatorTests(unittest.TestCase):
     def codes(self) -> set[str]:
         return {item.code for item in self.diagnostics()}
 
+    def development_diagnostics(self):
+        return validate_repository(self.repo, include_development_tests=True)
+
+    def development_codes(self) -> set[str]:
+        return {item.code for item in self.development_diagnostics()}
+
     def replace_profile(self, name: str) -> None:
         shutil.copyfile(
             FIXTURES / "profiles" / name,
@@ -59,16 +65,21 @@ class CustomizationValidatorTests(unittest.TestCase):
 
     def test_repository_configuration_is_valid(self) -> None:
         self.assertEqual([], self.diagnostics())
+        self.assertEqual([], self.development_diagnostics())
 
-    def test_test_assets_are_kept_outside_runtime_tree(self) -> None:
+    def test_development_mode_checks_test_assets_and_layout(self) -> None:
         legacy = self.repo / ".github" / "agent-kit" / "tests"
         legacy.mkdir(parents=True)
         (legacy / "test_legacy.py").write_text("pass\n", encoding="utf-8")
-        self.assertIn("TEST_LAYOUT", self.codes())
+        self.assertIn("TEST_LAYOUT", self.development_codes())
 
         shutil.rmtree(legacy)
         (self.repo / "tests" / "agent-kit" / "requirements.txt").unlink()
-        self.assertIn("REQUIRED_TEST_FILE", self.codes())
+        self.assertIn("REQUIRED_TEST_FILE", self.development_codes())
+
+    def test_runtime_validation_does_not_require_agent_kit_tests(self) -> None:
+        shutil.rmtree(self.repo / "tests" / "agent-kit")
+        self.assertEqual([], self.diagnostics())
 
     def test_all_supported_product_forms_are_valid(self) -> None:
         for product_form in (
@@ -164,6 +175,24 @@ class CustomizationValidatorTests(unittest.TestCase):
             any("require_task_authorization" in item.message for item in policy_errors)
         )
         self.assertTrue(any("allow_force_push" in item.message for item in policy_errors))
+
+    def test_git_delivery_policy_requires_streamlined_workflow(self) -> None:
+        policy = self.read_yaml(".project/git/delivery.yml")
+        policy["workflow"]["diagnostics"] = "repository-wide-zero"
+        policy["workflow"]["delivery_confirmation"] = "commit-and-push-twice"
+        self.write_yaml(".project/git/delivery.yml", policy)
+        diagnostics = [
+            item for item in self.diagnostics() if item.code == "GIT_POLICY_SCHEMA"
+        ]
+        self.assertTrue(any("workflow.diagnostics" in item.message for item in diagnostics))
+        self.assertTrue(
+            any("workflow.delivery_confirmation" in item.message for item in diagnostics)
+        )
+
+    def test_runtime_delivery_checks_do_not_require_agent_kit_tests(self) -> None:
+        policy = self.read_yaml(".project/git/delivery.yml")
+        checks = [*policy["commit"]["checks"], *policy["push"]["checks"]]
+        self.assertFalse(any("tests/agent-kit" in check for check in checks))
 
     def test_git_delivery_policy_rejects_push_target_overrides(self) -> None:
         policy = self.read_yaml(".project/git/delivery.yml")
@@ -326,7 +355,7 @@ class CustomizationValidatorTests(unittest.TestCase):
         original = agent.read_text(encoding="utf-8")
         for marker in (
             ".github/agent-contracts.md",
-            "CLOSE → RESET → INTAKE",
+            "INTAKE → WORK（诊断和实现）→ VERIFY → DELIVER → DONE",
             "GUIDE_SYMPTOMS",
             "CONFIRM_DIRECTION",
             "Usage Symptom Questions",
@@ -692,6 +721,17 @@ class CustomizationValidatorTests(unittest.TestCase):
             "content_confirmation.status: CONFIRMED",
             "返回编排 / Return to Orchestrator",
             "five static fallback handoffs",
+            "INTAKE → WORK → VERIFY → DELIVER → DONE",
+            "本次新增或恶化的诊断阻塞交付",
+            "Diagnostics introduced or worsened by this task block delivery",
+            "development self-tests for the Agent Kit source repository",
+            "validate_customizations.py --development",
+            "Independent Review 仅在高风险变更时必需",
+            "Independent Review is required only for high-risk changes",
+            "Git 交付最多等待一次用户确认",
+            "Git delivery waits for at most one user confirmation",
+            "成功、显式跳过 Git 交付或只读回答完成时直接给出结果",
+            "On success, an explicit Git-delivery skip, or a completed read-only answer",
         ):
             with self.subTest(marker=marker):
                 contract.write_text(
@@ -703,6 +743,28 @@ class CustomizationValidatorTests(unittest.TestCase):
                     any(code.startswith("SHARED_CONTRACT") for code in self.codes())
                 )
         contract.write_text(original, encoding="utf-8", newline="\n")
+
+    def test_business_agents_require_simplified_workflow_override(self) -> None:
+        for name in (
+            "orchestrator.agent.md",
+            "bug-resolver.agent.md",
+            "embedded-developer.agent.md",
+            "quality-reviewer.agent.md",
+            "doc-keeper.agent.md",
+        ):
+            agent = self.repo / ".github" / "agents" / name
+            original = agent.read_text(encoding="utf-8")
+            with self.subTest(agent=name):
+                agent.write_text(
+                    original.replace(
+                        "Simplified-workflow override",
+                        "REMOVED_SIMPLIFIED_WORKFLOW_OVERRIDE",
+                    ),
+                    encoding="utf-8",
+                    newline="\n",
+                )
+                self.assertIn("AGENT_BODY_CONTRACT", self.codes())
+            agent.write_text(original, encoding="utf-8", newline="\n")
 
     def test_commit_hook_files_and_markers_are_required(self) -> None:
         required = {
@@ -732,20 +794,12 @@ class CustomizationValidatorTests(unittest.TestCase):
                     self.assertIn("GIT_DELIVERY_CONTRACT", self.codes())
             path.write_text(original, encoding="utf-8", newline="\n")
 
-        for relative in (
-            ".githooks/commit-msg",
-            "tests/agent-kit/test_commit_hook.py",
-        ):
+        for relative in (".githooks/commit-msg",):
             with self.subTest(missing=relative):
                 path = self.repo / relative
                 saved = path.read_bytes()
                 path.unlink()
-                expected = (
-                    "REQUIRED_TEST_FILE"
-                    if relative.startswith("tests/")
-                    else "REQUIRED_FILE"
-                )
-                self.assertIn(expected, self.codes())
+                self.assertIn("REQUIRED_FILE", self.codes())
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(saved)
 
@@ -936,7 +990,7 @@ class CustomizationValidatorTests(unittest.TestCase):
         self.assertNotIn("Current State: CLOSE", initial_issue_example)
         self.assertIn("On Success: GUIDE_SYMPTOMS -> SCOPE", initial_issue_example)
 
-    def test_close_issue_handoff_is_required_after_delivery(self) -> None:
+    def test_close_issue_handoff_is_legacy_done_recovery_only(self) -> None:
         agent = self.repo / ".github" / "agents" / "embedded-developer.agent.md"
         original = agent.read_text(encoding="utf-8")
         agent.write_text(
@@ -950,13 +1004,13 @@ class CustomizationValidatorTests(unittest.TestCase):
         self.assertIn("HANDOFF_CLOSE_ISSUE", self.codes())
 
         for marker in (
-            "Recheck",
-            "repair",
+            "Legacy-session manual recovery",
+            "applicable gates",
             "selected Git delivery",
-            "clear issue-level state",
+            "direct DONE report",
+            "without clearing state",
             "fresh issue INTAKE",
-            "otherwise return BLOCKED",
-            "Next Action",
+            "actual blocker",
         ):
             with self.subTest(prompt_marker=marker):
                 agent.write_text(

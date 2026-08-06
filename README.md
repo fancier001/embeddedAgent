@@ -36,7 +36,7 @@ User
              └── docs when needed ─────▶ DocKeeper
 ```
 
-五个业务 Agent 的原有基础 handoff 由 frontmatter 静态定义、始终显示且保持 `send: false`，只作为人工备用角色入口。每组按钮末尾另有 `执行下一步 / Next Action`，使用 `send: true` 进入隐藏的 `NextActionRouter`；Router 读取最新唯一 Next Action，自动执行安全角色路由，或为缺输入、外部操作和受保护确认给出精确指令。切换后 Router 自己继续显示五个 `send:false` 静态返回按钮，分别返回 Orchestrator、BugResolver、EmbeddedDeveloper、QualityReviewer 和 DocKeeper，避免底部变为空白。基础/返回按钮不表示当前推荐动作，提前点击不匹配的按钮会被目标 Agent 门禁阻塞。
+默认流程由当前 manager 自动连续执行，基础 handoff 和 `执行下一步 / Next Action` 只作为人工恢复入口。Agent 仅在确实缺少用户输入、外部动作或新增权限时输出 Next Action；实现、验证、按风险触发的评审、必要文档和关闭均不要求用户逐步点击。隐藏的 `NextActionRouter` 仅保留旧会话兼容能力。
 
 ### 五个业务 Agent与隐藏 Router
 
@@ -55,23 +55,19 @@ User
 
 公共状态为：
 
-- `COMPLETE`：全部必需门禁通过。
+- `COMPLETE`：本次变更适用的必需门禁通过。
 - `CONDITIONAL`：用户明确接受剩余风险。
 - `BLOCKED`：缺少决策、资料、工具或权限，无法安全推进。
 - `FAILED`：验证失败或两轮返工后仍有 BLOCKER/MAJOR。
 - `INSUFFICIENT_EVIDENCE`：仅用于评审/Bug/故障分析，表示证据不足。
 
-Orchestrator 的标准交付流程是：
+Orchestrator 和 BugResolver 默认使用同一条精简流程：
 
 ```text
-INTAKE → PREFLIGHT → PLAN → IMPLEMENT → VERIFY → REVIEW
-                                              │
-                          最多两轮 REWORK ◀───┘
-                                              │
-                DOCUMENT（按需）→ DELIVERY → CLOSE
+INTAKE → WORK ↔ VERIFY → DELIVER（按需）→ DONE
 ```
 
-Bug 请求通过 `/analyze-bug`、`/analyze-log`、直接选择或 Orchestrator 的人工 handoff 进入 `BugResolver`，两个 manager 不自动嵌套。诊断路径为 `INTAKE → GUIDE_SYMPTOMS → CONFIRM_DIRECTION（按需）→ SCOPE → NORMALIZE_ERROR → IDENTIFY_PROBLEM → TRACE_CONTEXT → REPRODUCE_BASELINE → EVIDENCE_CHECK → AWAIT_EVIDENCE / HYPOTHESES → VALIDATE_CAUSE → DECIDE`；用户明确授权修复后，再进入 `PLAN_FIX → IMPLEMENT → VERIFY → QUALITY_REVIEW → REWORK → DOCUMENT → DELIVERY → CLOSE → RESET → INTAKE`。
+Bug 请求通过 `/analyze-bug`、`/analyze-log`、直接选择或 Orchestrator 的人工 handoff 进入 `BugResolver`。用户明确要求修复即授权当前范围内的必要写入；诊断作为 `WORK` 的内部步骤，只有存在会实质改变结果的多个方向时才询问。验证只阻塞本次新增或恶化的问题，既有 baseline 问题继续报告但不要求授权修复。独立评审仅在高风险变更或用户明确要求时触发；文档仅在公共接口、架构、对外行为、硬件假设或操作流程变化时触发。
 
 BugResolver 会把显式 `Git Delivery` 和 commit metadata 保留到 `DELIVERY`。若修复请求未提供交付选择，交付前统一使用 `none` 防止提前写入；门禁全部通过后生成一次 `Commit Delivery Confirmation`，建议 `commit` 为待确认默认值。推荐值不构成授权，用户确认前不写 Git；`commit-and-push`/`auto` 必须明确选择，显式 `none` 记录跳过。
 
@@ -83,9 +79,9 @@ VS Code 的人工 handoff 不会自动返回上一 manager，因此 `BugResolver
 
 进入 EmbeddedDeveloper 并看到 `Commit Delivery Confirmation` 后，最后一步不是另一个 handoff 按钮。Agent 必须先反馈逐文件修改内容和将原样交给 Git 的完整 commit message，并显示 `Commit Content Confirmation: PENDING`；用户核对后在当前输入框回复 `确认提交内容`，或回复 `调整修改: <要求>` 进入删减和重新验证流程。模式选择、Jira、按钮点击或笼统要求“提交”都不等于内容确认。最终确认后当前 Agent 使用 `git add -- <task-paths>` 显式暂存已确认任务路径并核对完整 staged 内容与预览完全一致，再执行 `git -c core.hooksPath=.githooks commit --file <message-file> --cleanup=verbatim`。文件、diff、范围或消息漂移会使确认失效并重新预览。`commit-msg` hook 是唯一消息门禁，直接调用 `project_policy.py message`；不存在额外提交包装层。
 
-每个业务 Agent 结果都包含唯一动态 Next Action：Current State、Chat Language、Action、Owner、UI Route、Dispatch Target、Input Required、Required Input、Reply Template、Instruction、On Success。`Chat Language` 只来自用户亲自输入并在路由中原样传递；需要回复时显示 `Input Required: YES`，逐项列出字段、格式和可复制模板，并明确要求在当前输入框回复；无需回复时显示 `Input Required: NO` 并明确提示点击“执行下一步”或无需操作。统一按钮点击只授权安全路由，不代替 Jira、修改内容、commit、push 或外部命令确认。
+只有确实需要用户输入、外部动作或新增权限时才输出一个动态 Next Action；成功结果和 Agent 可自行继续的动作不输出。需要回复时逐项列出字段、格式和可复制模板，并明确要求在当前输入框回复。按钮点击只用于人工恢复，不代替 Jira、修改内容或 Git 授权。
 
-修复、验证、独立评审、必要文档和所选 Git 交付均处理完成后，EmbeddedDeveloper 的 `问题已解决 / Close Issue` handoff 返回 BugResolver。BugResolver 输出闭环报告、清除问题级 Jira/根因/范围/授权等状态，再用 `START_NEW_ISSUE` 进入新问题；提前点击该 handoff 会返回 `BLOCKED`。
+适用门禁和所选 Git 交付处理完成后，BugResolver 直接输出最终报告并进入 `DONE`；不再要求 `Close Issue`、`RESET` 或 `START_NEW_ISSUE`。下一条用户消息自然开始新任务。
 
 BugResolver 先用 `Usage Symptom Profile` 理解用户目标、实际操作、预期/实际、频率/边界、环境、影响和恢复；缺少会改变分析方向的现象时，通过一张 `Usage Symptom Questions` 表集中询问，首轮最多 5 个，允许回答 `Unknown`。只有可能指向不同模块/根因路径或输入矛盾时才要求方向确认；确认前不深入追踪或委派 Developer，场景清晰时直接继续。随后用引用该 Profile 的 `Problem Identification` 区分已观察问题、类别、疑似子系统、严重度和证据置信度。
 
@@ -112,13 +108,13 @@ BugResolver 先用 `Usage Symptom Profile` 理解用户目标、实际操作、�
 
 `python .github/agent-kit/scripts/project_policy.py rules --root . --path <repo-relative-path>` 可确定性输出适用规则和 Git policy；重复 `--path` 支持多路径，`--all` 用于审计。
 
-默认 [Git delivery policy](.project/git/delivery.yml) 定义自动化开关、`denied_paths`、commit 模板/检查和 push 分支/检查，但禁止保存 remote、URL 或目标 ref。commit 内容由 `Task Change Baseline`、本任务修改账本和当前真实 diff 检测，不由 YAML 路径白名单决定；旧 `allowed_paths` 仅兼容解析。两个 `automation` 开关默认关闭且只约束 `auto`；用户确认的 `commit`/`commit-and-push` 不受其限制。Task Brief 的 `Git Delivery` 只接受 `none`、`commit`、`commit-and-push`、`auto`。即使已选择 `auto`，自动 commit 前仍必须确认精确 Commit Content fingerprint；缺失或漂移时只读预检返回 `CONFIRM_COMMIT_CONTENT`。严格的 [commit template](.project/git/commit.template)、版本化 [commit-msg hook](.githooks/commit-msg) 和 [`project_policy.py`](.github/agent-kit/scripts/project_policy.py) 共同构成提交消息门禁；消息规则只在 policy 脚本中实现。
+默认 [Git delivery policy](.project/git/delivery.yml) 以机器可读的 `workflow` 固定精简模式、增量诊断、风险评审、影响触发文档和一次性交付确认，并定义自动化开关、`denied_paths`、commit 模板/检查和 push 分支/检查；它禁止保存 remote、URL 或目标 ref。commit 内容由 `Task Change Baseline`、本任务修改账本和当前真实 diff 检测，不由 YAML 路径白名单决定；旧 `allowed_paths` 仅兼容解析。两个 `automation` 开关默认关闭且只约束 `auto`；用户确认的 `commit`/`commit-and-push` 不受其限制。Task Brief 的 `Git Delivery` 只接受 `none`、`commit`、`commit-and-push`、`auto`。即使已选择 `auto`，自动 commit 前仍必须确认精确 Commit Content fingerprint；缺失或漂移时只读预检返回 `CONFIRM_COMMIT_CONTENT`。严格的 [commit template](.project/git/commit.template)、版本化 [commit-msg hook](.githooks/commit-msg) 和 [`project_policy.py`](.github/agent-kit/scripts/project_policy.py) 共同构成提交消息门禁；消息规则只在 policy 脚本中实现。
 
 提交前的 `Commit Content` 逐文件显示 Git state、增删统计、真实摘要和排除路径，并同时展示完整 commit message；所有模式都显示 `Commit Content Confirmation: PENDING`，只有 auto 额外显示 fingerprint。用户可回复 `确认提交内容`，也可要求移除文件、缩小 hunk、减少实现或修改消息；后者进入 `ADJUST_CHANGESET`，只调整本任务内容并重新运行受影响验证、独立评审和确认，旧确认不会沿用。
 
 push 预检只通过当前项目 `.git` 的 local config 解析 current branch、branch remote/merge 和唯一 push URL；global/system config、环境变量、`.project` 和用户文本不能覆盖。无 upstream、detached HEAD、多个 push URL、保护分支、命中 `denied_paths` 或 fingerprint 漂移都会阻塞；工具只读，不执行 commit/push。
 
-`Git Delivery: auto` 只在修复、测试、必需检查、独立评审和必要文档全部通过后决策。完整消息缺必填 metadata 时阻塞请求补充；无 diff 时不交付；任一自动上传前提不足时 Git 保持不变，Agent 只输出完整 commit 内容。只有 policy 同时启用 commit/push、index 初始为空、改动正好属于修复范围、HEAD 与本地 upstream 一致且目标安全唯一时，才显式暂存、创建一个 commit，并用首次 fingerprint 与新 commit SHA 二次预检后 push；push 失败保留本地 commit，不自动回滚。
+`Git Delivery: auto` 只在修复、测试和所有适用的必需门通过后决策；未触发的独立评审或文档以带原因的 `NOT_RUN` 记录，不阻塞。完整消息缺必填 metadata 时阻塞请求补充；无 diff 时不交付；任一自动上传前提不足时 Git 保持不变，Agent 只输出完整 commit 内容。只有 policy 同时启用 commit/push、index 初始为空、改动正好属于修复范围、HEAD 与本地 upstream 一致且目标安全唯一时，才显式暂存、创建一个 commit，并用首次 fingerprint 与新 commit SHA 二次预检后 push；push 失败保留本地 commit，不自动回滚。
 
 `extensions` 可保存命名空间化的项目集成配置，`.project/` 也允许增加其他子目录和内容，因此扩展项目规范无需改变五 Agent 结构。
 
@@ -177,7 +173,7 @@ Orchestrator 与 BugResolver frontmatter 中的 `agents` allowlist 可能依赖�
 
 ```sh
 python -m pip install -r tests/agent-kit/requirements.txt
-python .github/agent-kit/scripts/validate_customizations.py --root .
+python .github/agent-kit/scripts/validate_customizations.py --root . --development
 python -m unittest discover -s tests/agent-kit -p "test_*.py"
 ```
 
@@ -189,7 +185,7 @@ cmake --build build/minimal-firmware
 ctest --test-dir build/minimal-firmware --output-on-failure
 ```
 
-CI 在 Windows 和 Ubuntu 上执行上述验证。真实交互还需按照 [VS Code Manual Smoke Test](tests/agent-kit/manual/vscode-smoke-test.md) 检查 agent 发现、项目约束调用、受控 Git 交付、自动编排、缺资料、baseline 失败、缺陷评审、ELF 不匹配和硬件审批。
+CI 在 Windows 和 Ubuntu 上执行上述开发验证。`tests/agent-kit/` 只属于本 Agent Kit 源码仓库；部署到目标项目后的默认运行时验证不要求该目录，使用不带 `--development` 的命令。真实交互还需按照 [VS Code Manual Smoke Test](tests/agent-kit/manual/vscode-smoke-test.md) 检查 agent 发现、项目约束调用、受控 Git 交付、自动编排、缺资料、baseline 失败、缺陷评审、ELF 不匹配和硬件审批。
 
 ### 目录
 
@@ -282,7 +278,7 @@ User
              └── docs when needed ─────▶ DocKeeper
 ```
 
-The five business agents' existing base handoffs are static, always visible, and remain `send: false` manual fallback role entries. Each set ends with `执行下一步 / Next Action`, a `send: true` handoff to the hidden `NextActionRouter`. The Router reads the latest unique Next Action, executes safe role routing, or emits exact instructions for missing input, external work, and protected confirmations. Once active, the Router itself exposes five `send:false` static return buttons for Orchestrator, BugResolver, EmbeddedDeveloper, QualityReviewer, and DocKeeper so the footer never becomes empty. A mismatched early base/return-button click is blocked by the target agent's gates.
+The active manager runs the default workflow continuously. Base handoffs and `执行下一步 / Next Action` are manual recovery entries only. An agent emits Next Action only for genuine user input, external work, or new authority; implementation, verification, risk-triggered review, required documentation, and completion require no step-by-step clicks. The hidden `NextActionRouter` remains only for legacy-session compatibility.
 
 ### Five Business Agents and the Hidden Router
 
@@ -307,17 +303,13 @@ Common statuses are:
 - `FAILED`: verification failed or BLOCKER/MAJOR findings remain after two rework rounds.
 - `INSUFFICIENT_EVIDENCE`: review/bug/fault analysis only; available evidence cannot support a conclusion.
 
-The standard Orchestrator delivery flow is:
+Orchestrator and BugResolver use the same simplified default flow:
 
 ```text
-INTAKE → PREFLIGHT → PLAN → IMPLEMENT → VERIFY → REVIEW
-                                              │
-                       up to two REWORK rounds ◀───┘
-                                              │
-                DOCUMENT (as needed) → DELIVERY → CLOSE
+INTAKE -> WORK <-> VERIFY -> DELIVER (when requested) -> DONE
 ```
 
-Bug requests enter `BugResolver` through `/analyze-bug`, `/analyze-log`, direct selection, or Orchestrator's manual handoff; the two managers are never auto-nested. Its diagnostic path is `INTAKE → GUIDE_SYMPTOMS → CONFIRM_DIRECTION (when needed) → SCOPE → NORMALIZE_ERROR → IDENTIFY_PROBLEM → TRACE_CONTEXT → REPRODUCE_BASELINE → EVIDENCE_CHECK → AWAIT_EVIDENCE / HYPOTHESES → VALIDATE_CAUSE → DECIDE`. After the user explicitly authorizes a fix, it continues through `PLAN_FIX → IMPLEMENT → VERIFY → QUALITY_REVIEW → REWORK → DOCUMENT → DELIVERY → CLOSE → RESET → INTAKE`.
+Bug requests enter `BugResolver` through `/analyze-bug`, `/analyze-log`, direct selection, or Orchestrator's manual handoff. A request to fix authorizes necessary in-scope writes. Diagnosis is internal to `WORK`, with a question only when multiple material outcomes exist. Verification blocks only issues introduced or worsened by the task; baseline debt remains reported but never requires remediation authorization. Independent review runs only for high-risk changes or when explicitly requested. Documentation runs only for changes to public interfaces, architecture, externally visible behavior, hardware assumptions, or operating procedures.
 
 BugResolver preserves explicit `Git Delivery` and commit metadata through `DELIVERY`. If a repair request omitted the delivery choice, all pre-delivery work uses `none` to prevent early writes. After all gates pass it creates one `Commit Delivery Confirmation` and proposes `commit` as the recommended default pending confirmation. A recommendation is not authorization and Git remains unchanged before confirmation. `commit-and-push`/`auto` require an explicit choice; explicit `none` records a skip.
 
@@ -329,9 +321,9 @@ A manual VS Code handoff does not automatically return to the previous manager, 
 
 After entering EmbeddedDeveloper and seeing `Commit Delivery Confirmation`, the final step is not another handoff button. The Agent first reports exact per-file changes and the complete commit message exactly as Git will receive it, with `Commit Content Confirmation: PENDING`. Review both, then reply `confirm commit content` in the current input, or use `adjust changes: <request>` to reduce and reverify them. Mode selection, Jira, button clicks, and generic commit requests are not content confirmation. After final confirmation, the current Agent stages confirmed task paths with `git add -- <task-paths>`, requires the complete staged content to match the preview exactly, then runs `git -c core.hooksPath=.githooks commit --file <message-file> --cleanup=verbatim`. File, diff, scope, or message drift invalidates confirmation and produces a new preview. The `commit-msg` hook is the sole message gate and directly invokes `project_policy.py message`; there is no commit wrapper.
 
-Every business-agent result contains one dynamic Next Action with Current State, Chat Language, Action, Owner, UI Route, Dispatch Target, Input Required, Required Input, Reply Template, Instruction, and On Success. `Chat Language` comes only from user-authored input and is preserved through routing. When a reply is required, `Input Required: YES` itemizes fields and formats, supplies a copy-ready template, and explicitly says to reply in the current input. Otherwise, `Input Required: NO` explicitly tells the user to click Next Action or take no action. Clicking the unified button authorizes safe routing only and never substitutes for Jira, change-content, commit, push, or external-command confirmation.
+Emit one dynamic Next Action only when user input, an external action, or new authority is genuinely required. Successful results and agent-owned continuation omit it. When a reply is required, itemize the fields and formats, supply a copy-ready template, and tell the user to reply in the current input. Buttons are manual recovery only and never substitute for Jira, change-content, or Git authorization.
 
-After repair, verification, independent review, required documentation, and selected Git delivery are handled, EmbeddedDeveloper's `问题已解决 / Close Issue` handoff returns to BugResolver. BugResolver emits the closure report, clears issue-level Jira/root-cause/scope/authorization state, and enters a fresh issue through `START_NEW_ISSUE`; an early handoff returns `BLOCKED`.
+After applicable gates and the selected Git delivery are handled, BugResolver emits the final report and enters `DONE`. It does not require `Close Issue`, `RESET`, or `START_NEW_ISSUE`; the next user message naturally starts a new task.
 
 BugResolver first uses Usage Symptom Profile to understand the user's goal, actual operations, expected/actual behavior, frequency/boundaries, environment, impact, and recovery. When direction-changing symptoms are missing, it asks them together through one Usage Symptom Questions table with at most five questions in the first set and permits `Unknown`. It asks for direction confirmation only when symptoms indicate different modules/root-cause paths or conflict; it does not trace deeply or delegate Developer before confirmation, and proceeds directly when the scenario is clear. It then emits Problem Identification grounded in that Profile to separate the observed problem, category, suspected subsystem, severity, and evidence confidence.
 
@@ -358,13 +350,13 @@ The optional root [`.project/`](.project/README.md) directory is a sibling of `.
 
 `python .github/agent-kit/scripts/project_policy.py rules --root . --path <repo-relative-path>` deterministically emits applicable rules and Git policy. Repeat `--path` for multiple paths, or use `--all` for audit.
 
-The default [Git delivery policy](.project/git/delivery.yml) defines automation, `denied_paths`, commit template/checks, and push branch/check rules, but cannot store a remote, URL, or target ref. Commit content is detected from `Task Change Baseline`, the task-change ledger, and the current actual diff, never from a YAML path allowlist; legacy `allowed_paths` is parsed for compatibility only. Both `automation` switches default to off and gate only `auto`; user-confirmed `commit`/`commit-and-push` ignore them. Task Brief `Git Delivery` accepts only `none`, `commit`, `commit-and-push`, or `auto`. Even after selecting `auto`, the exact Commit Content fingerprint must be confirmed before automatic commit. The strict [commit template](.project/git/commit.template), versioned [commit-msg hook](.githooks/commit-msg), and [`project_policy.py`](.github/agent-kit/scripts/project_policy.py) form the commit-message gate; message rules exist only in the policy script.
+The default [Git delivery policy](.project/git/delivery.yml) uses a machine-readable `workflow` section to enforce streamlined mode, incremental diagnostics, risk-based review, impact-triggered documentation, and one delivery confirmation. It also defines automation, `denied_paths`, commit template/checks, and push branch/check rules, but cannot store a remote, URL, or target ref. Commit content is detected from `Task Change Baseline`, the task-change ledger, and the current actual diff, never from a YAML path allowlist; legacy `allowed_paths` is parsed for compatibility only. Both `automation` switches default to off and gate only `auto`; user-confirmed `commit`/`commit-and-push` ignore them. Task Brief `Git Delivery` accepts only `none`, `commit`, `commit-and-push`, or `auto`. Even after selecting `auto`, the exact Commit Content fingerprint must be confirmed before automatic commit. The strict [commit template](.project/git/commit.template), versioned [commit-msg hook](.githooks/commit-msg), and [`project_policy.py`](.github/agent-kit/scripts/project_policy.py) form the commit-message gate; message rules exist only in the policy script.
 
 Before commit, `Commit Content` shows each file's Git state, added/deleted counts, truthful summary, and excluded paths together with the complete commit message. Every mode shows `Commit Content Confirmation: PENDING`; only auto also shows a fingerprint. The user may reply `confirm commit content`, or ask to remove a file, narrow a hunk, reduce the implementation, or change the message. The latter enters `ADJUST_CHANGESET`, changes only current-task work, and reruns affected verification, independent review, and confirmation without reusing the old confirmation.
 
 Push preflight resolves the current branch, branch remote/merge, and one push URL only from this project's local `.git` config. Global/system config, environment, `.project`, and user text cannot override it. Missing upstream, detached HEAD, multiple push URLs, protected branches, paths matching `denied_paths`, or fingerprint drift block delivery; the tool itself performs no commit or push.
 
-`Git Delivery: auto` decides only after the repair, tests, required checks, independent review, and required documentation pass. Missing required message metadata blocks for input; no diff means no delivery; any unmet automatic-upload prerequisite leaves Git unchanged and makes the agent output only the complete commit content. It explicitly stages, creates one commit, and pushes after fingerprint/SHA revalidation only when policy enables both commit and push, the index starts empty, changes exactly match the repair scope, HEAD equals the local upstream, and the target is safe and unique. A push failure keeps the local commit without automatic rollback.
+`Git Delivery: auto` decides only after the repair, tests, and all applicable required gates pass. Record untriggered independent review or documentation as `NOT_RUN` with a reason; neither blocks. Missing required message metadata blocks for input; no diff means no delivery; any unmet automatic-upload prerequisite leaves Git unchanged and makes the agent output only the complete commit content. It explicitly stages, creates one commit, and pushes after fingerprint/SHA revalidation only when policy enables both commit and push, the index starts empty, changes exactly match the repair scope, HEAD equals the local upstream, and the target is safe and unique. A push failure keeps the local commit without automatic rollback.
 
 `extensions` may hold namespaced project-integration configuration, and `.project/` may contain other subdirectories and content, so project rules can grow without changing the five-agent structure.
 
@@ -423,7 +415,7 @@ Install development dependencies and run static validation:
 
 ```sh
 python -m pip install -r tests/agent-kit/requirements.txt
-python .github/agent-kit/scripts/validate_customizations.py --root .
+python .github/agent-kit/scripts/validate_customizations.py --root . --development
 python -m unittest discover -s tests/agent-kit -p "test_*.py"
 ```
 
@@ -435,7 +427,7 @@ cmake --build build/minimal-firmware
 ctest --test-dir build/minimal-firmware --output-on-failure
 ```
 
-CI runs these checks on Windows and Ubuntu. Real interaction also requires the [VS Code Manual Smoke Test](tests/agent-kit/manual/vscode-smoke-test.md), covering discovery, project-constraint invocation, controlled Git delivery, automatic orchestration, missing documents, baseline failure, seeded-defect review, ELF mismatch, and hardware approval.
+CI runs these development checks on Windows and Ubuntu. `tests/agent-kit/` belongs only to the Agent Kit source repository; default runtime validation after installation into a target project does not require that directory and omits `--development`. Real interaction also requires the [VS Code Manual Smoke Test](tests/agent-kit/manual/vscode-smoke-test.md), covering discovery, project-constraint invocation, controlled Git delivery, automatic orchestration, missing documents, baseline failure, seeded-defect review, ELF mismatch, and hardware approval.
 
 ### Layout
 

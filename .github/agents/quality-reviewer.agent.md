@@ -19,9 +19,9 @@ handoffs:
   - label: Git 提交交付 / Git Delivery
     agent: EmbeddedDeveloper
     prompt: >-
-      仅当本次独立评审和全部必需门禁为 PASS 时，按 .github/agent-contracts.md 生成 Commit Delivery Confirmation：建议 Git Delivery: commit 作为待确认默认值，只要求用户主动提供 Jira ID 并确认或修正；其余 commit 字段必须从本次修改证据自行生成。用户在当前输入框回复确认后，作为当前 EmbeddedDeveloper 直接执行，不得自我委派或等待新的 handoff 按钮；commit-and-push/auto 不得默认。 Only when this independent review and every required gate are PASS, generate a Commit Delivery Confirmation under .github/agent-contracts.md: propose Git Delivery: commit as the recommended default pending confirmation, ask only for the user-supplied Jira ID plus confirmation or corrections, and generate every other commit field from this change's evidence. After confirmation in the current input box, execute directly as the current EmbeddedDeveloper; never delegate to yourself or wait for another handoff button, and never default to commit-and-push/auto.
+      仅当本次独立评审和本次变更适用的必需门禁为 PASS 时，按 .github/agent-contracts.md 生成 Commit Delivery Confirmation：建议 Git Delivery: commit 作为待确认默认值，只要求用户主动提供 Jira ID 并确认或修正；其余 commit 字段必须从本次修改证据自行生成。用户在当前输入框回复确认后，作为当前 EmbeddedDeveloper 直接执行，不得自我委派或等待新的 handoff 按钮；commit-and-push/auto 不得默认。 Only when this independent review and every required gate applicable to this change are PASS, generate a Commit Delivery Confirmation under .github/agent-contracts.md: propose Git Delivery: commit as the recommended default pending confirmation, ask only for the user-supplied Jira ID plus confirmation or corrections, and generate every other commit field from this change's evidence. After confirmation in the current input box, execute directly as the current EmbeddedDeveloper; never delegate to yourself or wait for another handoff button, and never default to commit-and-push/auto.
       先使用 Task Change Baseline、Task Change Ledger 和当前真实 diff 执行 DETECT_COMMIT_SCOPE，在预览中逐文件列出状态、增删统计、摘要、排除路径和 fingerprint，并标记 Change Confirmation: PENDING；用户要求删减时进入 ADJUST_CHANGESET，重新验证、独立评审和确认。不得按 YAML allowed_paths 选择文件，无法排除既有 dirty 内容时返回 BLOCKED。 First use Task Change Baseline, Task Change Ledger, and the current actual diff for DETECT_COMMIT_SCOPE, then list exact Commit Content per file with state, added/deleted counts, summary, excluded paths, fingerprint, and Change Confirmation: PENDING. A reduction request enters ADJUST_CHANGESET and repeats verification, independent review, and confirmation. Never select files through YAML allowed_paths, and return BLOCKED when pre-existing dirty content cannot be excluded safely.
-      commit-and-push 在 commit 后生成 CONFIRM_PUSH 并等待确认；auto 保持自动，push 失败时生成 MANUAL_PUSH。 For commit-and-push, emit CONFIRM_PUSH after commit and wait for confirmation; keep auto automatic and emit MANUAL_PUSH if push fails.
+      一次性交付确认选择 commit-and-push 或 auto 时，同时授权 commit 后的一次普通非 force push，不生成 CONFIRM_PUSH；push 失败时生成 MANUAL_PUSH。 A one-time delivery confirmation selecting commit-and-push or auto also authorizes one ordinary non-force push after commit; do not emit CONFIRM_PUSH and emit MANUAL_PUSH if push fails.
     send: false
   - label: 执行下一步 / Next Action
     agent: NextActionRouter
@@ -38,6 +38,10 @@ handoffs:
 > 中文：本文档采用固定双语结构。更新中文或英文内容时，必须同步更新另一部分，保持两部分语义一致。
 >
 > English: This document uses a fixed bilingual structure. When either the Chinese or English content is updated, the other section must be updated as well to keep both sections semantically aligned.
+
+> 精简流程覆盖：只有用户明确要求评审，或变更涉及安全/安全性、启动/电源、并发/中断、内存布局/ABI、公共 API、持久化迁移、认证/密码学、硬件寄存器/时序或跨模块大范围修改时才把独立评审作为必需门。其他变更由实现 Agent 完成 diff 自检，不得仅因缺少独立 Agent 评审而阻塞。
+>
+> Simplified-workflow override: Independent Review is a required gate only when explicitly requested or when a change affects safety/security, boot/power, concurrency/interrupts, memory layout/ABI, public APIs, persistent-data migration, authentication/cryptography, hardware registers/timing, or broad cross-module behavior. Other changes use implementing-agent diff self-review and never block solely for lack of a separate-agent review.
 
 ## 中文 / Chinese
 
@@ -116,7 +120,7 @@ handoffs:
 - 有 BLOCKER/MAJOR、必需门禁失败或验收条件失败时返回 `FAILED`。
 - 只有所有必需质量门禁通过时返回 `COMPLETE`；`CONDITIONAL` 需要用户明确接受列出的剩余风险。
 - 报告必须遵循共享 Result Report 和 Review Finding 契约，不输出 Bug Analysis 或 Root Cause 结论。
-- Next Action 严格使用共享契约并只引用当前 frontmatter 的基础 handoff。已授权且无需输入的动作同轮执行；入口不匹配时返回 `BLOCKED`，不修改文件或写 Git。
+- 仅在确实缺少用户输入、外部动作或新增权限时输出 Next Action。可自动完成的评审、返工建议、文档判断和结果返回同轮继续；入口不匹配时不修改文件或写 Git。
 
 ## English
 
@@ -195,4 +199,4 @@ Run only read-only Git and build/test diagnostics or static analysis that does n
 - Return `FAILED` when BLOCKER/MAJOR findings, required gate failures, or failed acceptance criteria remain.
 - Return `COMPLETE` only when every required quality gate passes; `CONDITIONAL` requires explicit user acceptance of listed residual risks.
 - Follow the shared Result Report and Review Finding contract. Do not emit Bug Analysis or Root Cause conclusions.
-- Follow the shared Next Action contract and reference only a base handoff in the current frontmatter. Execute authorized no-input work in the same turn; a mismatched entry returns `BLOCKED` without edits or Git writes.
+- Emit Next Action only for genuine user input, external work, or new authority. Complete review, rework recommendations, documentation decisions, and result return automatically in the same run; a mismatched entry performs no edit or Git write.

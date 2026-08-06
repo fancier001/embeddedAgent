@@ -16,7 +16,7 @@ handoffs:
     prompt: >-
       文档门禁完成且已有修复、测试、必需检查和独立质量评审 PASS 证据时，按 .github/agent-contracts.md 生成 Commit Delivery Confirmation：建议 Git Delivery: commit 作为待确认默认值，只要求用户主动提供 Jira ID 并确认或修正；其余 commit 字段必须从本次修改证据自行生成。用户在当前输入框回复确认后，作为当前 EmbeddedDeveloper 直接执行，不得自我委派或等待新的 handoff 按钮；commit-and-push/auto 不得默认。 After documentation completes with repair, test, required-check, and independent-review PASS evidence, generate a Commit Delivery Confirmation under .github/agent-contracts.md: propose Git Delivery: commit as the recommended default pending confirmation, ask only for the user-supplied Jira ID plus confirmation or corrections, and generate every other commit field from this change's evidence. After confirmation in the current input box, execute directly as the current EmbeddedDeveloper; never delegate to yourself or wait for another handoff button, and never default to commit-and-push/auto.
       先使用 Task Change Baseline、Task Change Ledger 和当前真实 diff 执行 DETECT_COMMIT_SCOPE，在预览中逐文件列出状态、增删统计、摘要、排除路径和 fingerprint，并标记 Change Confirmation: PENDING；用户要求删减时进入 ADJUST_CHANGESET，重新验证、独立评审和确认。不得按 YAML allowed_paths 选择文件，无法排除既有 dirty 内容时返回 BLOCKED。 First use Task Change Baseline, Task Change Ledger, and the current actual diff for DETECT_COMMIT_SCOPE, then list exact Commit Content per file with state, added/deleted counts, summary, excluded paths, fingerprint, and Change Confirmation: PENDING. A reduction request enters ADJUST_CHANGESET and repeats verification, independent review, and confirmation. Never select files through YAML allowed_paths, and return BLOCKED when pre-existing dirty content cannot be excluded safely.
-      commit-and-push 在 commit 后生成 CONFIRM_PUSH 并等待确认；auto 保持自动，push 失败时生成 MANUAL_PUSH。 For commit-and-push, emit CONFIRM_PUSH after commit and wait for confirmation; keep auto automatic and emit MANUAL_PUSH if push fails.
+      一次性交付确认选择 commit-and-push 或 auto 时，同时授权 commit 后的一次普通非 force push，不生成 CONFIRM_PUSH；push 失败时生成 MANUAL_PUSH。 A one-time delivery confirmation selecting commit-and-push or auto also authorizes one ordinary non-force push after commit; do not emit CONFIRM_PUSH and emit MANUAL_PUSH if push fails.
     send: false
   - label: 执行下一步 / Next Action
     agent: NextActionRouter
@@ -33,6 +33,10 @@ handoffs:
 > 中文：本文档采用固定双语结构。更新中文或英文内容时，必须同步更新另一部分，保持两部分语义一致。
 >
 > English: This document uses a fixed bilingual structure. When either the Chinese or English content is updated, the other section must be updated as well to keep both sections semantically aligned.
+
+> 精简流程覆盖：只有公共 API、架构、对外行为/状态机、硬件假设或操作流程发生变化时，文档才是必需门；已确认根因本身不触发文档任务。没有公共影响时记录 `NOT_RUN — Not required` 并自动继续，不要求用户 handoff。
+>
+> Simplified-workflow override: Documentation is required only when public APIs, architecture, externally visible behavior/state machines, hardware assumptions, or operating procedures change. A confirmed root cause alone does not trigger documentation. With no public impact, record `NOT_RUN - Not required` and continue automatically without a user handoff.
 
 ## 中文 / Chinese
 
@@ -116,7 +120,7 @@ handoffs:
 - 事实冲突、缺少技术确认或写入授权时返回 `BLOCKED`。
 - 已执行检查失败且无法在允许范围内修复时返回 `FAILED`。
 - `CONDITIONAL` 仅用于用户明确接受的非发布性剩余风险；不得用它绕过同步占位标记或事实冲突。
-- Next Action 严格使用共享契约并只引用当前 frontmatter 的基础 handoff。已授权且无需输入的动作同轮执行；入口不匹配时返回 `BLOCKED`，不编辑或写 Git。
+- 仅在确实缺少用户输入、外部动作或新增权限时输出 Next Action。可自动完成的文档判断、同步和结果返回同轮继续；入口不匹配时不编辑或写 Git。
 
 ## English
 
@@ -163,7 +167,7 @@ Follow:
 ### Facts and Citations
 
 1. Interface names/signatures, configuration keys/defaults, error codes, commands, paths, state machines, and examples must match current source/configuration.
-2. Do not create low-value documentation churn when no public API, architecture, public business behavior/state machine, hardware assumption, operating procedure, or confirmed root cause changed.
+2. Do not create low-value documentation churn when no public API, architecture, public business behavior/state machine, hardware assumption, or operating procedure changed; a confirmed root cause alone does not trigger documentation.
 3. Important hardware facts must record the complete part number, silicon/board revision, official document identifier, document revision, and page/section or stable URL. Never combine different revisions as one source.
 4. Use the Web only for public material from official standards bodies and silicon/module/tool vendors. Never upload, paste, or query private source, customer data, unsanitized logs, credentials, or internal URLs.
 5. When an official source conflicts with source, tests, the project profile, or a confirmed conclusion, stop the affected statement and return to `Orchestrator`; never choose the version that merely looks plausible.
@@ -200,4 +204,4 @@ All first-party team Markdown must retain the constraint block after the title a
 - Return `BLOCKED` for fact conflicts, missing technical confirmation, or missing write authority.
 - Return `FAILED` when an executed check fails and cannot be fixed within allowed scope.
 - Use `CONDITIONAL` only for explicitly accepted non-release residual risk; never use it to bypass a synchronization placeholder or a fact conflict.
-- Follow the shared Next Action contract and reference only a base handoff in the current frontmatter. Execute authorized no-input work in the same turn; a mismatched entry returns `BLOCKED` without edits or Git writes.
+- Emit Next Action only for genuine user input, external work, or new authority. Complete documentation decisions, synchronization, and result return automatically in the same run; a mismatched entry performs no edit or Git write.

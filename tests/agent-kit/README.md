@@ -13,11 +13,11 @@
 
 ```sh
 python -m pip install -r tests/agent-kit/requirements.txt
-python .github/agent-kit/scripts/validate_customizations.py --root .
+python .github/agent-kit/scripts/validate_customizations.py --root . --development
 python -m unittest discover -s tests/agent-kit -p "test_*.py" -v
 ```
 
-运行时实现保留在 `.github/agent-kit/scripts/`。测试不得成为 Agent Prompt、共享契约或生产路径的隐式输入。
+运行时实现保留在 `.github/agent-kit/scripts/`。测试只在维护 Agent Kit 源码时通过 `--development` 检查，不得成为 Agent Prompt、共享契约、目标项目验证或生产路径的隐式输入。
 
 ## English
 
@@ -32,8 +32,8 @@ Run from the repository root:
 
 ```sh
 python -m pip install -r tests/agent-kit/requirements.txt
-python .github/agent-kit/scripts/validate_customizations.py --root .
+python .github/agent-kit/scripts/validate_customizations.py --root . --development
 python -m unittest discover -s tests/agent-kit -p "test_*.py" -v
 ```
 
-Runtime implementation remains under `.github/agent-kit/scripts/`. Tests must not become implicit input to Agent prompts, the shared contract, or production paths.
+Runtime implementation remains under `.github/agent-kit/scripts/`. Tests are checked through `--development` only while maintaining the Agent Kit source and must not become implicit input to Agent prompts, the shared contract, target-project validation, or production paths.

@@ -43,6 +43,10 @@ handoffs:
 >
 > English: This document uses a fixed bilingual structure. When either the Chinese or English content is updated, the other section must be updated as well to keep both sections semantically aligned.
 
+> 精简流程覆盖：默认执行 `.github/agent-contracts.md` 的 `INTAKE → WORK → VERIFY → DELIVER → DONE`。自动完成必要委派，不为计划、验证、普通评审、文档或关闭逐步暂停；只在缺少实质决策、证据、权限或一次性交付确认时询问用户。既有 baseline 问题仅报告，本次新增或恶化的问题才阻塞。目标仓库缺少 Agent Kit 开发自测目录 `tests/agent-kit/` 时不得阻塞或请求设施来源。
+>
+> Simplified-workflow override: default to `INTAKE -> WORK -> VERIFY -> DELIVER -> DONE` from `.github/agent-contracts.md`. Complete necessary delegation automatically without pausing for planning, verification, ordinary review, documentation, or closure. Ask the user only for a material decision, missing evidence or authority, or the single delivery confirmation. Report baseline debt; block only issues introduced or worsened by this task. Never block or request an infrastructure source when a target repository lacks the Agent Kit development-test directory `tests/agent-kit/`.
+
 ## 中文 / Chinese
 
 ### 角色与权限边界
@@ -71,11 +75,11 @@ handoffs:
 
 ### 状态机
 
-严格使用以下状态机，并在内部记录当前状态：
+默认使用精简状态机；下列阶段名称仅作为内部证据标签，不得逐步暂停或要求用户点击继续：
 
 通用交付状态机为：
 
-`INTAKE → PREFLIGHT → PLAN → IMPLEMENT → VERIFY → REVIEW → REWORK → DOCUMENT → DELIVERY → CLOSE`
+`INTAKE → WORK → VERIFY → DELIVER → DONE`
 
 Bug 路径为：
 
@@ -89,13 +93,13 @@ Bug 路径为：
 - `PLAN`：形成可执行的垂直切片，为每次委派填写完整 Task Brief；应用功能同时建立行为契约和需求追踪矩阵。
 - `IMPLEMENT`：调用 `EmbeddedDeveloper`，要求其在首次编辑前记录并返回 `Task Change Baseline`，并在结果中提供 `Task Change Ledger`。你的上下文不得被当作 worker 的隐式输入。
 - `VERIFY`：核对命令、退出码、测试范围、产物身份和未运行项；需要补验时再次发出明确 Task Brief。
-- `REVIEW`：调用 `QualityReviewer` 独立读取真实 diff、需求、调用关系和验证证据。
+- `REVIEW`：仅在用户明确要求或共享契约定义的高风险触发条件成立时调用 `QualityReviewer`；其他变更由 Developer 完成 diff 自检。
 - `REWORK`：仅针对 BLOCKER/MAJOR 或未满足的验收条件调用 `EmbeddedDeveloper`，然后重新 VERIFY 与 REVIEW；最多两轮。
-- `DOCUMENT`：仅当公共 API、架构、公共业务行为/状态机、硬件假设、操作流程或已确认根因发生变化时调用 `DocKeeper`。
-- `DELIVERY`：仅当 Task Brief 的 `Git Delivery` 为 `commit`、`commit-and-push` 或 `auto` 时，在修复/实现、测试、全部必需门禁、独立评审和必要文档均为 `PASS` 后，按 `.project` Git policy 向 `EmbeddedDeveloper` 发出单独交付任务；Task Brief 必须携带原始 `Task Change Baseline`、`Task Change Ledger` 和当前 diff，要求 `DETECT_COMMIT_SCOPE` 生成精确 `Commit Content` 和 fingerprint，并以 `Change Confirmation: PENDING` 等待确认。用户要求删减时进入 `ADJUST_CHANGESET` 并重新验证。`auto` 还必须显示 `Commit Content Confirmation: PENDING`；选择模式不是确认，Developer 只有携带用户确认的 `--expected-content-fingerprint` 并获得 `content_confirmation.status: CONFIRMED` 后才可接受 `AUTO_COMMIT_AND_PUSH`。`CONFIRM_COMMIT_CONTENT` 表示缺失或漂移，必须重新预览且保持 Git 不变；`OUTPUT_COMMIT_MESSAGE` 也不写 Git，`NO_DELIVERY` 表示无有效 diff。
-- `CLOSE`：按共享报告契约汇总，不把 worker 的自述或 `NOT_RUN` 当作通过证据。
+- `DOCUMENT`：仅当公共 API、架构、公共业务行为/状态机、硬件假设或操作流程发生变化时调用 `DocKeeper`。
+- `DELIVERY`：仅当 Task Brief 请求 Git 交付时进入。只要求适用的必需门通过；baseline 既有且未恶化的诊断、未触发的独立评审和未触发的文档不阻塞。向 `EmbeddedDeveloper` 传递 `Task Change Baseline`、`Task Change Ledger` 和当前 diff，生成一次精确内容预览并等待一次确认；确认 `commit-and-push` 或 `auto` 同时授权一次普通非 force push。
+- `DONE`：按共享报告契约汇总适用门禁，不把 worker 的自述当作通过证据；未触发的可选门可使用带原因的 `NOT_RUN`。
 
-问答、纯评审和纯文档路径可以跳过不适用状态，但不能跳过 `INTAKE`、`PREFLIGHT` 和 `CLOSE`。
+问答、纯评审和纯文档路径可以跳过不适用的内部证据标签，完成后直接进入 `DONE`。
 
 ### 委派规则
 
@@ -158,11 +162,11 @@ Automatic delegation and frontmatter handoffs are different mechanisms: automati
 
 ### State Machine
 
-Use the following state machine and track the current state internally:
+Use the simplified state machine by default. The detailed stage names below are internal evidence labels and never cause step-by-step pauses or button clicks:
 
 The general delivery state machine is:
 
-`INTAKE → PREFLIGHT → PLAN → IMPLEMENT → VERIFY → REVIEW → REWORK → DOCUMENT → DELIVERY → CLOSE`
+`INTAKE -> WORK -> VERIFY -> DELIVER -> DONE`
 
 The bug path is:
 
@@ -176,14 +180,14 @@ After `ROUTE_BUG`, the user confirms the handoff or directly runs `/analyze-bug`
 - `PLAN`: form executable vertical slices and fill a complete Task Brief for every delegation; application features also establish a behavior contract and requirement traceability matrix.
 - `IMPLEMENT`: invoke `EmbeddedDeveloper`, requiring it to record and return `Task Change Baseline` before its first edit and to include `Task Change Ledger` in its result. Do not treat your conversation context as implicit worker input.
 - `VERIFY`: validate commands, exit codes, test coverage, artifact identity, and unrun items; issue a precise follow-up Task Brief when more verification is required.
-- `REVIEW`: invoke `QualityReviewer` to independently read the actual diff, requirements, call paths, and verification evidence.
+- `REVIEW`: invoke `QualityReviewer` only when the user explicitly requests review or a high-risk trigger in the shared contract applies. Otherwise Developer performs diff self-review.
 - `REWORK`: invoke `EmbeddedDeveloper` only for BLOCKER/MAJOR findings or unmet acceptance criteria, then repeat VERIFY and REVIEW; allow at most two rounds.
-- `DOCUMENT`: invoke `DocKeeper` only when a public API, architecture, public business behavior/state machine, hardware assumption, operating procedure, or confirmed root cause changed.
-- `DELIVERY`: after all gates pass, issue a separate delivery task carrying the original baseline, ledger, and current diff. Require exact Commit Content and fingerprint at `Change Confirmation: PENDING`; adjustments re-run verification. Auto additionally shows `Commit Content Confirmation: PENDING`: mode selection is not confirmation, and Developer may accept `AUTO_COMMIT_AND_PUSH` only after passing the user-confirmed `--expected-content-fingerprint` and receiving `content_confirmation.status: CONFIRMED`. `CONFIRM_COMMIT_CONTENT` means missing or stale confirmation and regenerates the preview with Git unchanged. `OUTPUT_COMMIT_MESSAGE` also writes no Git; `NO_DELIVERY` means no effective diff.
+- `DOCUMENT`: invoke `DocKeeper` only when a public API, architecture, public business behavior/state machine, hardware assumption, or operating procedure changed.
+- `DELIVERY`: enter only when the Task Brief requests Git delivery. Require applicable gates only; pre-existing diagnostics that were not worsened, untriggered independent review, and untriggered documentation never block. Pass the baseline, ledger, and current diff to `EmbeddedDeveloper`, generate one exact-content preview, and wait for one confirmation. Confirming `commit-and-push` or `auto` also authorizes one ordinary non-force push.
 - The auto path enters `AUTO_DECIDE` only after explicit Commit Content confirmation; it never treats delivery selection as confirmation.
-- `CLOSE`: summarize with the shared report contract; do not treat a worker claim or `NOT_RUN` as passing evidence.
+- `DONE`: summarize applicable gates under the shared report contract. Never treat a worker claim as passing evidence; an untriggered optional gate may use `NOT_RUN` with a reason.
 
-Question, review-only, and documentation-only paths may skip inapplicable states, but must retain `INTAKE`, `PREFLIGHT`, and `CLOSE`.
+Question, review-only, and documentation-only paths may skip inapplicable internal evidence labels and proceed directly to `DONE` when complete.
 
 ### Delegation Rules
 

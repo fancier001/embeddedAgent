@@ -33,7 +33,7 @@ AI 实质参与代码生成、检查、重构、测试或文档时填写 `Y` 和
 
 确认发生在当前执行交付的 BugResolver 或 EmbeddedDeveloper 会话中。Agent 先反馈逐文件内容和将原样交给 Git 的完整 commit message，并标记 `Commit Content Confirmation: PENDING`。用户核对后在当前输入框明确回复 `确认提交内容`，Agent 才执行 `STAGE` 和 `COMMIT`；也可回复 `调整修改: <要求>` 进入 `ADJUST_CHANGESET` 和重新确认。模式选择、Jira、按钮点击或笼统要求提交不构成内容确认；文件、diff、范围或消息漂移会使确认失效。
 
-`commit-and-push` 在 commit 成功后输出 `CONFIRM_PUSH` 并等待 `确认推送`。`auto` 不增加 commit 后的 push 二次确认，但自动 commit 前必须显示 `Commit Content Confirmation: PENDING` 并等待用户用当前 fingerprint 明确 `确认自动提交内容`；选择 auto 本身不是内容确认。缺失或漂移时预检返回 `CONFIRM_COMMIT_CONTENT`，不得暂存或提交。auto push 失败保留本地 commit、不自动重试，并输出 `MANUAL_PUSH` 与最近一次安全解析 remote/ref 对应的非 force 命令。
+一次性交付确认选择 `commit-and-push` 或 `auto` 时，同时授权精确内容的 commit 和随后一次普通非 force push，不再生成 `CONFIRM_PUSH`。`auto` 在 commit 前仍使用当前 fingerprint 防止内容漂移；缺失或漂移时预检返回 `CONFIRM_COMMIT_CONTENT`，不得暂存或提交。push 失败保留本地 commit、不自动重试，并输出 `MANUAL_PUSH` 与最近一次安全解析 remote/ref 对应的非 force 命令。
 
 `commit-msg` hook 在 Git 创建 commit 前内部执行以下校验；Agent 不再额外预检：
 
@@ -46,9 +46,9 @@ BugResolver 或 EmbeddedDeveloper 只可运行 `git add -- <task-paths>` 显式�
 
 ### Git 交付
 
-`.project/git/delivery.yml` 只定义自动化开关、排除路径、提交字段、分支规则和检查命令。commit 内容由本次任务的初始 Git 基线、修改账本和当前真实 diff 检测，不由 YAML 路径白名单决定；旧 `scope.allowed_paths` 仅为兼容字段且不参与筛选。`denied_paths` 仍可排除构建或生成产物。policy 禁止保存 remote、URL 或目标 ref；push 目标只能从当前项目的本地 `.git` 配置读取。
+`.project/git/delivery.yml` 的 `workflow` 固定精简模式：`new-or-worsened` 增量诊断、`risk-based` 独立评审、`impact-based` 文档和 `once` 一次性交付确认。该文件还定义自动化开关、排除路径、提交字段、分支规则和检查命令。commit 内容由本次任务的初始 Git 基线、修改账本和当前真实 diff 检测，不由 YAML 路径白名单决定；旧 `scope.allowed_paths` 仅为兼容字段且不参与筛选。`denied_paths` 仍可排除构建或生成产物。policy 禁止保存 remote、URL 或目标 ref；push 目标只能从当前项目的本地 `.git` 配置读取。
 
-Task Brief 的 `Git Delivery` 只接受 `none`、`commit`、`commit-and-push`、`auto`。用户确认后的 `commit`/`commit-and-push` 分别由 `CONFIRM_COMMIT`/`CONFIRM_PUSH` 授权，不受关闭的 automation 开关阻塞；只有 `auto` 要求两个 automation 开关同时启用。Task Brief 不得提供 remote、URL、目标分支或 refspec。`auto` 只选择“确认具体内容后执行一次 commit 加一次普通 push”的模式，不等于确认 Commit Content，也不支持仅自动 commit。
+Task Brief 的 `Git Delivery` 只接受 `none`、`commit`、`commit-and-push`、`auto`。一次 `CONFIRM_COMMIT` 同时确认精确内容和所选模式；选择 `commit-and-push` 时包含一次普通 push 授权，不受关闭的 automation 开关阻塞。只有 `auto` 要求两个 automation 开关同时启用。Task Brief 不得提供 remote、URL、目标分支或 refspec。
 
 普通提交的范围由 `DETECT_COMMIT_SCOPE` 根据任务基线、修改账本和真实 diff 展示，最终确认后由 Agent 显式暂存。所有 staged 内容都会进入本次 commit，因此调用入口前必须核对完整 staged 路径和 diff，并排除无关 staged 文件。`fingerprint` 只用于 `auto` 的内容确认与漂移检测；普通 commit 不依赖 fingerprint 或 commit `git-plan`。用户可通过 `ADJUST_CHANGESET` 要求删减，调整后必须重新验证、独立评审和确认。
 
@@ -103,7 +103,7 @@ Use AI=`Y` with one truthful primary scenario/detail when AI materially particip
 
 Confirmation occurs in the current BugResolver or EmbeddedDeveloper conversation that performs delivery. The Agent first reports per-file content and the complete commit message exactly as Git will receive it, marked `Commit Content Confirmation: PENDING`. After reviewing both, the user explicitly replies `confirm commit content` in the current input, and only then does the Agent run `STAGE` and `COMMIT`. The user may instead reply `adjust changes: <request>` to enter `ADJUST_CHANGESET` and a new confirmation. Mode selection, Jira, button clicks, and generic commit requests are not content confirmation; file, diff, scope, or message drift invalidates confirmation.
 
-`commit-and-push` emits `CONFIRM_PUSH` after commit and waits for `confirm push`. Auto adds no post-commit push confirmation, but before automatic commit it shows `Commit Content Confirmation: PENDING` and waits for an explicit `confirm automatic commit content` with the current fingerprint; selecting auto is not content confirmation. Missing or stale confirmation returns `CONFIRM_COMMIT_CONTENT` without staging or committing. A failed auto push preserves the local commit without automatic retry and emits `MANUAL_PUSH` with the non-force command for the most recently safe resolved remote/ref.
+A one-time delivery confirmation selecting `commit-and-push` or `auto` authorizes the commit of the exact content and one subsequent ordinary non-force push; it never emits `CONFIRM_PUSH`. Auto still uses the current fingerprint before commit to detect content drift. Missing or stale confirmation returns `CONFIRM_COMMIT_CONTENT` without staging or committing. A failed push preserves the local commit without automatic retry and emits `MANUAL_PUSH` with the non-force command for the most recently safe resolved remote/ref.
 
 The `commit-msg` hook runs this validation internally before Git creates a commit; the Agent does not prevalidate it separately:
 
@@ -116,9 +116,9 @@ BugResolver or EmbeddedDeveloper may run only `git add -- <task-paths>` to stage
 
 ### Git Delivery
 
-`.project/git/delivery.yml` contains automation switches, denied paths, commit fields, branch rules, and check commands only. Commit content is detected from the task's initial Git baseline, change ledger, and current actual diff, not from a YAML path allowlist; legacy `scope.allowed_paths` is compatibility-only and never filters content. `denied_paths` may still exclude build or generated artifacts. The policy forbids remote aliases, URLs, and target refs; push targets come exclusively from the current project's local `.git` configuration.
+The `workflow` section of `.project/git/delivery.yml` fixes streamlined mode with `new-or-worsened` diagnostics, `risk-based` independent review, `impact-based` documentation, and `once` delivery confirmation. The file also contains automation switches, denied paths, commit fields, branch rules, and check commands. Commit content is detected from the task's initial Git baseline, change ledger, and current actual diff, not from a YAML path allowlist; legacy `scope.allowed_paths` is compatibility-only and never filters content. `denied_paths` may still exclude build or generated artifacts. The policy forbids remote aliases, URLs, and target refs; push targets come exclusively from the current project's local `.git` configuration.
 
-Task Brief `Git Delivery` accepts only `none`, `commit`, `commit-and-push`, or `auto`. User-confirmed `commit`/`commit-and-push` are authorized through `CONFIRM_COMMIT`/`CONFIRM_PUSH`; only `auto` requires both automation switches. A Task Brief never supplies a remote, URL, target branch, or refspec. `auto` selects one commit plus one ordinary push after specific content confirmation; it does not confirm Commit Content, and automatic commit-only is unsupported.
+Task Brief `Git Delivery` accepts only `none`, `commit`, `commit-and-push`, or `auto`. One `CONFIRM_COMMIT` confirms the exact content and selected mode; selecting `commit-and-push` includes one ordinary push authorization. Only `auto` requires both automation switches. A Task Brief never supplies a remote, URL, target branch, or refspec.
 
 For ordinary commit, `DETECT_COMMIT_SCOPE` presents scope from the task baseline, change ledger, and actual diff, and the Agent stages it explicitly only after final confirmation. Every staged item enters the commit, so inspect the complete staged path set and diff and exclude unrelated staged files before invoking the entrypoint. A `fingerprint` is used only for auto content confirmation and drift detection; ordinary commit does not depend on a fingerprint or commit `git-plan`. The user can request a reduction through `ADJUST_CHANGESET`, after which verification, independent review, and confirmation run again.
 
