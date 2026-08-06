@@ -120,17 +120,9 @@ EXPECTED_HANDOFFS: Mapping[str, tuple[tuple[str, str], ...]] = {
 NEXT_ACTION_IDS = (
     "CONFIRM_DIRECTION",
     "PROVIDE_EVIDENCE",
-    "IMPLEMENT_FIX",
-    "FIX_FINDINGS",
-    "QUALITY_REVIEW",
-    "DOCUMENT_CHANGES",
-    "GIT_DELIVERY",
     "CONFIRM_COMMIT",
     "ADJUST_CHANGESET",
-    "CONFIRM_PUSH",
     "MANUAL_PUSH",
-    "CLOSE_ISSUE",
-    "START_NEW_ISSUE",
     "NONE",
 )
 NEXT_ACTION_ROUTES = (
@@ -205,13 +197,13 @@ GIT_DELIVERY_HANDOFF_PROMPT_MARKERS = (
     "MANUAL_PUSH",
 )
 CLOSE_ISSUE_HANDOFF_PROMPT_MARKERS = (
-    "Recheck",
-    "repair",
+    "Legacy-session manual recovery",
+    "applicable gates",
     "selected Git delivery",
-    "clear issue-level state",
+    "direct DONE report",
+    "without clearing state",
     "fresh issue INTAKE",
-    "otherwise return BLOCKED",
-    "Next Action",
+    "actual blocker",
 )
 
 EXPECTED_PROMPTS: Mapping[str, Mapping[str, str]] = {
@@ -265,6 +257,7 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
     "orchestrator.agent.md": frozenset(
         {
             ".github/agent-contracts.md",
+            "Simplified-workflow override",
             ".project/project.yml",
             "`PREFLIGHT`",
             "`PLAN`",
@@ -283,7 +276,8 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
     "bug-resolver.agent.md": frozenset(
         {
             ".github/agent-contracts.md",
-            "CLOSE → RESET → INTAKE",
+            "Simplified-workflow override",
+            "INTAKE → WORK（诊断和实现）→ VERIFY → DELIVER → DONE",
             "GUIDE_SYMPTOMS",
             "CONFIRM_DIRECTION",
             "IDENTIFY_PROBLEM",
@@ -313,6 +307,7 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
     "embedded-developer.agent.md": frozenset(
         {
             ".github/agent-contracts.md",
+            "Simplified-workflow override",
             ".project/project.yml",
             "project_policy.py",
             "`IMPLEMENT`",
@@ -345,6 +340,7 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
     "quality-reviewer.agent.md": frozenset(
         {
             ".github/agent-contracts.md",
+            "Simplified-workflow override",
             "Review Finding",
             "`BLOCKER`",
             "`MAJOR`",
@@ -359,6 +355,7 @@ REQUIRED_AGENT_BODY_MARKERS: Mapping[str, frozenset[str]] = {
     "doc-keeper.agent.md": frozenset(
         {
             ".github/agent-contracts.md",
+            "Simplified-workflow override",
             ".project/",
             "`RECEIVED`",
             "`REPORT`",
@@ -432,7 +429,7 @@ REQUIRED_PRODUCT_FILES = (
     ".github/agent-kit/scripts/project_policy.py",
     ".githooks/commit-msg",
 )
-REQUIRED_TEST_FILES = (
+DEVELOPMENT_TEST_FILES = (
     "tests/agent-kit/requirements.txt",
     "tests/agent-kit/test_commit_hook.py",
     "tests/agent-kit/test_project_policy.py",
@@ -492,6 +489,17 @@ REQUIRED_SHARED_CONTRACT_MARKERS = frozenset(
         "Next Action has a separate language-rendering gate",
         "no Han, CJK punctuation, or fullwidth characters",
         "the `START_NEW_ISSUE` values above are mandatory",
+        "INTAKE → WORK → VERIFY → DELIVER → DONE",
+        "本次新增或恶化的诊断阻塞交付",
+        "Diagnostics introduced or worsened by this task block delivery",
+        "development self-tests for the Agent Kit source repository",
+        "validate_customizations.py --development",
+        "Independent Review 仅在高风险变更时必需",
+        "Independent Review is required only for high-risk changes",
+        "Git 交付最多等待一次用户确认",
+        "Git delivery waits for at most one user confirmation",
+        "成功、显式跳过 Git 交付或只读回答完成时直接给出结果",
+        "On success, an explicit Git-delivery skip, or a completed read-only answer",
     }
 )
 REQUIRED_GIT_DELIVERY_FILE_MARKERS: Mapping[str, frozenset[str]] = {
@@ -811,6 +819,7 @@ GIT_DELIVERY_POLICY_SCHEMA: Mapping[str, Any] = {
     "required": [
         "schema_version",
         "automation",
+        "workflow",
         "scope",
         "commit",
         "push",
@@ -826,6 +835,24 @@ GIT_DELIVERY_POLICY_SCHEMA: Mapping[str, Any] = {
             "properties": {
                 "commit": {"type": "boolean"},
                 "push": {"type": "boolean"},
+            },
+        },
+        "workflow": {
+            "type": "object",
+            "additionalProperties": False,
+            "required": [
+                "mode",
+                "diagnostics",
+                "independent_review",
+                "documentation",
+                "delivery_confirmation",
+            ],
+            "properties": {
+                "mode": {"const": "streamlined"},
+                "diagnostics": {"const": "new-or-worsened"},
+                "independent_review": {"const": "risk-based"},
+                "documentation": {"const": "impact-based"},
+                "delivery_confirmation": {"const": "once"},
             },
         },
         "scope": {
@@ -1011,8 +1038,14 @@ class Diagnostic:
 class RepositoryValidator:
     """Validate one repository root and return all detected problems."""
 
-    def __init__(self, root: Path | str) -> None:
+    def __init__(
+        self,
+        root: Path | str,
+        *,
+        include_development_tests: bool = False,
+    ) -> None:
         self.root = Path(root).resolve()
+        self.include_development_tests = include_development_tests
         self.diagnostics: list[Diagnostic] = []
         self._text_cache: dict[Path, str | None] = {}
         self._markdown_anchor_cache: dict[Path, set[str] | None] = {}
@@ -1024,6 +1057,8 @@ class RepositoryValidator:
 
         self._validate_text_hygiene()
         self._validate_required_files()
+        if self.include_development_tests:
+            self._validate_development_test_files()
         self._validate_git_delivery_files()
         self._validate_shared_contract()
         self._validate_agents()
@@ -1093,7 +1128,11 @@ class RepositoryValidator:
             path = self.root / relative
             if not path.is_file():
                 self._add(path, "REQUIRED_FILE", "required product file is missing")
-        for relative in REQUIRED_TEST_FILES:
+
+    def _validate_development_test_files(self) -> None:
+        """Validate source-repository tests only in explicit development mode."""
+
+        for relative in DEVELOPMENT_TEST_FILES:
             path = self.root / relative
             if not path.is_file():
                 self._add(path, "REQUIRED_TEST_FILE", "required test file is missing")
@@ -1935,9 +1974,15 @@ class RepositoryValidator:
                 )
                 resolved = candidate.resolve()
                 try:
-                    resolved.relative_to(self.root)
+                    relative_target = resolved.relative_to(self.root)
                 except ValueError:
                     self._add(path, "LINK_OUTSIDE", f"link leaves repository: {destination}")
+                    continue
+                if (
+                    not self.include_development_tests
+                    and relative_target.parts[:2] == ("tests", "agent-kit")
+                ):
+                    # Agent Kit source tests are intentionally optional in runtime installs.
                     continue
                 if not resolved.exists():
                     self._add(path, "LINK_MISSING", f"local link target does not exist: {destination}")
@@ -1959,10 +2004,17 @@ class RepositoryValidator:
                         )
 
 
-def validate_repository(root: Path | str) -> list[Diagnostic]:
+def validate_repository(
+    root: Path | str,
+    *,
+    include_development_tests: bool = False,
+) -> list[Diagnostic]:
     """Public API used by unit tests and integrations."""
 
-    return RepositoryValidator(root).validate()
+    return RepositoryValidator(
+        root,
+        include_development_tests=include_development_tests,
+    ).validate()
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -1980,12 +2032,20 @@ def _build_parser() -> argparse.ArgumentParser:
         dest="output_format",
         help="diagnostic output format",
     )
+    parser.add_argument(
+        "--development",
+        action="store_true",
+        help="also require Agent Kit source tests and development-only layout",
+    )
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _build_parser().parse_args(argv)
-    diagnostics = validate_repository(args.root)
+    diagnostics = validate_repository(
+        args.root,
+        include_development_tests=args.development,
+    )
     if args.output_format == "json":
         print(json.dumps([asdict(item) for item in diagnostics], ensure_ascii=False, indent=2))
     elif diagnostics:

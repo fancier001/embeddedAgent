@@ -7,6 +7,13 @@ automation:
   commit: false
   push: false
 
+workflow:
+  mode: streamlined
+  diagnostics: new-or-worsened
+  independent_review: risk-based
+  documentation: impact-based
+  delivery_confirmation: once
+
 scope:
   denied_paths:
     - "**/build/**"
@@ -31,7 +38,6 @@ commit:
     - Other
   checks:
     - "python .github/agent-kit/scripts/validate_customizations.py --root ."
-    - "python -m unittest discover -s tests/agent-kit -p test_*.py -v"
 
 push:
   allowed_branches:

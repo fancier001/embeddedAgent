@@ -167,6 +167,19 @@ class ProjectRuleTests(unittest.TestCase):
             with self.assertRaises(PolicyInputError):
                 resolve_rules(repo, ["README.md"])
 
+    def test_policy_loader_requires_streamlined_workflow(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = Path(temporary) / "repository"
+            shutil.copytree(PROJECT_ROOT / ".project", repo / ".project")
+            policy_path = repo / ".project" / "git" / "delivery.yml"
+            policy_data = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
+            policy_data["workflow"]["independent_review"] = "always"
+            policy_path.write_text(
+                yaml.safe_dump(policy_data, sort_keys=False), encoding="utf-8"
+            )
+            with self.assertRaises(PolicyInputError):
+                resolve_rules(repo, ["README.md"])
+
     def test_legacy_allowed_paths_do_not_restrict_product_code(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             repo = Path(temporary) / "repository"

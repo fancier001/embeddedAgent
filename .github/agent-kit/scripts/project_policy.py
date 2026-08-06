@@ -340,6 +340,7 @@ def _validate_policy(policy: Mapping[str, Any], project_dir: Path) -> None:
         required={
             "schema_version",
             "automation",
+            "workflow",
             "scope",
             "commit",
             "push",
@@ -349,6 +350,7 @@ def _validate_policy(policy: Mapping[str, Any], project_dir: Path) -> None:
         allowed={
             "schema_version",
             "automation",
+            "workflow",
             "scope",
             "commit",
             "push",
@@ -366,6 +368,34 @@ def _validate_policy(policy: Mapping[str, Any], project_dir: Path) -> None:
     )
     if not all(isinstance(automation.get(key), bool) for key in ("commit", "push")):
         raise PolicyInputError("automation.commit and automation.push must be boolean")
+    workflow = _mapping_keys(
+        policy.get("workflow"),
+        label="workflow",
+        required={
+            "mode",
+            "diagnostics",
+            "independent_review",
+            "documentation",
+            "delivery_confirmation",
+        },
+        allowed={
+            "mode",
+            "diagnostics",
+            "independent_review",
+            "documentation",
+            "delivery_confirmation",
+        },
+    )
+    expected_workflow = {
+        "mode": "streamlined",
+        "diagnostics": "new-or-worsened",
+        "independent_review": "risk-based",
+        "documentation": "impact-based",
+        "delivery_confirmation": "once",
+    }
+    for key, expected in expected_workflow.items():
+        if workflow.get(key) != expected:
+            raise PolicyInputError(f"workflow.{key} must be {expected!r}")
     scope = _mapping_keys(
         policy.get("scope"),
         label="scope",
